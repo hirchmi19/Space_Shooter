@@ -44,7 +44,7 @@ void Game::InitGameLoop() {
 
         ClearBackground(BLACK);
 
-        DrawText("It works!", 300, 280, 20, RAYWHITE);
+        DrawText("It works?", 300, 280, 20, RAYWHITE);
 
         EndDrawing();
     }
