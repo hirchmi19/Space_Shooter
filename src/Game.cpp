@@ -10,50 +10,49 @@ Game::Game() {
     InitWindow(900, 600, "Space Shooter");
     SetTargetFPS(60);
 
-    InitGameLoop();
-
-    CloseWindow();
+    Init();
 }
 
-Game::~Game() = default;
+Game::~Game() {
 
-void Game::InitGameLoop() {
+    CloseWindow();
+};
 
-    constexpr double UPS = 60;
-    constexpr double timePerUpdate = 1 / UPS;
+void Game::Init() {
+
+
+    InitWindow(900, 600, "Space Shooter");
+    SetTargetFPS(60);
+}
+
+void Game::Run() {
+
+    constexpr double UPS = 60.0;
+    constexpr double timePerUpdate = 1.0 / UPS;
 
     double prevTime = GetTime();
-    double deltaTime = 0;
+    double updateAccumulator = 0.0;
 
     while (!WindowShouldClose()) {
 
-        double currentTime = GetTime();
-
-        deltaTime += (currentTime - prevTime) / timePerUpdate;
+        const double currentTime = GetTime();
+        updateAccumulator += (currentTime - prevTime) / timePerUpdate;
         prevTime = currentTime;
 
-        while (deltaTime >= 1) {
+        while (updateAccumulator >= 1.0) {
 
-           // UpdateGameLoop();
-            deltaTime--;
+            Update();
+            updateAccumulator--;
         }
 
-        BeginDrawing();
-
-       // DrawGameLoop();
-
-        ClearBackground(BLACK);
-
-        DrawText("It works?", 300, 280, 20, RAYWHITE);
-
-        EndDrawing();
+        Draw();
     }
 }
 
-void Game::DrawGameLoop() {
+void Game::Draw() {
 
 }
 
-void Game::UpdateGameLoop() {
+void Game::Update() {
 
 }

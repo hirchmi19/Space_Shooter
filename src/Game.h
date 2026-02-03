@@ -10,8 +10,10 @@ class Game {
     Game();
     ~Game();
 
+    void Run();
+
     private:
-    static void InitGameLoop();
-    void UpdateGameLoop();
-    void DrawGameLoop();
+    static void Init();
+    void Update();
+    void Draw();
 };
