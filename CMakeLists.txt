@@ -8,6 +8,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_subdirectory(external/raylib)
 
 add_executable(Space_Shooter
-        src/main.cpp)
+        src/main.cpp
+        src/Game.cpp
+        src/Game.h)
 
 target_link_libraries(Space_Shooter raylib)

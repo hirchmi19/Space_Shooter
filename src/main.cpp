@@ -2,23 +2,13 @@
 // Created by Michael Hirsch on 03.02.26.
 //
 
+#include "Game.h"
 #include "raylib.h"
 
 int main()
 {
-    InitWindow(800, 600, "Space Shooter");
-    SetTargetFPS(60);
 
-    while (!WindowShouldClose())
-    {
-        BeginDrawing();
-        ClearBackground(BLACK);
+    Game game;
 
-        DrawText("It works!", 300, 280, 20, RAYWHITE);
-
-        EndDrawing();
-    }
-
-    CloseWindow();
     return 0;
 }
