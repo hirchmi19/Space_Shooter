@@ -10,6 +10,8 @@ add_subdirectory(external/raylib)
 add_executable(Space_Shooter
         src/main.cpp
         src/Game.cpp
-        src/Game.h)
+        src/Game.h
+        src/Player.cpp
+        src/Player.h)
 
 target_link_libraries(Space_Shooter raylib)
