@@ -19,6 +19,9 @@ add_executable(Space_Shooter
         src/Systems/Assets/Sprite.h
         src/Systems/Assets/AssetSystem.cpp
         src/Systems/Assets/AssetSystem.h
-        src/Helper/EnumHash.h)
+        src/Helper/EnumHash.h
+        src/GameWorld.cpp
+        src/GameWorld.h
+        src/Components/PositionComponent.h)
 
 target_link_libraries(Space_Shooter raylib)
