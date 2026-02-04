@@ -4,11 +4,9 @@
 
 #include "raylib.h"
 #include "Game.h"
+#include "Constants/GameConstants.h"
 
 Game::Game() {
-
-    InitWindow(900, 600, "Space Shooter");
-    SetTargetFPS(60);
 
     Init();
 }
@@ -20,15 +18,13 @@ Game::~Game() {
 
 void Game::Init() {
 
-
-    InitWindow(900, 600, "Space Shooter");
-    SetTargetFPS(60);
+    InitWindow(GameConstants::SCREEN_WIDTH, GameConstants::SCREEN_HEIGHT, "Space Shooter");
+    SetTargetFPS(GameConstants::TARGET_FPS);
 }
 
 void Game::Run() {
 
-    constexpr double UPS = 60.0;
-    constexpr double timePerUpdate = 1.0 / UPS;
+    constexpr double timePerUpdate = 1.0 / GameConstants::UPS;
 
     double prevTime = GetTime();
     double updateAccumulator = 0.0;
@@ -45,12 +41,17 @@ void Game::Run() {
             updateAccumulator--;
         }
 
+        BeginDrawing();
+
         Draw();
+
+        EndDrawing();
     }
 }
 
 void Game::Draw() {
 
+    ClearBackground(BLACK);
 }
 
 void Game::Update() {

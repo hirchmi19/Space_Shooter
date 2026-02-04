@@ -12,6 +12,7 @@ add_executable(Space_Shooter
         src/Game.cpp
         src/Game.h
         src/Player.cpp
-        src/Player.h)
+        src/Player.h
+        src/Constants/GameConstants.h)
 
 target_link_libraries(Space_Shooter raylib)
