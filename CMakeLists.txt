@@ -11,8 +11,14 @@ add_executable(Space_Shooter
         src/main.cpp
         src/Game.cpp
         src/Game.h
-        src/Player.cpp
-        src/Player.h
-        src/Constants/GameConstants.h)
+        src/Entities/Player.cpp
+        src/Entities/Player.h
+        src/Constants/GameConstants.h
+        src/Systems/Assets/TextureID.h
+        src/Systems/Assets/SpriteID.h
+        src/Systems/Assets/Sprite.h
+        src/Systems/Assets/AssetSystem.cpp
+        src/Systems/Assets/AssetSystem.h
+        src/Helper/EnumHash.h)
 
 target_link_libraries(Space_Shooter raylib)

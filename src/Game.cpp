@@ -43,6 +43,8 @@ void Game::Run() {
 
         BeginDrawing();
 
+        ClearBackground(BLACK);
+
         Draw();
 
         EndDrawing();
@@ -51,7 +53,6 @@ void Game::Run() {
 
 void Game::Draw() {
 
-    ClearBackground(BLACK);
 }
 
 void Game::Update() {
