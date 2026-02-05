@@ -4,30 +4,23 @@
 
 #pragma once
 #include <unordered_map>
-#include "Components/PositionComponent.h"
+#include <vector>
+
+#include "Entity.h"
+#include "EntityType.h"
+#include "Systems/GameSystem.h"
+#include "Systems/ISystem.h"
 
 
 class GameWorld {
 
     public:
-    using Entity = uint32_t;
-
-    Entity CreateEntity(Entity entity);
-    void DestroyEntity(Entity entity);
-
-    template <typename T>
-    void AddComponent(Entity e, T component);
-
-    template <typename T>
-    bool HasComponent (Entity e) const ;
-
-    template <typename T>
-    T& GetComponent (Entity e);
+    GameWorld();
+    ~GameWorld();
 
     private:
-    Entity nextEntity = 1;
-
-    std::unordered_map<Entity, PositionComponent> positions;
+    std::unordered_map<EntityType, std::vector<std::unique_ptr<Entity>>> entities;
+    GameSystem system;
 };
 
 

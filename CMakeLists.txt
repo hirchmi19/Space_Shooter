@@ -22,6 +22,11 @@ add_executable(Space_Shooter
         src/Helper/EnumHash.h
         src/GameWorld.cpp
         src/GameWorld.h
-        src/Components/PositionComponent.h)
+        src/Systems/GameSystem.cpp
+        src/Systems/GameSystem.h
+        src/Systems/ISystem.cpp
+        src/Systems/ISystem.h
+        src/EntityType.h
+        src/Entity.h)
 
 target_link_libraries(Space_Shooter raylib)

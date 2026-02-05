@@ -3,6 +3,8 @@
 //
 
 #pragma once
+#include "GameWorld.h"
+#include "Systems/GameSystem.h"
 
 class Game {
 
@@ -13,6 +15,9 @@ class Game {
     void Run();
 
     private:
+
+    GameWorld world;
+
     static void Init();
     void Update();
     void Draw();

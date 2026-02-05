@@ -9,6 +9,8 @@
 Game::Game() {
 
     Init();
+    world = GameWorld();
+    gameSystem =
 }
 
 Game::~Game() {
