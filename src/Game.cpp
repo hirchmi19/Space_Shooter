@@ -4,27 +4,35 @@
 
 #include "raylib.h"
 #include "Game.h"
+
+#include "GameWorld.h"
 #include "Constants/GameConstants.h"
 
 Game::Game() {
 
-    Init();
-    world = GameWorld();
-    gameSystem =
+    CreateGame();
 }
 
 Game::~Game() {
 
+    world.reset();
     CloseWindow();
 };
 
-void Game::Init() {
+/**
+ * Creates a Window and the Game World
+ */
+void Game::CreateGame() {
 
     InitWindow(GameConstants::SCREEN_WIDTH, GameConstants::SCREEN_HEIGHT, "Space Shooter");
     SetTargetFPS(GameConstants::TARGET_FPS);
+    world = std::make_unique<GameWorld>();
 }
 
-void Game::Run() {
+/**
+ * Runs the Game Loop
+ */
+void Game::RunGame() {
 
     constexpr double timePerUpdate = 1.0 / GameConstants::UPS;
 

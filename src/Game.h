@@ -3,22 +3,21 @@
 //
 
 #pragma once
-#include "GameWorld.h"
-#include "Systems/GameSystem.h"
+#include <memory>
+
+class GameWorld;
 
 class Game {
 
     public:
     Game();
     ~Game();
-
-    void Run();
+    void RunGame();
 
     private:
+    std::unique_ptr<GameWorld> world;
 
-    GameWorld world;
-
-    static void Init();
+    void CreateGame();
     void Update();
     void Draw();
 };

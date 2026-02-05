@@ -3,8 +3,9 @@
 //
 
 #pragma once
+#include <cstdint>
 
-enum class EntityType {
+enum class EntityType : uint32_t {
 
     NONE,
     ENEMY,

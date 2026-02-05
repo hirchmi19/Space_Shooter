@@ -6,10 +6,13 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Entity.h"
-#include "EntityType.h"
-#include "Systems/GameSystem.h"
-#include "Systems/ISystem.h"
+#include "raylib.h"
+#include "Systems/Assets/SpriteID.h"
+#include "Entities/Player.h"
+
+class Entity;
+class ISystem;
+class EntityType;
 
 
 class GameWorld {
@@ -18,9 +21,19 @@ class GameWorld {
     GameWorld();
     ~GameWorld();
 
+    void RunSystems();
+    void CreateProjectile(SpriteID id, Vector2 spawnPosition);
+    void CreateEnemy(SpriteID id, Vector2 spawnPosition);
+    Player& GetPlayer();
+
     private:
+    Player player;
     std::unordered_map<EntityType, std::vector<std::unique_ptr<Entity>>> entities;
-    GameSystem system;
+    std::vector<std::unique_ptr<ISystem>> systems;
+
+    void CreateSystems();
+    void AddEntity(std::unique_ptr<Entity> entity);
+    void RemoveEntity(std::unique_ptr<Entity> entity);
 };
 
 

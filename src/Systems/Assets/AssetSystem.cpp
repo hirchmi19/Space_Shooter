@@ -3,28 +3,35 @@
 //
 
 #include "AssetSystem.h"
+#include "raylib.h"
 
 AssetSystem::AssetSystem() = default;
 
 AssetSystem::~AssetSystem() {
 
-    for (const auto& [id, texture] : textures ) {
+    for (const Texture2D texture : textures) {
         UnloadTexture(texture);
     }
 }
 
 
-void AssetSystem::LoadTex(TextureID id, const char *path) {
+void AssetSystem::LoadTex(const TextureID id, const char *path) {
 
-    textures.emplace(id, LoadTexture(path));
+    const size_t index = ToIndex(id);
+    textures[index] = LoadTexture(path);
 }
 
-void AssetSystem::DefineSprite(SpriteID id, TextureID textureID, Rectangle src) {
+void AssetSystem::DefineSprite(const SpriteID id, TextureID textureID, Rectangle src) {
 
-    sprites.emplace(id, Sprite{textureID, src});
+    const size_t index = ToIndex(id);
+    sprites[index] = Sprite{textureID, src};
 }
 
-void AssetSystem::InitAssets() {
+
+/**
+ * Loads the sprite sheets and cuts out the sprites
+ */
+void AssetSystem::InitSprites() {
 
     LoadTex(TextureID::BACKGROUND_ATLAS, "assets/SpaceShooterAssetPack_BackGrounds.png");
     LoadTex(TextureID::SHIP_ATLAS, "assets/SpaceShooterAssetPack_Ships.png");
@@ -38,11 +45,20 @@ void AssetSystem::InitAssets() {
     DefineSprite(SpriteID::PLAYER_PROJECTILE, TextureID::PROJECTILE_ATLAS, {19, 3, 1, 3});
 }
 
-
+/**
+ * Returns a Texture
+ * \param id
+ * \return
+ */
 const Texture2D& AssetSystem::GetTexture(TextureID id) const {
     return textures.at(id);
 }
 
+/**
+ * Returns a Sprite
+ * \param id
+ * \return
+ */
 const Sprite& AssetSystem::GetSprite(SpriteID id) const {
     return sprites.at(id);
 }

@@ -3,7 +3,8 @@
 //
 
 #pragma once
-#include "../GameWorld.h"
+
+class GameWorld;
 
 
 class ISystem {
@@ -12,6 +13,7 @@ class ISystem {
 
     virtual ~ISystem() = default;
     virtual void Run(GameWorld& world) = 0;
+    virtual void InitSprites() = 0;
 };
 
 

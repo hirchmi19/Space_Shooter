@@ -3,33 +3,31 @@
 //
 
 #pragma once
-#include <unordered_map>
-
+#include <array>
 #include "raylib.h"
-#include "Sprite.h"
+#include "../ISystem.h"
 #include "SpriteID.h"
 #include "TextureID.h"
-#include "../../Helper/EnumHash.h"
+#include "../../Utilities/utils.h"
+#include "Sprite.h"
 
-
-class AssetSystem {
+class AssetSystem : public ISystem {
 
     public:
     AssetSystem();
-    ~AssetSystem();
+    ~AssetSystem() override;
 
-    void InitAssets();
+    void InitSprites() override;
 
-    const Texture2D& GetTexture(TextureID texture) const;
-    const Sprite& GetSprite(SpriteID texture) const;
+    const Texture2D& GetTexture(TextureID id) const;
+    const Sprite& GetSprite(SpriteID id) const;
 
     private:
     void LoadTex(TextureID id, const char* path);
     void DefineSprite (SpriteID id, TextureID textureID, Rectangle src);
 
-    std::unordered_map<TextureID, Texture2D, EnumHash<TextureID>> textures;
-    std::unordered_map<SpriteID, Sprite, EnumHash<SpriteID>> sprites;
-
+    std::array<Texture2D, ToIndex(TextureID::COUNT)> textures{};
+    std::array<Sprite, ToIndex(SpriteID::COUNT)> sprites{};
 
 };
 

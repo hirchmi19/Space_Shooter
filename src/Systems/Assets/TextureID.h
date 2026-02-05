@@ -4,10 +4,11 @@
 
 #pragma once
 
-enum class TextureID {
+enum class TextureID : u_int32_t{
 
     NONE,
     BACKGROUND_ATLAS,
     SHIP_ATLAS,
     PROJECTILE_ATLAS,
+    COUNT
 };
