@@ -5,10 +5,10 @@
 #pragma once
 #include <cstdint>
 
-enum class EntityType : uint32_t {
+enum class EntityID : uint32_t {
 
     NONE,
     ENEMY,
-    PLAYER,
-    PROJECTILE
+    PROJECTILE,
+    COUNT
 };

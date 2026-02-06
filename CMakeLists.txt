@@ -21,10 +21,17 @@ add_executable(Space_Shooter
         src/Systems/Assets/AssetSystem.h
         src/GameWorld.cpp
         src/GameWorld.h
-        src/Systems/ISystem.h
-        src/Entities/EntityType.h
+        src/Systems/IGameSystem.h
+        src/Entities/EntityID.h
         src/Entities/Entity.h
         src/Utilities/utils.h
+        src/Systems/GameSystemID.h
+        src/Entities/Enemy.cpp
+        src/Entities/Enemy.h
+        src/Entities/Projectile.cpp
+        src/Entities/Projectile.h
+        src/Systems/Rendering/RenderSystem.cpp
+        src/Systems/Rendering/RenderSystem.h
 )
 
 target_link_libraries(Space_Shooter raylib)

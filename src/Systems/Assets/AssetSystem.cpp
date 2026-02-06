@@ -5,7 +5,11 @@
 #include "AssetSystem.h"
 #include "raylib.h"
 
-AssetSystem::AssetSystem() = default;
+AssetSystem::AssetSystem() : IGameSystem(GameSystemID::ASSET_SYSTEM) {
+
+    InitSprites();
+}
+
 
 AssetSystem::~AssetSystem() {
 
@@ -21,12 +25,16 @@ void AssetSystem::LoadTex(const TextureID id, const char *path) {
     textures[index] = LoadTexture(path);
 }
 
-void AssetSystem::DefineSprite(const SpriteID id, TextureID textureID, Rectangle src) {
+void AssetSystem::DefineSprite(const SpriteID id, const TextureID textureID, const Rectangle src) {
 
     const size_t index = ToIndex(id);
     sprites[index] = Sprite{textureID, src};
 }
 
+void AssetSystem::Run(GameWorld &world) {
+
+    //NOTHING
+}
 
 /**
  * Loads the sprite sheets and cuts out the sprites
@@ -50,8 +58,10 @@ void AssetSystem::InitSprites() {
  * \param id
  * \return
  */
-const Texture2D& AssetSystem::GetTexture(TextureID id) const {
-    return textures.at(id);
+Texture2D AssetSystem::GetTexture(const TextureID id) const {
+
+    const size_t index = ToIndex(id);
+    return textures[index];
 }
 
 /**
@@ -59,6 +69,8 @@ const Texture2D& AssetSystem::GetTexture(TextureID id) const {
  * \param id
  * \return
  */
-const Sprite& AssetSystem::GetSprite(SpriteID id) const {
-    return sprites.at(id);
+ Sprite AssetSystem::GetSprite(const SpriteID id) const {
+
+    const size_t index = ToIndex(id);
+    return sprites[index];
 }

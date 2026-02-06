@@ -5,24 +5,25 @@
 #pragma once
 #include <array>
 #include "raylib.h"
-#include "../ISystem.h"
+#include "../IGameSystem.h"
 #include "SpriteID.h"
 #include "TextureID.h"
 #include "../../Utilities/utils.h"
 #include "Sprite.h"
 
-class AssetSystem : public ISystem {
+class AssetSystem : public IGameSystem {
 
     public:
     AssetSystem();
     ~AssetSystem() override;
 
-    void InitSprites() override;
 
-    const Texture2D& GetTexture(TextureID id) const;
-    const Sprite& GetSprite(SpriteID id) const;
+    Texture2D GetTexture(TextureID id) const;
+    Sprite GetSprite(SpriteID id) const;
 
     private:
+    void Run(GameWorld &world) override;
+    void InitSprites();
     void LoadTex(TextureID id, const char* path);
     void DefineSprite (SpriteID id, TextureID textureID, Rectangle src);
 

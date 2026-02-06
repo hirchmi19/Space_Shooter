@@ -3,37 +3,55 @@
 //
 
 #pragma once
-#include <unordered_map>
 #include <vector>
 
 #include "raylib.h"
-#include "Systems/Assets/SpriteID.h"
+#include "Entities/Enemy.h"
 #include "Entities/Player.h"
+#include "Entities/Projectile.h"
+#include "Utilities/utils.h"
+#include "Systems/GameSystemID.h"
+#include "Systems/Assets/AssetSystem.h"
+#include "Systems/Rendering/RenderSystem.h"
 
 class Entity;
-class ISystem;
-class EntityType;
+class IGameSystem;
+enum class SpriteID : uint32_t;
 
 
 class GameWorld {
 
     public:
     GameWorld();
-    ~GameWorld();
+    ~GameWorld() = default;
 
-    void RunSystems();
-    void CreateProjectile(SpriteID id, Vector2 spawnPosition);
-    void CreateEnemy(SpriteID id, Vector2 spawnPosition);
-    Player& GetPlayer();
+    void RunGameplaySystems() const;
+    void RunRenderSystems() const;
+    void SpawnProjectile(SpriteID id, Vector2 spawnPosition);
+    void SpawnEnemy(SpriteID id, Vector2 spawnPosition);
+    const Player& GetPlayer() const;
 
     private:
     Player player;
-    std::unordered_map<EntityType, std::vector<std::unique_ptr<Entity>>> entities;
-    std::vector<std::unique_ptr<ISystem>> systems;
+
+    std::vector<Enemy> enemies;
+    std::vector<Projectile> projectiles;
+
+    std::vector<size_t> enemiesToRemove;
+    std::vector<size_t> projectilesToRemove;
+
+    std::array<std::unique_ptr<IGameSystem>, ToIndex(GameSystemID::COUNT)> gameSystems{};
 
     void CreateSystems();
-    void AddEntity(std::unique_ptr<Entity> entity);
-    void RemoveEntity(std::unique_ptr<Entity> entity);
+    void AddSystem(std::unique_ptr<IGameSystem> system);
+
+    void KillEntities();
+    void KillEnemies();
+    void KillProjectiles();
+    void FindDeadEntities();
+    void FindDeadProjectiles();
+    void FindDeadEnemies();
+
 };
 
 

@@ -5,6 +5,13 @@
 #pragma once
 #include <type_traits>
 
+
+/**
+ * Casts an enumeration type into a size_t integer
+ * \tparam Enum
+ * \param e
+ * \return
+ */
 template<typename Enum>
 constexpr size_t ToIndex(Enum e) {
     static_assert(std::is_enum_v<Enum>, "ToIndex requires an enum type");
