@@ -1,14 +1,17 @@
 //
-// Created by Michael Hirsch on 06.02.26.
+// Created by Michael Hirsch on 08.02.26.
 //
 
-#ifndef SPACE_SHOOTER_ENEMY_H
-#define SPACE_SHOOTER_ENEMY_H
-#include "Entity.h"
+#pragma once
 
+#include "CombatData.h"
+#include "Movement2D.h"
+#include "RenderData.h"
 
-class Enemy : public Entity {
+struct Enemy {
+
+   Movement2D movement;
+   RenderData render;
+   CombatData combat;
+
 };
-
-
-#endif //SPACE_SHOOTER_ENEMY_H

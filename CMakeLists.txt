@@ -12,7 +12,6 @@ add_executable(Space_Shooter
         src/Game.cpp
         src/Game.h
         src/Entities/Player.cpp
-        src/Entities/Player.h
         src/Constants/GameConstants.h
         src/Systems/Assets/TextureID.h
         src/Systems/Assets/SpriteID.h
@@ -22,16 +21,19 @@ add_executable(Space_Shooter
         src/GameWorld.cpp
         src/GameWorld.h
         src/Systems/IGameSystem.h
-        src/Entities/EntityID.h
-        src/Entities/Entity.h
         src/Utilities/utils.h
         src/Systems/GameSystemID.h
-        src/Entities/Enemy.cpp
-        src/Entities/Enemy.h
-        src/Entities/Projectile.cpp
-        src/Entities/Projectile.h
         src/Systems/Rendering/RenderSystem.cpp
         src/Systems/Rendering/RenderSystem.h
+        src/Entities/Enemy.h
+        src/Entities/Movement2D.h
+        src/Entities/RenderData.h
+        src/Entities/CombatData.h
+        src/Entities/Projectile.h
+        src/Entities/Movement1D.h
+        src/Systems/Rendering/Star.h
+        src/Systems/Rendering/BackgroundSystem.cpp
+        src/Systems/Rendering/BackgroundSystem.h
 )
 
 target_link_libraries(Space_Shooter raylib)

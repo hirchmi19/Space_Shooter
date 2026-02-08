@@ -5,10 +5,17 @@
 #pragma once
 #include "../IGameSystem.h"
 
-
 class RenderSystem : public IGameSystem {
 
     public:
+    RenderSystem();
+    ~RenderSystem() override = default;
+
+    void RenderPlayer(const GameWorld& world) const;
+    void RenderEnemies(const GameWorld& world) const;
+    void RenderBackground(const GameWorld& world) const;
+    void Run(GameWorld& world) override;
+
 };
 
 

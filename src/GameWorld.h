@@ -3,18 +3,19 @@
 //
 
 #pragma once
-#include <vector>
 
-#include "raylib.h"
+#include  "raylib.h"
+#include <vector>
 #include "Entities/Enemy.h"
 #include "Entities/Player.h"
 #include "Entities/Projectile.h"
 #include "Utilities/utils.h"
 #include "Systems/GameSystemID.h"
 #include "Systems/Assets/AssetSystem.h"
+#include "Systems/Rendering/BackgroundSystem.h"
 #include "Systems/Rendering/RenderSystem.h"
 
-class Entity;
+class Player;
 class IGameSystem;
 enum class SpriteID : uint32_t;
 
@@ -25,14 +26,21 @@ class GameWorld {
     GameWorld();
     ~GameWorld() = default;
 
-    void RunGameplaySystems() const;
-    void RunRenderSystems() const;
+    void RunGameplaySystems();
+    void RunRenderSystems();
+
     void SpawnProjectile(SpriteID id, Vector2 spawnPosition);
     void SpawnEnemy(SpriteID id, Vector2 spawnPosition);
     const Player& GetPlayer() const;
 
+    const Texture2D& GetTexture(TextureID id) const;
+    const Sprite& GetSprite(SpriteID id) const;
+
+    void RenderBackground() const;
+
+
     private:
-    Player player;
+   // Player player;
 
     std::vector<Enemy> enemies;
     std::vector<Projectile> projectiles;
@@ -45,9 +53,13 @@ class GameWorld {
     void CreateSystems();
     void AddSystem(std::unique_ptr<IGameSystem> system);
 
+    const AssetSystem& GetAssetSystem() const;
+    const BackgroundSystem& GetBackgroundSystem() const;
+
     void KillEntities();
     void KillEnemies();
     void KillProjectiles();
+
     void FindDeadEntities();
     void FindDeadProjectiles();
     void FindDeadEnemies();

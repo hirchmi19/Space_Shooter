@@ -58,7 +58,7 @@ void AssetSystem::InitSprites() {
  * \param id
  * \return
  */
-Texture2D AssetSystem::GetTexture(const TextureID id) const {
+const Texture2D& AssetSystem::GetTexture(const TextureID id) const {
 
     const size_t index = ToIndex(id);
     return textures[index];
@@ -69,7 +69,7 @@ Texture2D AssetSystem::GetTexture(const TextureID id) const {
  * \param id
  * \return
  */
- Sprite AssetSystem::GetSprite(const SpriteID id) const {
+ const Sprite& AssetSystem::GetSprite(const SpriteID id) const {
 
     const size_t index = ToIndex(id);
     return sprites[index];

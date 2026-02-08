@@ -47,7 +47,7 @@ void Game::RunGame() {
 
         while (updateAccumulator >= 1.0) {
 
-            Update();
+            world->RunGameplaySystems();
             updateAccumulator--;
         }
 
@@ -55,7 +55,7 @@ void Game::RunGame() {
 
         ClearBackground(BLACK);
 
-        Draw();
+        world->RunRenderSystems();
 
         EndDrawing();
     }

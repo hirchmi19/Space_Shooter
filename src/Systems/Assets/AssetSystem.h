@@ -18,8 +18,8 @@ class AssetSystem : public IGameSystem {
     ~AssetSystem() override;
 
 
-    Texture2D GetTexture(TextureID id) const;
-    Sprite GetSprite(SpriteID id) const;
+    const Texture2D& GetTexture(TextureID id) const;
+    const Sprite& GetSprite(SpriteID id) const;
 
     private:
     void Run(GameWorld &world) override;
