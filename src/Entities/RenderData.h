@@ -12,7 +12,7 @@ struct Sprite;
 
 struct RenderData {
 
-  std::vector<Sprite> sprites;
+  std::vector<const Sprite*> sprites;
   Vector2 size;
 
 };

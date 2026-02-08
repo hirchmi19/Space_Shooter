@@ -6,6 +6,8 @@
 
 #include  "raylib.h"
 #include <vector>
+
+#include "Constants/GameConstants.h"
 #include "Entities/Enemy.h"
 #include "Entities/Player.h"
 #include "Entities/Projectile.h"
@@ -19,6 +21,13 @@ class Player;
 class IGameSystem;
 enum class SpriteID : uint32_t;
 
+//Constants for Player Spawn
+constexpr float playerSpawnX = GameConstants::SCREEN_WIDTH / 2.0f - 8;
+constexpr float playerSpawnY = GameConstants::SCREEN_HEIGHT - 100.0f;
+
+constexpr Vector2 playerSpawn = {playerSpawnX, playerSpawnY};
+constexpr Vector2 playerSize = {8, 7};
+//----------------------------------------------------------------------
 
 class GameWorld {
 
@@ -40,7 +49,7 @@ class GameWorld {
 
 
     private:
-   // Player player;
+    Player player;
 
     std::vector<Enemy> enemies;
     std::vector<Projectile> projectiles;

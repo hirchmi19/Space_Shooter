@@ -16,8 +16,8 @@ class GameWorld;
 class Player {
 
     public:
-    Player(const Vector2& position, const Vector2& size, const std::vector<Sprite>& sprites)
-     : movement{ position, 0.0f }, render{ sprites, size }, combat{3, Rectangle {0, 0, size.x, size.y} } {}
+    Player(const Vector2& position, const Vector2& size, const std::vector<const Sprite*>& sprites)
+     : movement{ position, 0.0f }, render{ sprites, size }, combat{3, Rectangle {position.x, position.y, size.x, size.y} } {}
 
     ~Player() = default;
 

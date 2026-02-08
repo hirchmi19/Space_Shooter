@@ -19,7 +19,7 @@ AssetSystem::~AssetSystem() {
 }
 
 
-void AssetSystem::LoadTex(const TextureID id, const char *path) {
+void AssetSystem::LoadTex(const TextureID id, const char* path) {
 
     const size_t index = ToIndex(id);
     textures[index] = LoadTexture(path);
@@ -41,16 +41,18 @@ void AssetSystem::Run(GameWorld &world) {
  */
 void AssetSystem::InitSprites() {
 
-    LoadTex(TextureID::BACKGROUND_ATLAS, "assets/SpaceShooterAssetPack_BackGrounds.png");
-    LoadTex(TextureID::SHIP_ATLAS, "assets/SpaceShooterAssetPack_Ships.png");
-    LoadTex(TextureID::PROJECTILE_ATLAS, "assets/SpaceShooterAssetPack_Projectiles.png");
+    LoadTex(TextureID::PLAYER_SHIP_CANVAS, "assets/SpaceShooterAssetPack_Ships.png");
+    LoadTex(TextureID::ENEMY_SHIP_CANVAS, "assets/pico8_invaders_sprites_LARGE.png");
+    LoadTex(TextureID::PROJECTILE_CANVAS, "assets/SpaceShooterAssetPack_Projectiles.png");
 
-    DefineSprite(SpriteID::BACKGROUND_STARS, TextureID::BACKGROUND_ATLAS, {0, 0, 128, 256});
+    //Player sprites
+    DefineSprite(SpriteID::PLAYER_SHIP_MIDDLE, TextureID::PLAYER_SHIP_CANVAS, {8, 0, 8, 8});
+    DefineSprite(SpriteID::PLAYER_SHIP_LEFT, TextureID::PLAYER_SHIP_CANVAS, {0, 0, 6, 8});
+    DefineSprite(SpriteID::PLAYER_SHIP_RIGHT, TextureID::PLAYER_SHIP_CANVAS, {18, 0, 6, 8});
 
-    DefineSprite(SpriteID::PLAYER_SHIP, TextureID::SHIP_ATLAS, {32, 64, 16, 16});
-    DefineSprite(SpriteID::SMALL_ENEMY_SHIP, TextureID::SHIP_ATLAS, {73, 2, 7, 5});
+    DefineSprite(SpriteID::SMALL_ENEMY_SHIP, TextureID::PLAYER_SHIP_CANVAS, {73, 2, 7, 5});
 
-    DefineSprite(SpriteID::PLAYER_PROJECTILE, TextureID::PROJECTILE_ATLAS, {19, 3, 1, 3});
+    DefineSprite(SpriteID::PLAYER_PROJECTILE, TextureID::PLAYER_SHIP_CANVAS, {21, 44, 1, 4});
 }
 
 /**
@@ -73,4 +75,13 @@ const Texture2D& AssetSystem::GetTexture(const TextureID id) const {
 
     const size_t index = ToIndex(id);
     return sprites[index];
+}
+
+std::vector<const Sprite*> AssetSystem::GetPlayerSprites() const {
+
+    return {
+        &GetSprite(SpriteID::PLAYER_SHIP_LEFT),
+        &GetSprite(SpriteID::PLAYER_SHIP_MIDDLE),
+        &GetSprite(SpriteID::PLAYER_SHIP_RIGHT)
+    };
 }

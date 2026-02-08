@@ -8,8 +8,10 @@
 #include "Star.h"
 #include "../IGameSystem.h"
 
-constexpr int MAX_NUMBER_OF_STARS = 120;
 
+//Constants for starfield background
+constexpr int MAX_NUMBER_OF_STARS = 120;
+//----------------------------------------------------------------------
 
 class BackgroundSystem : public IGameSystem{
 

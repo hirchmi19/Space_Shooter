@@ -3,8 +3,9 @@
 //
 
 #pragma once
-#include <array>
+
 #include "raylib.h"
+#include <vector>
 #include "../IGameSystem.h"
 #include "SpriteID.h"
 #include "TextureID.h"
@@ -20,6 +21,8 @@ class AssetSystem : public IGameSystem {
 
     const Texture2D& GetTexture(TextureID id) const;
     const Sprite& GetSprite(SpriteID id) const;
+    std::vector<const Sprite*> GetPlayerSprites() const;
+    //std::vector<const Sprite*> GetEnemySprites() const;
 
     private:
     void Run(GameWorld &world) override;

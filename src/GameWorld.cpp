@@ -3,15 +3,14 @@
 //
 
 #include "GameWorld.h"
-
 #include <cassert>
-
 #include "Systems/Assets/AssetSystem.h"
 
 
-GameWorld::GameWorld() {
+GameWorld::GameWorld() : player(playerSpawn, playerSize, GetAssetSystem().GetPlayerSprites()) {
 
     CreateSystems();
+
 }
 
 void GameWorld::RunGameplaySystems() {
@@ -45,7 +44,7 @@ void GameWorld::RenderBackground() const {
 }
 
 
-//const Player& GameWorld::GetPlayer() const {return player;}
+const Player& GameWorld::GetPlayer() const {return player;}
 
 void GameWorld::SpawnEnemy(SpriteID id, Vector2 spawnPosition) {
 
@@ -77,7 +76,7 @@ const AssetSystem& GameWorld::GetAssetSystem() const {
 
     const auto& ptr = gameSystems[ToIndex(GameSystemID::ASSET_SYSTEM)];
 
-    assert(ptr && "AssetSystem is not initialized!");
+    //assert(ptr && "AssetSystem is not initialized!");
     return static_cast<const AssetSystem&>(*ptr);
 }
 

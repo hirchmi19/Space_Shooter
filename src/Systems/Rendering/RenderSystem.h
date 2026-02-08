@@ -5,6 +5,10 @@
 #pragma once
 #include "../IGameSystem.h"
 
+//Constants for rendering
+constexpr int PLAYER_SCALING = 8;
+//-------------------------------------
+
 class RenderSystem : public IGameSystem {
 
     public:
