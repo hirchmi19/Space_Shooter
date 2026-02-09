@@ -41,6 +41,7 @@ class GameWorld {
     void SpawnProjectile(SpriteID id, Vector2 spawnPosition);
     void SpawnEnemy(SpriteID id, Vector2 spawnPosition);
     const Player& GetPlayer() const;
+    Player& GetPlayer();
 
     const Texture2D& GetTexture(TextureID id) const;
     const Sprite& GetSprite(SpriteID id) const;

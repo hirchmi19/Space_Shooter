@@ -5,6 +5,7 @@
 #include "GameWorld.h"
 #include <cassert>
 #include "Systems/Assets/AssetSystem.h"
+#include "Systems/Movement/MovementSystem.h"
 
 GameWorld::GameWorld() : player(playerSpawn, playerSize, GetAssetSystem().GetPlayerSprites()) {
 
@@ -17,8 +18,11 @@ GameWorld::GameWorld() : player(playerSpawn, playerSize, GetAssetSystem().GetPla
  */
 void GameWorld::RunGameplaySystems() {
 
-    auto& sys = gameSystems[ToIndex(GameSystemID::BACKGROUND_SYSTEM)];
-    if (sys) sys->Run(*this);
+    player.HandleInput(*this);
+    auto& bgSys = gameSystems[ToIndex(GameSystemID::BACKGROUND_SYSTEM)];
+    auto& moveSys = gameSystems[ToIndex(GameSystemID::MOVEMENT_SYSTEM)];
+    if (bgSys) bgSys->Run(*this);
+    if (moveSys) moveSys->Run(*this);
 
 }
 
@@ -67,6 +71,12 @@ void GameWorld::RenderBackground() const {
  */
 const Player& GameWorld::GetPlayer() const {return player;}
 
+/**
+ * Returns a reference to the player
+ * \return
+ */
+Player &GameWorld::GetPlayer() { return player; }
+
 
 /**
  * Creates an Enemy struct
@@ -88,7 +98,6 @@ void GameWorld::SpawnProjectile(SpriteID id, Vector2 spawnPosition) {
 
 //--------------------------------------------------------------------------
 
-
 /**
  * Inits all game systems
  */
@@ -97,6 +106,7 @@ void GameWorld::CreateSystems() {
     AddSystem(std::make_unique<AssetSystem>());
     AddSystem(std::make_unique<RenderSystem>());
     AddSystem(std::make_unique<BackgroundSystem>());
+    AddSystem(std::make_unique<MovementSystem>());
 }
 
 /**

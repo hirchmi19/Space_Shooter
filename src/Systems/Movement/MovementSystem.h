@@ -5,6 +5,9 @@
 #pragma once
 #include "../IGameSystem.h"
 
+//Movement system constants
+constexpr uint32_t PLAYER_WORLD_SPEED = 4;
+//----------------------------------------------------------------------
 
 class MovementSystem : public IGameSystem{
 

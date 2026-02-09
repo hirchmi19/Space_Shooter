@@ -6,10 +6,11 @@
 
 struct CombatData {
 
-    int health;
+    uint32_t health;
     Rectangle hitbox;
     bool isAlive = true;
 
     bool IsAlive() const { return isAlive; }
+    void Kill() { isAlive = false; }
 
 };

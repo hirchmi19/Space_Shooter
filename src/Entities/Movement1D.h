@@ -8,6 +8,6 @@
 struct Movement1D {
 
     Vector2 position;
-    float speed = 0;
+    int32_t speed = 0;
 
 };

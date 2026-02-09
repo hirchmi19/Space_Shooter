@@ -36,6 +36,7 @@ add_executable(Space_Shooter
         src/Systems/Rendering/BackgroundSystem.h
         src/Systems/Movement/MovementSystem.cpp
         src/Systems/Movement/MovementSystem.h
+        src/Constants/RenderConstants.h
 )
 
 target_link_libraries(Space_Shooter raylib)

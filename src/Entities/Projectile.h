@@ -10,5 +10,6 @@ struct Projectile {
     Movement1D movement;
     RenderData render;
     CombatData combat;
+    int32_t direction;
 
 };
