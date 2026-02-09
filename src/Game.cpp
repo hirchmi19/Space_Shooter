@@ -20,16 +20,6 @@ Game::~Game() {
 };
 
 /**
- * Creates a Window and the Game World
- */
-void Game::CreateGame() {
-
-    InitWindow(GameConstants::SCREEN_WIDTH, GameConstants::SCREEN_HEIGHT, "Space Shooter");
-    SetTargetFPS(GameConstants::TARGET_FPS);
-    world = std::make_unique<GameWorld>();
-}
-
-/**
  * Runs the Game Loop
  */
 void Game::RunGame() {
@@ -61,10 +51,16 @@ void Game::RunGame() {
     }
 }
 
-void Game::Draw() {
+//--------------------------------------------------------------------------
 
+
+/**
+ * Creates a Window and the Game World
+ */
+void Game::CreateGame() {
+
+    InitWindow(GameConstants::SCREEN_WIDTH, GameConstants::SCREEN_HEIGHT, "Space Shooter");
+    SetTargetFPS(GameConstants::TARGET_FPS);
+    world = std::make_unique<GameWorld>();
 }
 
-void Game::Update() {
-
-}

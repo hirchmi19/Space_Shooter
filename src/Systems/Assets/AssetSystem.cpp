@@ -19,6 +19,40 @@ AssetSystem::~AssetSystem() {
 }
 
 
+/**
+ * Returns a Texture
+ * \param id
+ * \return
+ */
+const Texture2D& AssetSystem::GetTexture(const TextureID id) const {
+
+    const size_t index = ToIndex(id);
+    return textures[index];
+}
+
+/**
+ * Returns a Sprite
+ * \param id
+ * \return
+ */
+const Sprite& AssetSystem::GetSprite(const SpriteID id) const {
+
+    const size_t index = ToIndex(id);
+    return sprites[index];
+}
+
+std::vector<const Sprite*> AssetSystem::GetPlayerSprites() const {
+
+    return {
+        &GetSprite(SpriteID::PLAYER_SHIP_LEFT),
+        &GetSprite(SpriteID::PLAYER_SHIP_MIDDLE),
+        &GetSprite(SpriteID::PLAYER_SHIP_RIGHT)
+    };
+}
+
+//--------------------------------------------------------------------------
+
+
 void AssetSystem::LoadTex(const TextureID id, const char* path) {
 
     const size_t index = ToIndex(id);
@@ -55,33 +89,3 @@ void AssetSystem::InitSprites() {
     DefineSprite(SpriteID::PLAYER_PROJECTILE, TextureID::PLAYER_SHIP_CANVAS, {21, 44, 1, 4});
 }
 
-/**
- * Returns a Texture
- * \param id
- * \return
- */
-const Texture2D& AssetSystem::GetTexture(const TextureID id) const {
-
-    const size_t index = ToIndex(id);
-    return textures[index];
-}
-
-/**
- * Returns a Sprite
- * \param id
- * \return
- */
- const Sprite& AssetSystem::GetSprite(const SpriteID id) const {
-
-    const size_t index = ToIndex(id);
-    return sprites[index];
-}
-
-std::vector<const Sprite*> AssetSystem::GetPlayerSprites() const {
-
-    return {
-        &GetSprite(SpriteID::PLAYER_SHIP_LEFT),
-        &GetSprite(SpriteID::PLAYER_SHIP_MIDDLE),
-        &GetSprite(SpriteID::PLAYER_SHIP_RIGHT)
-    };
-}

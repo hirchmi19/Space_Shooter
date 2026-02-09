@@ -8,7 +8,8 @@ struct CombatData {
 
     int health;
     Rectangle hitbox;
+    bool isAlive = true;
 
-    bool IsAlive() const { return health > 0; }
+    bool IsAlive() const { return isAlive; }
 
 };

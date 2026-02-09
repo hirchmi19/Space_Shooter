@@ -6,7 +6,7 @@
 #include "../IGameSystem.h"
 
 //Constants for rendering
-constexpr int PLAYER_SCALING = 8;
+constexpr uint32_t PLAYER_SCALING = 8;
 //-------------------------------------
 
 class RenderSystem : public IGameSystem {
@@ -15,10 +15,13 @@ class RenderSystem : public IGameSystem {
     RenderSystem();
     ~RenderSystem() override = default;
 
+    void Run(GameWorld& world) override;
+
+    private:
     void RenderPlayer(const GameWorld& world) const;
     void RenderEnemies(const GameWorld& world) const;
     void RenderBackground(const GameWorld& world) const;
-    void Run(GameWorld& world) override;
+
 
 };
 

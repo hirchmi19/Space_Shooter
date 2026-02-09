@@ -18,6 +18,4 @@ class Game {
     std::unique_ptr<GameWorld> world;
 
     void CreateGame();
-    void Update();
-    void Draw();
 };

@@ -6,13 +6,15 @@
 #include <cassert>
 #include "Systems/Assets/AssetSystem.h"
 
-
 GameWorld::GameWorld() : player(playerSpawn, playerSize, GetAssetSystem().GetPlayerSprites()) {
 
     CreateSystems();
 
 }
 
+/**
+ * Runs all gameplay systems by calling their run/update functions
+ */
 void GameWorld::RunGameplaySystems() {
 
     auto& sys = gameSystems[ToIndex(GameSystemID::BACKGROUND_SYSTEM)];
@@ -20,6 +22,9 @@ void GameWorld::RunGameplaySystems() {
 
 }
 
+/**
+ * Renders EVERYTHING
+ */
 void GameWorld::RunRenderSystems() {
 
     auto& sys = gameSystems[ToIndex(GameSystemID::RENDERER_SYSTEM)];
@@ -27,37 +32,66 @@ void GameWorld::RunRenderSystems() {
 
 }
 
-
+/**
+ * Returns a Sprite struct
+ * \param id
+ * \return
+ */
 const Sprite& GameWorld::GetSprite(const SpriteID id) const {
 
     return GetAssetSystem().GetSprite(id);
 }
 
+/**
+ * Returns a Raylib Texture
+ * \param id
+ * \return
+ */
 const Texture2D& GameWorld::GetTexture(TextureID id) const {
 
     return GetAssetSystem().GetTexture(id);
 }
 
+/**
+ * Calls the render function of the background system
+ */
 void GameWorld::RenderBackground() const {
 
     GetBackgroundSystem().Render();
 }
 
 
+/**
+ * Returns a  read-only reference to the player
+ * \return
+ */
 const Player& GameWorld::GetPlayer() const {return player;}
 
+
+/**
+ * Creates an Enemy struct
+ * \param id
+ * \param spawnPosition
+ */
 void GameWorld::SpawnEnemy(SpriteID id, Vector2 spawnPosition) {
 
 }
 
+/**
+ * Creates a Projectile struct
+ * \param id
+ * \param spawnPosition
+ */
 void GameWorld::SpawnProjectile(SpriteID id, Vector2 spawnPosition) {
-
 
 }
 
+//--------------------------------------------------------------------------
 
 
-
+/**
+ * Inits all game systems
+ */
 void GameWorld::CreateSystems() {
 
     AddSystem(std::make_unique<AssetSystem>());
@@ -65,6 +99,10 @@ void GameWorld::CreateSystems() {
     AddSystem(std::make_unique<BackgroundSystem>());
 }
 
+/**
+ * Adds a system and gives GameWorld the ownership
+ * \param system
+ */
 void GameWorld::AddSystem(std::unique_ptr<IGameSystem> system) {
 
     const GameSystemID id = system->GetSystemID();
@@ -72,6 +110,10 @@ void GameWorld::AddSystem(std::unique_ptr<IGameSystem> system) {
     gameSystems[index] = std::move(system);
 }
 
+/**
+* Returns a read-only reference to the asset system
+ * \return
+ */
 const AssetSystem& GameWorld::GetAssetSystem() const {
 
     const auto& ptr = gameSystems[ToIndex(GameSystemID::ASSET_SYSTEM)];
@@ -80,7 +122,11 @@ const AssetSystem& GameWorld::GetAssetSystem() const {
     return static_cast<const AssetSystem&>(*ptr);
 }
 
-const BackgroundSystem &GameWorld::GetBackgroundSystem() const {
+/**
+ * Returns a read-only reference to the background system
+ * \return
+ */
+const BackgroundSystem& GameWorld::GetBackgroundSystem() const {
 
     const auto& ptr = gameSystems[ToIndex(GameSystemID::BACKGROUND_SYSTEM)];
 
@@ -89,12 +135,18 @@ const BackgroundSystem &GameWorld::GetBackgroundSystem() const {
 }
 
 
+/**
+ * Removes all enemies and projectiles from the collection respectively GameWorld
+ */
 void GameWorld::KillEntities() {
 
     KillEnemies();
     KillProjectiles();
 }
 
+/**
+ * Finds all enemies and projectiles which are marked for death and adds them to their respective removal queues
+ */
 void GameWorld::FindDeadEntities() {
 
     FindDeadEnemies();

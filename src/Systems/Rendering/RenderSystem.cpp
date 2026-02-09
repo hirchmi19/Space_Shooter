@@ -9,11 +9,15 @@
 
 RenderSystem::RenderSystem() : IGameSystem(GameSystemID::RENDERER_SYSTEM) {}
 
+
 void RenderSystem::Run(GameWorld& world) {
 
     RenderBackground(world);
     RenderPlayer(world);
 }
+
+//--------------------------------------------------------------------------
+
 
 
 void RenderSystem::RenderBackground(const GameWorld& world) const {
@@ -43,7 +47,4 @@ void RenderSystem::RenderPlayer(const GameWorld& world) const {
     if (playerSpeed < 0) playerSprite = world.GetSprite(SpriteID::PLAYER_SHIP_LEFT);
 
     DrawTexturePro(playerTexture, playerSprite.src, dest, Vector2{0, 0}, 0.0f, WHITE);
-
-
-
 }
