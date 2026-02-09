@@ -6,7 +6,7 @@
 #include "Game.h"
 
 #include "GameWorld.h"
-#include "Constants/GameConstants.h"
+#include "../Constants/GameConstants.h"
 
 Game::Game() {
 

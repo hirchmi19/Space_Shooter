@@ -7,15 +7,14 @@
 #include  "raylib.h"
 #include <vector>
 
-#include "Constants/GameConstants.h"
-#include "Entities/Enemy.h"
-#include "Entities/Player.h"
-#include "Entities/Projectile.h"
-#include "Utilities/utils.h"
-#include "Systems/GameSystemID.h"
-#include "Systems/Assets/AssetSystem.h"
-#include "Systems/Rendering/BackgroundSystem.h"
-#include "Systems/Rendering/RenderSystem.h"
+#include "../Constants/GameConstants.h"
+#include "../Entities/Enemy.h"
+#include "../Entities/Player.h"
+#include "../Entities/Projectile.h"
+#include "../Utilities/utils.h"
+#include "../Systems/GameSystemID.h"
+#include "../Systems/Assets/AssetSystem.h"
+#include "../Systems/Rendering/BackgroundSystem.h"
 
 class Player;
 class IGameSystem;

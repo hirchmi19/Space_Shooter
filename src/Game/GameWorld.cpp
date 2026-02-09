@@ -4,8 +4,9 @@
 
 #include "GameWorld.h"
 #include <cassert>
-#include "Systems/Assets/AssetSystem.h"
-#include "Systems/Movement/MovementSystem.h"
+#include "../Systems/Assets/AssetSystem.h"
+#include "../Systems/Movement/MovementSystem.h"
+#include  "../Systems/Rendering/RenderSystem.h"
 
 GameWorld::GameWorld() : player(playerSpawn, playerSize, GetAssetSystem().GetPlayerSprites()) {
 

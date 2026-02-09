@@ -8,7 +8,7 @@
 #include <iostream>
 #include <ostream>
 
-#include "../GameWorld.h"
+#include "../Game/GameWorld.h"
 
 
 void Player::CalcNewPosition(const int32_t& speed) {

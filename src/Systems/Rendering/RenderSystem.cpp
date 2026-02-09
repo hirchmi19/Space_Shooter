@@ -5,7 +5,7 @@
 #include "RenderSystem.h"
 
 #include "raylib.h"
-#include "../../GameWorld.h"
+#include "../../Game/GameWorld.h"
 
 RenderSystem::RenderSystem() : IGameSystem(GameSystemID::RENDERER_SYSTEM) {}
 

@@ -9,8 +9,8 @@ add_subdirectory(external/raylib)
 
 add_executable(Space_Shooter
         src/main.cpp
-        src/Game.cpp
-        src/Game.h
+        src/Game/Game.cpp
+        src/Game/Game.h
         src/Entities/Player.cpp
         src/Constants/GameConstants.h
         src/Systems/Assets/TextureID.h
@@ -18,8 +18,8 @@ add_executable(Space_Shooter
         src/Systems/Assets/Sprite.h
         src/Systems/Assets/AssetSystem.cpp
         src/Systems/Assets/AssetSystem.h
-        src/GameWorld.cpp
-        src/GameWorld.h
+        src/Game/GameWorld.cpp
+        src/Game/GameWorld.h
         src/Systems/IGameSystem.h
         src/Utilities/utils.h
         src/Systems/GameSystemID.h
