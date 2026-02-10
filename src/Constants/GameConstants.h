@@ -6,8 +6,8 @@
 
 namespace   GameConstants {
 
-  inline constexpr uint32_t SCREEN_WIDTH = 1200;
-  inline constexpr uint32_t SCREEN_HEIGHT = 900;
-  inline constexpr uint32_t TARGET_FPS = 60;
+  inline constexpr int SCREEN_WIDTH = 1200;
+  inline constexpr int SCREEN_HEIGHT = 900;
+  inline constexpr int TARGET_FPS = 60;
   inline constexpr uint32_t UPS = 60;
 };

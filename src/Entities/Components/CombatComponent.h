@@ -15,7 +15,7 @@ struct CombatComponent {
     bool IsAlive() const { return health > 0; }
     void Kill() { health = 0; }
 
-    void TakeDamage(const int32_t damage) {
+    void TakeDamage(const int damage) {
 
         if (damage >= health) {health = 0;}
         else {health -= damage;}

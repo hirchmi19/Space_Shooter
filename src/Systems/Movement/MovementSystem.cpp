@@ -23,15 +23,14 @@ void MovementSystem::Run(GameWorld& world) {
 void MovementSystem::MovePlayer(GameWorld& world) {
 
     Player& player = world.GetPlayer();
-    const int32_t playerSpeed = player.GetSpeed() * MovementConstants::PLAYER_WORLD_SPEED;
-
+    const auto& playerSpeed = player.GetSpeed();
     const Vector2& playerPosition = player.GetPosition();
     const uint32_t playerPosXRight = playerPosition.x + player.GetSize().x * RenderConstants::PLAYER_SCALING;
 
     if (playerPosXRight > GameConstants::SCREEN_WIDTH && playerSpeed > 0)return;
     if (playerPosition.x <= 0 && playerSpeed < 0) return;
 
-    CalcNewPlayerPosition(playerSpeed, player);
+    CalcNewPlayerPosition(player);
 }
 
 void MovementSystem::MoveProjectiles(GameWorld& world) {
@@ -50,10 +49,10 @@ void MovementSystem::MoveProjectiles(GameWorld& world) {
 
 }
 
-void MovementSystem::CalcNewPlayerPosition(const int32_t speed, Player& player) {
+void MovementSystem::CalcNewPlayerPosition(Player& player) {
 
     Vector2 playerPosition = player.GetPosition();
-    playerPosition.x += speed;
+    playerPosition.x += player.GetSpeed() * MovementConstants::PLAYER_WORLD_SPEED;
     player.SetPosition(playerPosition);
 }
 

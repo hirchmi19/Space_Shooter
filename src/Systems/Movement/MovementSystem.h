@@ -22,7 +22,7 @@ class MovementSystem : public IGameSystem{
     void MoveEnemies(GameWorld& world);
 
 
-    void CalcNewPlayerPosition(int32_t speed, Player& player);
+    void CalcNewPlayerPosition(Player& player);
     void CalcNewProjectilePosition(Projectile& projectile);
 };
 

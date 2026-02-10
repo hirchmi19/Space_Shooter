@@ -50,7 +50,7 @@ std::vector<const Sprite*> AssetSystem::GetPlayerSprites() const {
     };
 }
 
-std::vector<const Sprite *> AssetSystem::GetProjectileSprite(const SpriteID id) const {
+std::vector<const Sprite*> AssetSystem::GetProjectileSprite(const SpriteID id) const {
 
     if (id == SpriteID::ENEMY_PROJECTILE) return {&GetSprite(SpriteID::ENEMY_PROJECTILE)};
     if (id == SpriteID::PLAYER_PROJECTILE) return {&GetSprite(SpriteID::PLAYER_PROJECTILE)};
@@ -92,8 +92,10 @@ void AssetSystem::InitSprites() {
     DefineSprite(SpriteID::PLAYER_SHIP_LEFT, TextureID::PLAYER_SHIP_CANVAS, {0, 0, 6, 8});
     DefineSprite(SpriteID::PLAYER_SHIP_RIGHT, TextureID::PLAYER_SHIP_CANVAS, {18, 0, 6, 8});
 
+    //Enemy sprites
     DefineSprite(SpriteID::SMALL_ENEMY_SHIP, TextureID::PLAYER_SHIP_CANVAS, {73, 2, 7, 5});
 
+    //Projectile sprites
     DefineSprite(SpriteID::PLAYER_PROJECTILE, TextureID::ENEMY_SHIP_CANVAS, {20, 42, 1, 4});
     DefineSprite(SpriteID::ENEMY_PROJECTILE, TextureID::ENEMY_SHIP_CANVAS, {12, 42, 1, 4});
 }

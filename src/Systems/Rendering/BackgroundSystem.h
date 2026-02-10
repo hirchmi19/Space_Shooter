@@ -10,7 +10,7 @@
 
 
 //Constants for starfield background
-constexpr uint32_t MAX_NUMBER_OF_STARS = 120;
+constexpr size_t MAX_NUMBER_OF_STARS = 120;
 //----------------------------------------------------------------------
 
 class BackgroundSystem : public IGameSystem{

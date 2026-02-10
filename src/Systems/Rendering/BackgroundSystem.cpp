@@ -15,7 +15,7 @@ BackgroundSystem::BackgroundSystem() : IGameSystem(GameSystemID::BACKGROUND_SYST
 void BackgroundSystem::Run(GameWorld& world) {
 
 
-    for (int i = 0; i < stars.size(); ++i) {
+    for (size_t i = 0; i < stars.size(); ++i) {
 
         stars[i].position.y++;
 
@@ -26,10 +26,10 @@ void BackgroundSystem::Run(GameWorld& world) {
 void BackgroundSystem::Render() const {
 
 
-    for (const auto& star : stars) {
+    for (size_t i = 0; i < stars.size(); ++i) {
 
-        DrawPixel(static_cast<uint32_t>(star.position.x), static_cast<uint32_t>(star.position.y),
-            Color {star.colorValue, star.colorValue, star.colorValue, 255});
+        DrawPixel(stars[i].position.x, stars[i].position.y,
+            Color {stars[i].colorValue, stars[i].colorValue, stars[i].colorValue, 255});
     }
 }
 
@@ -40,7 +40,7 @@ void BackgroundSystem::Render() const {
 void BackgroundSystem::InitStars() {
 
 
-    for (int i = 0; i < stars.size(); ++i) {
+    for (size_t i = 0; i < stars.size(); ++i) {
 
         Star s;
         s.position.x = static_cast<float>(GetRandomValue(0, GameConstants::SCREEN_WIDTH));
