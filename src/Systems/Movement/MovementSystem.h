@@ -4,10 +4,9 @@
 
 #pragma once
 #include "../IGameSystem.h"
+#include "../../Entities/Projectile.h"
 
-//Movement system constants
-constexpr uint32_t PLAYER_WORLD_SPEED = 4;
-//----------------------------------------------------------------------
+class Player;
 
 class MovementSystem : public IGameSystem{
 
@@ -21,6 +20,10 @@ class MovementSystem : public IGameSystem{
     void MovePlayer(GameWorld& world);
     void MoveProjectiles(GameWorld& world);
     void MoveEnemies(GameWorld& world);
+
+
+    void CalcNewPlayerPosition(int32_t speed, Player& player);
+    void CalcNewProjectilePosition(Projectile& projectile);
 };
 
 

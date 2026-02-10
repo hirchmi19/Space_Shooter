@@ -3,13 +3,16 @@
 //
 
 #pragma once
-#include "Movement1D.h"
+#include "../Constants/MovementConstants.h"
+#include "Components/Movement1D.h"
+#include "Components/CombatComponent.h"
+#include "Components/RenderComponent.h"
 
 struct Projectile {
 
     Movement1D movement;
-    RenderData render;
-    CombatData combat;
-    int32_t direction;
+    RenderComponent render;
+    CombatComponent combat;
 
 };
+

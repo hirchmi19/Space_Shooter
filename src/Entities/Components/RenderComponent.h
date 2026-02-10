@@ -10,7 +10,7 @@
 struct Sprite;
 
 
-struct RenderData {
+struct RenderComponent {
 
   std::vector<const Sprite*> sprites;
   Vector2 size;

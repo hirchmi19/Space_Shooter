@@ -26,17 +26,18 @@ add_executable(Space_Shooter
         src/Systems/Rendering/RenderSystem.cpp
         src/Systems/Rendering/RenderSystem.h
         src/Entities/Enemy.h
-        src/Entities/Movement2D.h
-        src/Entities/RenderData.h
-        src/Entities/CombatData.h
+        src/Entities/Components/Movement2D.h
+        src/Entities/Components/RenderComponent.h
+        src/Entities/Components/CombatComponent.h
         src/Entities/Projectile.h
-        src/Entities/Movement1D.h
+        src/Entities/Components/Movement1D.h
         src/Systems/Rendering/Star.h
         src/Systems/Rendering/BackgroundSystem.cpp
         src/Systems/Rendering/BackgroundSystem.h
         src/Systems/Movement/MovementSystem.cpp
         src/Systems/Movement/MovementSystem.h
         src/Constants/RenderConstants.h
+        src/Constants/MovementConstants.h
 )
 
 target_link_libraries(Space_Shooter raylib)

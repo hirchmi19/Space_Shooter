@@ -11,13 +11,6 @@
 #include "../Game/GameWorld.h"
 
 
-void Player::CalcNewPosition(const int32_t& speed) {
-
-    movement.position.x += speed;
-    combat.hitbox.x = movement.position.x;
-    combat.hitbox.y = movement.position.y;
-}
-
 void Player::HandleInput(GameWorld& world) {
 
     movement.speed = 0;
@@ -35,5 +28,9 @@ void Player::HandleInput(GameWorld& world) {
         std::cout << movement.speed << std::endl;
     }
 
-    if (IsKeyPressed(KEY_SPACE)) world.SpawnProjectile(SpriteID::PLAYER_PROJECTILE, movement.position);
+    if (IsKeyPressed(KEY_SPACE)) {
+
+        std::cout << "shoot fired" << std::endl;
+        world.SpawnPlayerProjectile(movement.position);
+    }
 }

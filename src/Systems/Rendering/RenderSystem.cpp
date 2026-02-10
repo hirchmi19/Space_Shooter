@@ -14,6 +14,7 @@ void RenderSystem::Run(GameWorld& world) {
 
     RenderBackground(world);
     RenderPlayer(world);
+    RenderProjectiles(world);
 }
 
 //--------------------------------------------------------------------------
@@ -47,4 +48,26 @@ void RenderSystem::RenderPlayer(const GameWorld& world) const {
 
     DrawTexturePro(playerTexture, playerSprite.src, dest, Vector2{0, 0}, 0.0f, WHITE);
     DrawRectangleLinesEx(world.GetPlayer().GetHitBox(), 1.0f, PINK);
+}
+
+void RenderSystem::RenderProjectiles(GameWorld& world) const  {
+
+
+    auto& projectiles = world.GetProjectiles();
+
+    for (auto& projectile : projectiles ) {
+
+        const auto& texture = world.GetTexture(TextureID::ENEMY_SHIP_CANVAS);
+        const auto& sprite = *(projectile.render.sprites[0]);
+
+        const Rectangle dest = {
+            projectile.movement.position.x,
+            projectile.movement.position.y,
+            projectile.render.size.x * RenderConstants::PROJECTILE_SCALING,
+            projectile.render.size.y * RenderConstants::PROJECTILE_SCALING};
+
+        DrawTexturePro(texture, sprite.src, dest, { 0, 0 }, 0.0f, WHITE);
+       // DrawRectangleLinesEx(projectile.combat.hitbox, 1.0f, PINK);
+    }
+
 }

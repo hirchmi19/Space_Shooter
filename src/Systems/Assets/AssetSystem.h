@@ -23,6 +23,8 @@ class AssetSystem : public IGameSystem {
     const Sprite& GetSprite(SpriteID id) const;
     std::vector<const Sprite*> GetPlayerSprites() const;
     //std::vector<const Sprite*> GetEnemySprites() const;
+    std::vector<const Sprite*> GetProjectileSprite(const SpriteID id) const;
+
 
     private:
     void Run(GameWorld &world) override;

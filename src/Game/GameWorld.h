@@ -37,7 +37,7 @@ class GameWorld {
     void RunGameplaySystems();
     void RunRenderSystems();
 
-    void SpawnProjectile(SpriteID id, Vector2 spawnPosition);
+    void SpawnPlayerProjectile(const Vector2& playerPosition);
     void SpawnEnemy(SpriteID id, Vector2 spawnPosition);
     const Player& GetPlayer() const;
     Player& GetPlayer();
@@ -46,6 +46,9 @@ class GameWorld {
     const Sprite& GetSprite(SpriteID id) const;
 
     void RenderBackground() const;
+
+    std::vector<Projectile>& GetProjectiles() {return projectiles;};
+    std::vector<Enemy>& GetEnemies() {return enemies;};
 
 
     private:
@@ -72,6 +75,8 @@ class GameWorld {
     void FindDeadEntities();
     void FindDeadProjectiles();
     void FindDeadEnemies();
+
+    void AddProjectile(const Projectile& projectile);
 
 };
 

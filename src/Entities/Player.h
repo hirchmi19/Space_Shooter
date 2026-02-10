@@ -6,9 +6,9 @@
 
 #include "raylib.h"
 #include <vector>
-#include "CombatData.h"
-#include "Movement1D.h"
-#include "RenderData.h"
+#include "Components/CombatComponent.h"
+#include "Components/Movement1D.h"
+#include "Components/RenderComponent.h"
 #include "../Constants/RenderConstants.h"
 #include "../Systems/Assets/Sprite.h"
 
@@ -24,11 +24,16 @@ class Player {
 
     ~Player() = default;
 
-    void CalcNewPosition(const int32_t& speed);
+    void SetPosition(const Vector2& pos) {
+
+        movement.position = pos;
+        combat.hitbox.x = pos.x;
+        combat.hitbox.y = pos.y;
+    };
 
     const Vector2& GetPosition() const { return movement.position; }
     const Vector2& GetSize() const  { return render.size; }
-    const int32_t& GetSpeed() const { return movement.speed; }
+    int32_t GetSpeed() const { return movement.speed; }
     const Rectangle& GetHitBox() const { return combat.hitbox; }
     bool IsAlive() const { return combat.IsAlive(); }
 
@@ -36,6 +41,6 @@ class Player {
 
     private:
     Movement1D movement;
-    RenderData render;
-    CombatData combat;
+    RenderComponent render;
+    CombatComponent combat;
 };

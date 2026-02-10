@@ -4,6 +4,9 @@
 
 #include "GameWorld.h"
 #include <cassert>
+#include <iostream>
+#include <ostream>
+
 #include "../Systems/Assets/AssetSystem.h"
 #include "../Systems/Movement/MovementSystem.h"
 #include  "../Systems/Rendering/RenderSystem.h"
@@ -25,6 +28,9 @@ void GameWorld::RunGameplaySystems() {
     if (bgSys) bgSys->Run(*this);
     if (moveSys) moveSys->Run(*this);
 
+    FindDeadEntities();
+    KillEntities();
+
 }
 
 /**
@@ -32,8 +38,8 @@ void GameWorld::RunGameplaySystems() {
  */
 void GameWorld::RunRenderSystems() {
 
-    auto& sys = gameSystems[ToIndex(GameSystemID::RENDERER_SYSTEM)];
-    if (sys) sys->Run(*this);
+    auto& renderSys = gameSystems[ToIndex(GameSystemID::RENDERER_SYSTEM)];
+    if (renderSys) renderSys->Run(*this);
 
 }
 
@@ -76,7 +82,7 @@ const Player& GameWorld::GetPlayer() const {return player;}
  * Returns a reference to the player
  * \return
  */
-Player &GameWorld::GetPlayer() { return player; }
+Player& GameWorld::GetPlayer() { return player; }
 
 
 /**
@@ -89,13 +95,33 @@ void GameWorld::SpawnEnemy(SpriteID id, Vector2 spawnPosition) {
 }
 
 /**
- * Creates a Projectile struct
- * \param id
- * \param spawnPosition
+ * Creates a Projectile
+ * \param playerPosition
  */
-void GameWorld::SpawnProjectile(SpriteID id, Vector2 spawnPosition) {
+void GameWorld::SpawnPlayerProjectile(const Vector2& playerPosition) {
 
+    const Sprite& projectileSprite = GetAssetSystem().GetSprite(SpriteID::PLAYER_PROJECTILE);
+
+    const Vector2 projectileSize {projectileSprite.src.width,projectileSprite.src.height};
+    const float playerWidth = player.GetSize().x * RenderConstants::PLAYER_SCALING;
+    const Vector2 spawnPosition {playerPosition.x + (playerWidth * 0.5f) - (projectileSize.x * 0.5f),playerPosition.y};
+    constexpr int32_t speed = -1;
+
+    const auto sprites = GetAssetSystem().GetProjectileSprite(SpriteID::PLAYER_PROJECTILE);
+
+    projectiles.emplace_back(
+        Movement1D{spawnPosition, speed},
+        RenderComponent{sprites, projectileSize},
+        CombatComponent{1,Rectangle{
+                spawnPosition.x,
+                spawnPosition.y,
+                projectileSize.x * RenderConstants::PROJECTILE_SCALING,
+                projectileSize.y * RenderConstants::PROJECTILE_SCALING
+            }
+        }
+    );
 }
+
 
 //--------------------------------------------------------------------------
 
@@ -108,6 +134,9 @@ void GameWorld::CreateSystems() {
     AddSystem(std::make_unique<RenderSystem>());
     AddSystem(std::make_unique<BackgroundSystem>());
     AddSystem(std::make_unique<MovementSystem>());
+
+    enemies.reserve(50);
+    projectiles.reserve(50);
 }
 
 /**
@@ -201,11 +230,11 @@ void GameWorld::KillProjectiles() {
     for (auto i = projectilesToRemove.rbegin(); i != projectilesToRemove.rend(); ++i) {
 
         projectiles.erase(projectiles.begin() + *i);
+        std::cout << "killed" << std::endl;
     }
 
     projectilesToRemove.clear();
 }
-
 
 
 
