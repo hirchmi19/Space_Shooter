@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "../../Systems/Timers/Timer.h"
 
 struct CombatComponent {
 

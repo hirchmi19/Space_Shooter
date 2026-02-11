@@ -76,8 +76,7 @@ class GameWorld {
     void FindDeadProjectiles();
     void FindDeadEnemies();
 
-    void AddProjectile(const Projectile& projectile);
-
+    void TickTimers();
 };
 
 

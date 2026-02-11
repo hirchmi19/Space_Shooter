@@ -237,5 +237,10 @@ void GameWorld::KillProjectiles() {
 }
 
 
+void GameWorld::TickTimers() {
+
+    player.GetTimer().Tick( 1 / GameConstants::UPS);
+}
+
 
 

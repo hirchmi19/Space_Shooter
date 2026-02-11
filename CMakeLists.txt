@@ -38,6 +38,9 @@ add_executable(Space_Shooter
         src/Systems/Movement/MovementSystem.h
         src/Constants/RenderConstants.h
         src/Constants/MovementConstants.h
+        src/Entities/Components/Timer.h
+        src/Systems/Timers/TimerSystem.cpp
+        src/Systems/Timers/TimerSystem.h
 )
 
 target_link_libraries(Space_Shooter raylib)

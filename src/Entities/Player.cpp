@@ -7,6 +7,14 @@
 
 #include "../Game/GameWorld.h"
 
+void Player::SetPosition(const Vector2& pos) {
+
+    movement.position = pos;
+    combat.hitbox.x = pos.x;
+    combat.hitbox.y = pos.y;
+};
+
+
 
 void Player::HandleInput(GameWorld& world) {
 

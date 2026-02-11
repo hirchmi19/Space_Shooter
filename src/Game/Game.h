@@ -12,7 +12,7 @@ class Game {
     public:
     Game();
     ~Game();
-    void RunGame();
+    void Run();
 
     private:
     std::unique_ptr<GameWorld> world;
