@@ -4,7 +4,7 @@
 
 #pragma once
 
-enum class TextureID : u_int32_t{
+enum class TextureID : uint32_t {
 
     NONE,
     BACKGROUND_CANVAS,

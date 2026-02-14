@@ -4,15 +4,18 @@
 
 #pragma once
 
-enum class SpriteID : u_int32_t {
+enum class SpriteID : uint32_t {
 
     NONE,
     PLAYER_SHIP_LEFT,
     PLAYER_SHIP_MIDDLE,
     PLAYER_SHIP_RIGHT,
-    SMALL_ENEMY_SHIP,
-    MEDIUM_ENEMY_SHIP,
-    BIG_ENEMY_SHIP,
+    YELLOW_ENEMY_0,
+    YELLOW_ENEMY_1,
+    RED_ENEMY_0,
+    RED_ENEMY_1,
+    BLACK_ENEMY_0,
+    BLACK_ENEMY_1,
     PLAYER_PROJECTILE,
     ENEMY_PROJECTILE,
     COUNT

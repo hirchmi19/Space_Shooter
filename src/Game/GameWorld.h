@@ -15,6 +15,8 @@
 #include "../Systems/GameSystemID.h"
 #include "../Systems/Assets/AssetSystem.h"
 #include "../Systems/Rendering/BackgroundSystem.h"
+#include "../Systems/Waving/FormationSlot.h"
+#include "../Systems/Waving/WaveSystem.h"
 
 class Player;
 class IGameSystem;
@@ -38,18 +40,21 @@ class GameWorld {
     void RunRenderSystems();
 
     void SpawnPlayerProjectile(const Vector2& playerPosition);
-    void SpawnEnemy(SpriteID id, Vector2 spawnPosition);
+    void SpawnEnemy(const std::vector<const Sprite*>& sprites, const Vector2& spawnPosition);
     const Player& GetPlayer() const;
     Player& GetPlayer();
 
     const Texture2D& GetTexture(TextureID id) const;
     const Sprite& GetSprite(SpriteID id) const;
+    const std::vector<const Sprite*> GetEnemySprites(EnemyID id) const;
 
     void RenderBackground() const;
 
     std::vector<Projectile>& GetProjectiles() {return projectiles;};
     std::vector<Enemy>& GetEnemies() {return enemies;};
 
+   void BlockSlot(FormationSlot& slot) const;
+    void CompleteDive();
 
     private:
     Player player;
@@ -67,6 +72,7 @@ class GameWorld {
 
     const AssetSystem& GetAssetSystem() const;
     const BackgroundSystem& GetBackgroundSystem() const;
+    WaveSystem& GetWaveSystem() const;
 
     void KillEntities();
     void KillEnemies();

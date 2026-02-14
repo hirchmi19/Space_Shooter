@@ -4,6 +4,7 @@
 
 #include "AssetSystem.h"
 #include "raylib.h"
+#include "../../Entities/EnemyID.h"
 
 AssetSystem::AssetSystem() : IGameSystem(GameSystemID::ASSET_SYSTEM) {
 
@@ -52,10 +53,15 @@ std::vector<const Sprite*> AssetSystem::GetPlayerSprites() const {
 
 std::vector<const Sprite*> AssetSystem::GetProjectileSprite(const SpriteID id) const {
 
-    if (id == SpriteID::ENEMY_PROJECTILE) return {&GetSprite(SpriteID::ENEMY_PROJECTILE)};
-    if (id == SpriteID::PLAYER_PROJECTILE) return {&GetSprite(SpriteID::PLAYER_PROJECTILE)};
+    return {&GetSprite(id)};
+}
 
-    return {};
+std::vector<const Sprite *> AssetSystem::GetEnemySprites(const EnemyID id) const {
+
+    if (id == EnemyID::YELLOW_ENEMY) return {&GetSprite(SpriteID::YELLOW_ENEMY_0), &GetSprite(SpriteID::YELLOW_ENEMY_1)};
+    if (id == EnemyID::RED_ENEMY) return {&GetSprite(SpriteID::RED_ENEMY_0), &GetSprite(SpriteID::RED_ENEMY_1)};
+    if (id == EnemyID::BLACK_ENEMY) return {&GetSprite(SpriteID::BLACK_ENEMY_0), &GetSprite(SpriteID::BLACK_ENEMY_1)};
+
 }
 
 //--------------------------------------------------------------------------
@@ -83,6 +89,7 @@ void AssetSystem::Run(GameWorld &world) {
  */
 void AssetSystem::InitSprites() {
 
+    //Load textures
     LoadTex(TextureID::PLAYER_SHIP_CANVAS, "assets/SpaceShooterAssetPack_Ships.png");
     LoadTex(TextureID::ENEMY_SHIP_CANVAS, "assets/pico8_invaders_sprites_LARGE.png");
     LoadTex(TextureID::PROJECTILE_CANVAS, "assets/SpaceShooterAssetPack_Projectiles.png");
@@ -92,8 +99,19 @@ void AssetSystem::InitSprites() {
     DefineSprite(SpriteID::PLAYER_SHIP_LEFT, TextureID::PLAYER_SHIP_CANVAS, {0, 0, 6, 8});
     DefineSprite(SpriteID::PLAYER_SHIP_RIGHT, TextureID::PLAYER_SHIP_CANVAS, {18, 0, 6, 8});
 
+    //--------------------------------------------------------------------------
+
     //Enemy sprites
-    DefineSprite(SpriteID::SMALL_ENEMY_SHIP, TextureID::PLAYER_SHIP_CANVAS, {73, 2, 7, 5});
+    DefineSprite(SpriteID::YELLOW_ENEMY_0, TextureID::ENEMY_SHIP_CANVAS, {56, 0, 8, 8});
+    DefineSprite(SpriteID::YELLOW_ENEMY_1, TextureID::ENEMY_SHIP_CANVAS, {56, 8, 8, 7});
+
+    DefineSprite(SpriteID::RED_ENEMY_0, TextureID::ENEMY_SHIP_CANVAS, {40, 0, 8, 8});
+    DefineSprite(SpriteID::RED_ENEMY_1, TextureID::ENEMY_SHIP_CANVAS, {40, 8, 8 ,8});
+
+    DefineSprite(SpriteID::BLACK_ENEMY_0, TextureID::ENEMY_SHIP_CANVAS, {72, 0, 8, 8});
+    DefineSprite(SpriteID::BLACK_ENEMY_1, TextureID::ENEMY_SHIP_CANVAS, {72, 8, 8 ,8});
+
+    //--------------------------------------------------------------------------
 
     //Projectile sprites
     DefineSprite(SpriteID::PLAYER_PROJECTILE, TextureID::ENEMY_SHIP_CANVAS, {20, 42, 1, 4});

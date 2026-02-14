@@ -3,14 +3,13 @@
 //
 
 #pragma once
-#include "../../Systems/Timers/Timer.h"
 
 struct CombatComponent {
 
     public:
     Rectangle hitbox{};
 
-    explicit CombatComponent(const int32_t hp, const Rectangle hitbox)
+    explicit CombatComponent(const int hp, const Rectangle hitbox)
         : hitbox(hitbox), health(hp) {}
 
     bool IsAlive() const { return health > 0; }
@@ -23,5 +22,5 @@ struct CombatComponent {
     }
 
     private:
-    int32_t health = 0;
+    int health = 0;
 };

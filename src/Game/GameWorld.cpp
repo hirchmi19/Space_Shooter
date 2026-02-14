@@ -10,6 +10,7 @@
 #include "../Systems/Assets/AssetSystem.h"
 #include "../Systems/Movement/MovementSystem.h"
 #include  "../Systems/Rendering/RenderSystem.h"
+#include "../Systems/Waving/WaveSystem.h"
 
 GameWorld::GameWorld() : player(playerSpawn, playerSize, GetAssetSystem().GetPlayerSprites()) {
 
@@ -22,11 +23,16 @@ GameWorld::GameWorld() : player(playerSpawn, playerSize, GetAssetSystem().GetPla
  */
 void GameWorld::RunGameplaySystems() {
 
+    TickTimers();
     player.HandleInput(*this);
-    auto& bgSys = gameSystems[ToIndex(GameSystemID::BACKGROUND_SYSTEM)];
-    auto& moveSys = gameSystems[ToIndex(GameSystemID::MOVEMENT_SYSTEM)];
+
+    const auto& bgSys = gameSystems[ToIndex(GameSystemID::BACKGROUND_SYSTEM)];
+    const auto& moveSys = gameSystems[ToIndex(GameSystemID::MOVEMENT_SYSTEM)];
+    const auto& waveSys = gameSystems[ToIndex(GameSystemID::WAVE_SYSTEM)];
+
     if (bgSys) bgSys->Run(*this);
     if (moveSys) moveSys->Run(*this);
+    if (waveSys) waveSys->Run(*this);
 
     FindDeadEntities();
     KillEntities();
@@ -63,6 +69,12 @@ const Texture2D& GameWorld::GetTexture(TextureID id) const {
     return GetAssetSystem().GetTexture(id);
 }
 
+const std::vector<const Sprite *> GameWorld::GetEnemySprites(const EnemyID id) const {
+
+    return {GetAssetSystem().GetEnemySprites(id)};
+
+}
+
 /**
  * Calls the render function of the background system
  */
@@ -84,13 +96,22 @@ const Player& GameWorld::GetPlayer() const {return player;}
  */
 Player& GameWorld::GetPlayer() { return player; }
 
-
 /**
- * Creates an Enemy struct
- * \param id
+ * Creates an Enemy
+ * \param sprites
  * \param spawnPosition
  */
-void GameWorld::SpawnEnemy(SpriteID id, Vector2 spawnPosition) {
+void GameWorld::SpawnEnemy(const std::vector<const Sprite *> &sprites, const Vector2 &spawnPosition) {
+
+
+    const Vector2 size = {sprites[0]->src.width, sprites[0]->src.height};
+
+    enemies.emplace_back(RenderComponent{sprites, size},
+        CombatComponent{1,
+            Rectangle{spawnPosition.x, spawnPosition.y,
+            size.x * RenderConstants::ENEMY_SCALING,
+            size.y * RenderConstants::ENEMY_SCALING}
+        });
 
 }
 
@@ -122,6 +143,18 @@ void GameWorld::SpawnPlayerProjectile(const Vector2& playerPosition) {
     );
 }
 
+void GameWorld::BlockSlot(FormationSlot &slot) const {
+
+
+    GetWaveSystem().BlockSlot(slot);
+}
+
+void GameWorld::CompleteDive() {
+
+
+    GetWaveSystem().CompleteDive();
+}
+
 
 //--------------------------------------------------------------------------
 
@@ -134,9 +167,10 @@ void GameWorld::CreateSystems() {
     AddSystem(std::make_unique<RenderSystem>());
     AddSystem(std::make_unique<BackgroundSystem>());
     AddSystem(std::make_unique<MovementSystem>());
+    AddSystem(std::make_unique<WaveSystem>());
 
-    enemies.reserve(50);
-    projectiles.reserve(50);
+    enemies.reserve(44);
+    projectiles.reserve(25);
 }
 
 /**
@@ -172,6 +206,14 @@ const BackgroundSystem& GameWorld::GetBackgroundSystem() const {
 
     assert(ptr && "BackgroundSystem is not initialized!");
     return static_cast<const BackgroundSystem&>(*ptr);
+}
+
+ WaveSystem& GameWorld::GetWaveSystem() const {
+
+    auto& ptr = gameSystems[ToIndex(GameSystemID::WAVE_SYSTEM)];
+
+    assert(ptr && "WaveSystem is not initialized!");
+    return static_cast<WaveSystem&>(*ptr);
 }
 
 
@@ -230,7 +272,6 @@ void GameWorld::KillProjectiles() {
     for (auto i = projectilesToRemove.rbegin(); i != projectilesToRemove.rend(); ++i) {
 
         projectiles.erase(projectiles.begin() + *i);
-        std::cout << "killed" << std::endl;
     }
 
     projectilesToRemove.clear();

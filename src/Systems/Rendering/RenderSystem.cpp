@@ -15,6 +15,7 @@ void RenderSystem::Run(GameWorld& world) {
     RenderBackground(world);
     RenderPlayer(world);
     RenderProjectiles(world);
+    RenderEnemies(world);
 }
 
 //--------------------------------------------------------------------------
@@ -26,8 +27,25 @@ void RenderSystem::RenderBackground(const GameWorld& world) const {
     world.RenderBackground();
 }
 
-void RenderSystem::RenderEnemies(const GameWorld& world) const {
+void RenderSystem::RenderEnemies(GameWorld& world) const {
 
+    const auto& enemies = world.GetEnemies();
+    const double time = GetTime();
+    const size_t spriteToDraw = static_cast<size_t>(time * 4) % 2; // flip between sprites to simulate animation
+
+    for (const auto& enemy : enemies) {
+
+        const auto& texture = world.GetTexture(TextureID::ENEMY_SHIP_CANVAS);
+        const auto& sprite = *(enemy.render.sprites[spriteToDraw]);
+
+        const Rectangle dest = {
+            enemy.wave.worldPosition.x,
+            enemy.wave.worldPosition.y,
+            enemy.render.size.x * RenderConstants::ENEMY_SCALING,
+            enemy.render.size.y * RenderConstants::ENEMY_SCALING};
+
+        DrawTexturePro(texture, sprite.src, dest, { 0, 0 }, 0.0f, WHITE);
+    }
 }
 
 
@@ -53,9 +71,9 @@ void RenderSystem::RenderPlayer(const GameWorld& world) const {
 void RenderSystem::RenderProjectiles(GameWorld& world) const  {
 
 
-    auto& projectiles = world.GetProjectiles();
+    const auto& projectiles = world.GetProjectiles();
 
-    for (auto& projectile : projectiles ) {
+    for (const auto& projectile : projectiles ) {
 
         const auto& texture = world.GetTexture(TextureID::ENEMY_SHIP_CANVAS);
         const auto& sprite = *(projectile.render.sprites[0]);
@@ -69,5 +87,6 @@ void RenderSystem::RenderProjectiles(GameWorld& world) const  {
         DrawTexturePro(texture, sprite.src, dest, { 0, 0 }, 0.0f, WHITE);
        // DrawRectangleLinesEx(projectile.combat.hitbox, 1.0f, PINK);
     }
+
 
 }

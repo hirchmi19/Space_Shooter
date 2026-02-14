@@ -4,6 +4,9 @@
 
 #include "MovementSystem.h"
 
+#include <iostream>
+#include <ostream>
+
 #include "../../Constants/MovementConstants.h"
 #include "../../Game/GameWorld.h"
 #include "../../Constants/RenderConstants.h"
@@ -13,8 +16,8 @@ MovementSystem::MovementSystem() : IGameSystem(GameSystemID::MOVEMENT_SYSTEM){}
 void MovementSystem::Run(GameWorld& world) {
 
     MovePlayer(world);
+    MoveEnemies(world);
     MoveProjectiles(world);
-
 }
 
 //--------------------------------------------------------------------------
@@ -35,8 +38,8 @@ void MovementSystem::MovePlayer(GameWorld& world) {
 
 void MovementSystem::MoveProjectiles(GameWorld& world) {
 
+   auto& projectiles = world.GetProjectiles();
 
-    auto& projectiles = world.GetProjectiles();
     for (auto& projectile : projectiles) {
 
         const int posYUp = projectile.movement.position.y + projectile.render.size.y;
@@ -46,6 +49,34 @@ void MovementSystem::MoveProjectiles(GameWorld& world) {
 
         CalcNewProjectilePosition(projectile);
     }
+}
+
+void MovementSystem::MoveEnemies(GameWorld &world) {
+
+    auto& enemies = world.GetEnemies();
+    //std::cout << "Enemies:" << enemies.size() << std::endl;
+
+    for (auto& enemy : enemies) {
+
+        if (enemy.wave.state != WaveState::DIVING) continue;
+
+        if ( enemy.wave.t >= 1.0f) {
+
+            enemy.wave.worldPosition = enemy.wave.formationPosition;
+            enemy.wave.state = WaveState::IN_FORMATION;
+            continue;
+        }
+
+        enemy.wave.t += enemy.wave.speed * GetFrameTime();
+
+        auto& bezierPoints = enemy.wave.controlPoints;
+        enemy.wave.worldPosition = GetSplinePointBezierCubic(bezierPoints[0], bezierPoints[1], bezierPoints[2], bezierPoints[3], enemy.wave.t);
+
+        std::cout << "t:" << enemy.wave.t << std::endl;
+    }
+
+
+
 
 }
 

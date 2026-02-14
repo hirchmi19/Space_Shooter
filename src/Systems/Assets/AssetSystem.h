@@ -12,6 +12,8 @@
 #include "../../Utilities/utils.h"
 #include "Sprite.h"
 
+enum class EnemyID;
+
 class AssetSystem : public IGameSystem {
 
     public:
@@ -22,8 +24,8 @@ class AssetSystem : public IGameSystem {
     const Texture2D& GetTexture(TextureID id) const;
     const Sprite& GetSprite(SpriteID id) const;
     std::vector<const Sprite*> GetPlayerSprites() const;
-    //std::vector<const Sprite*> GetEnemySprites() const;
-    std::vector<const Sprite*> GetProjectileSprite(const SpriteID id) const;
+    std::vector<const Sprite*> GetEnemySprites(EnemyID id) const;
+    std::vector<const Sprite*> GetProjectileSprite(SpriteID id) const;
 
 
     private:

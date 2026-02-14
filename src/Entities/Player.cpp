@@ -22,6 +22,13 @@ void Player::HandleInput(GameWorld& world) {
 
     if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) movement.speed = -1;
     if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) movement.speed = 1;
-    if (IsKeyPressed(KEY_SPACE)) world.SpawnPlayerProjectile(movement.position);
+
+    if (IsKeyPressed(KEY_SPACE)) {
+
+        if (!world.GetPlayer().CanShoot()) return;
+
+        world.SpawnPlayerProjectile(movement.position);
+        world.GetPlayer().GetTimer().Start(0.7);
+    }
 
 }

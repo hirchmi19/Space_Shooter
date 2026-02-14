@@ -5,13 +5,13 @@
 #pragma once
 
 #include "Components/CombatComponent.h"
-#include "Components/Movement2D.h"
 #include "Components/RenderComponent.h"
+#include "Components/WaveComponent.h"
 
 struct Enemy {
 
-   Movement2D movement;
    RenderComponent render;
    CombatComponent combat;
+   WaveComponent wave;
 
 };

@@ -26,7 +26,6 @@ add_executable(Space_Shooter
         src/Systems/Rendering/RenderSystem.cpp
         src/Systems/Rendering/RenderSystem.h
         src/Entities/Enemy.h
-        src/Entities/Components/Movement2D.h
         src/Entities/Components/RenderComponent.h
         src/Entities/Components/CombatComponent.h
         src/Entities/Projectile.h
@@ -38,9 +37,19 @@ add_executable(Space_Shooter
         src/Systems/Movement/MovementSystem.h
         src/Constants/RenderConstants.h
         src/Constants/MovementConstants.h
-        src/Entities/Components/Timer.h
-        src/Systems/Timers/TimerSystem.cpp
-        src/Systems/Timers/TimerSystem.h
+        src/Entities/Components/TimerComponent.h
+        src/Systems/Waving/WaveSystem.cpp
+        src/Systems/Waving/WaveSystem.h
+        src/Entities/Components/WaveComponent.h
+        src/Entities/Components/WaveState.h
+        src/Systems/Waving/FormationSlot.h
+        src/Entities/EnemyID.h
+        src/Systems/Waving/WavePhase.h
+        src/Systems/Waving/DiveType.h
+        src/Systems/Waving/DivingGroup.h
+        src/Utilities/WaveMath.h
+        src/Systems/Waving/WavePattern.h
+        src/Systems/Waving/WaveType.h
 )
 
 target_link_libraries(Space_Shooter raylib)
