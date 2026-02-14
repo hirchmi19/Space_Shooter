@@ -15,10 +15,14 @@ void Player::SetPosition(const Vector2& pos) {
 };
 
 
-
+/**
+ * Reads the player inputs
+ * \param world
+ */
 void Player::HandleInput(GameWorld& world) {
 
     movement.speed = 0;
+    cooldownTimer.Tick(1 / GameConstants::UPS);
 
     if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) movement.speed = -1;
     if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) movement.speed = 1;
@@ -28,7 +32,7 @@ void Player::HandleInput(GameWorld& world) {
         if (!world.GetPlayer().CanShoot()) return;
 
         world.SpawnPlayerProjectile(movement.position);
-        world.GetPlayer().GetTimer().Start(0.7);
+        cooldownTimer.Start(0.7);
     }
 
 }

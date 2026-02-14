@@ -5,6 +5,7 @@
 #include "BackgroundSystem.h"
 
 #include "../../Constants/GameConstants.h"
+#include "../../Constants/WaveConstants.h"
 
 
 BackgroundSystem::BackgroundSystem() : IGameSystem(GameSystemID::BACKGROUND_SYSTEM){
@@ -17,12 +18,15 @@ void BackgroundSystem::Run(GameWorld& world) {
 
     for (size_t i = 0; i < stars.size(); ++i) {
 
-        stars[i].position.y++;
+        stars[i].position.y += std::min(25, WaveConstants::waveCounter + 1);
 
         if (stars[i].position.y >= GameConstants::SCREEN_HEIGHT) { RespawnStar(i);}
     }
 }
 
+/**
+ * Renders all stars
+ */
 void BackgroundSystem::Render() const {
 
 
@@ -37,6 +41,9 @@ void BackgroundSystem::Render() const {
 //--------------------------------------------------------------------------
 
 
+/**
+ * Spawns all initial stars in the background
+ */
 void BackgroundSystem::InitStars() {
 
 
@@ -50,7 +57,10 @@ void BackgroundSystem::InitStars() {
     }
 }
 
-
+/**
+ * Respawns an start, after he leaves the screen space
+ * \param index
+ */
 void BackgroundSystem::RespawnStar(const size_t index) {
 
     stars[index].position.x = static_cast<float>(GetRandomValue(0, GetScreenWidth()));

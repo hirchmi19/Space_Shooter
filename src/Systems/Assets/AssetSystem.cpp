@@ -8,7 +8,7 @@
 
 AssetSystem::AssetSystem() : IGameSystem(GameSystemID::ASSET_SYSTEM) {
 
-    InitSprites();
+    InitAssets();
 }
 
 
@@ -42,6 +42,10 @@ const Sprite& AssetSystem::GetSprite(const SpriteID id) const {
     return sprites[index];
 }
 
+/**
+ * Returns the player sprites
+ * \return
+ */
 std::vector<const Sprite*> AssetSystem::GetPlayerSprites() const {
 
     return {
@@ -51,16 +55,28 @@ std::vector<const Sprite*> AssetSystem::GetPlayerSprites() const {
     };
 }
 
+/**
+ * Returns a projectile Sprite
+ * \param id
+ * \return
+ */
 std::vector<const Sprite*> AssetSystem::GetProjectileSprite(const SpriteID id) const {
 
     return {&GetSprite(id)};
 }
 
+/**
+ * Returns the enemy sprites of an specific enemy type
+ * \param id
+ * \return
+ */
 std::vector<const Sprite *> AssetSystem::GetEnemySprites(const EnemyID id) const {
 
     if (id == EnemyID::YELLOW_ENEMY) return {&GetSprite(SpriteID::YELLOW_ENEMY_0), &GetSprite(SpriteID::YELLOW_ENEMY_1)};
     if (id == EnemyID::RED_ENEMY) return {&GetSprite(SpriteID::RED_ENEMY_0), &GetSprite(SpriteID::RED_ENEMY_1)};
     if (id == EnemyID::BLACK_ENEMY) return {&GetSprite(SpriteID::BLACK_ENEMY_0), &GetSprite(SpriteID::BLACK_ENEMY_1)};
+
+    return {};
 
 }
 
@@ -81,13 +97,13 @@ void AssetSystem::DefineSprite(const SpriteID id, const TextureID textureID, con
 
 void AssetSystem::Run(GameWorld &world) {
 
-    //NOTHING
+    // HERE RUNS NOTHING
 }
 
 /**
  * Loads the sprite sheets and cuts out the sprites
  */
-void AssetSystem::InitSprites() {
+void AssetSystem::InitAssets() {
 
     //Load textures
     LoadTex(TextureID::PLAYER_SHIP_CANVAS, "assets/SpaceShooterAssetPack_Ships.png");

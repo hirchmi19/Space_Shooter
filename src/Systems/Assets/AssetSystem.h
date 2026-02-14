@@ -30,7 +30,7 @@ class AssetSystem : public IGameSystem {
 
     private:
     void Run(GameWorld &world) override;
-    void InitSprites();
+    void InitAssets();
     void LoadTex(TextureID id, const char* path);
     void DefineSprite (SpriteID id, TextureID textureID, Rectangle src);
 

@@ -23,6 +23,10 @@ void MovementSystem::Run(GameWorld& world) {
 //--------------------------------------------------------------------------
 
 
+/**
+ * Moves the player
+ * \param world
+ */
 void MovementSystem::MovePlayer(GameWorld& world) {
 
     Player& player = world.GetPlayer();
@@ -36,6 +40,10 @@ void MovementSystem::MovePlayer(GameWorld& world) {
     CalcNewPlayerPosition(player);
 }
 
+/**
+ * Moves all projectiles
+ * \param world
+ */
 void MovementSystem::MoveProjectiles(GameWorld& world) {
 
    auto& projectiles = world.GetProjectiles();
@@ -51,6 +59,10 @@ void MovementSystem::MoveProjectiles(GameWorld& world) {
     }
 }
 
+/**
+ * Moves all enemies
+ * \param world
+ */
 void MovementSystem::MoveEnemies(GameWorld &world) {
 
     auto& enemies = world.GetEnemies();
@@ -71,8 +83,6 @@ void MovementSystem::MoveEnemies(GameWorld &world) {
 
         auto& bezierPoints = enemy.wave.controlPoints;
         enemy.wave.worldPosition = GetSplinePointBezierCubic(bezierPoints[0], bezierPoints[1], bezierPoints[2], bezierPoints[3], enemy.wave.t);
-
-        std::cout << "t:" << enemy.wave.t << std::endl;
     }
 
 

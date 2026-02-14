@@ -47,9 +47,9 @@ add_executable(Space_Shooter
         src/Systems/Waving/WavePhase.h
         src/Systems/Waving/DiveType.h
         src/Systems/Waving/DivingGroup.h
-        src/Utilities/WaveMath.h
         src/Systems/Waving/WavePattern.h
         src/Systems/Waving/WaveType.h
+        src/Constants/WaveConstants.h
 )
 
 target_link_libraries(Space_Shooter raylib)

@@ -18,7 +18,7 @@
 
 constexpr std::array ROW_COUNTS = {4, 8, 8, 12, 12};
 constexpr float HORIZONTAL_SPACING = 60.0f;
-constexpr float VERTICAL_SPACING   = 60.0f;
+constexpr float VERTICAL_SPACING   = 65.0f;
 static uint32_t waveCounter = 0;
 
 
@@ -30,10 +30,6 @@ class WaveSystem : public IGameSystem{
     ~WaveSystem() override = default;
 
     void Run(GameWorld &world) override;
-
-    void BlockSlot(FormationSlot& slot) const;
-    void CompleteDive();
-
 
     private:
 
@@ -58,17 +54,19 @@ class WaveSystem : public IGameSystem{
     std::array<WavePattern, ToIndex(WaveType::COUNT)> patterns{};
 
     void Init();
-    void InitWave();
-    void StartWave();
+    void StartWave(GameWorld& world);
 
     void DefinePatterns();
     //void PickWavePattern();
 
-    void DefineBezierTop(Enemy& enemy, const Vector2& spawn, const FormationSlot& slot);
-    //void DefineBezierSide(Vector2& spawn, Vector2& slotPosition);
+    void DefineBezierTop(Enemy& enemy, const Vector2& spawn, const Vector2& slotPosition);
+    void DefineBezierSide(Enemy& enemy, const Vector2& spawn, const Vector2& slotPosition);
 
     void BuildDivingGroups(const WavePattern &pattern);
     std::vector<size_t> GetGroupMemberIndices(int id) const;
+
+    void SpawnDive(GameWorld& world, const DiveType type);
+    void AssignDiveCurves(GameWorld& world, DiveType type);
 
     void HandleDiving(GameWorld& world);
     bool IsCurrentDiveFinished(GameWorld& world) const;
@@ -77,7 +75,6 @@ class WaveSystem : public IGameSystem{
     void CalcTopDiveSpawns();
     void CalcSideDiveSpawns();
 
-    void InitTopDive(GameWorld& world);
 };
 
 

@@ -40,7 +40,10 @@ class GameWorld {
     void RunRenderSystems();
 
     void SpawnPlayerProjectile(const Vector2& playerPosition);
+
     void SpawnEnemy(const std::vector<const Sprite*>& sprites, const Vector2& spawnPosition);
+    //void SpawnEnemyProjectile(const Vector2& enemyPosition);
+
     const Player& GetPlayer() const;
     Player& GetPlayer();
 
@@ -53,10 +56,8 @@ class GameWorld {
     std::vector<Projectile>& GetProjectiles() {return projectiles;};
     std::vector<Enemy>& GetEnemies() {return enemies;};
 
-   void BlockSlot(FormationSlot& slot) const;
-    void CompleteDive();
-
     private:
+
     Player player;
 
     std::vector<Enemy> enemies;
@@ -72,7 +73,6 @@ class GameWorld {
 
     const AssetSystem& GetAssetSystem() const;
     const BackgroundSystem& GetBackgroundSystem() const;
-    WaveSystem& GetWaveSystem() const;
 
     void KillEntities();
     void KillEnemies();
@@ -82,7 +82,6 @@ class GameWorld {
     void FindDeadProjectiles();
     void FindDeadEnemies();
 
-    void TickTimers();
 };
 
 

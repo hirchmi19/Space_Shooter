@@ -27,6 +27,10 @@ void RenderSystem::RenderBackground(const GameWorld& world) const {
     world.RenderBackground();
 }
 
+/**
+ *Renders all enemies and shift their sprites
+ * \param world
+ */
 void RenderSystem::RenderEnemies(GameWorld& world) const {
 
     const auto& enemies = world.GetEnemies();
@@ -49,6 +53,10 @@ void RenderSystem::RenderEnemies(GameWorld& world) const {
 }
 
 
+/**
+ * Renders the player
+ * \param world
+ */
 void RenderSystem::RenderPlayer(const GameWorld& world) const {
 
     const auto& playerTexture = world.GetTexture(TextureID::PLAYER_SHIP_CANVAS);
@@ -68,6 +76,10 @@ void RenderSystem::RenderPlayer(const GameWorld& world) const {
     DrawRectangleLinesEx(world.GetPlayer().GetHitBox(), 1.0f, PINK);
 }
 
+/**
+ * Renders all projectiles
+ * \param world
+ */
 void RenderSystem::RenderProjectiles(GameWorld& world) const  {
 
 

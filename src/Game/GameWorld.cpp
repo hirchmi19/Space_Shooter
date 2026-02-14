@@ -23,7 +23,6 @@ GameWorld::GameWorld() : player(playerSpawn, playerSize, GetAssetSystem().GetPla
  */
 void GameWorld::RunGameplaySystems() {
 
-    TickTimers();
     player.HandleInput(*this);
 
     const auto& bgSys = gameSystems[ToIndex(GameSystemID::BACKGROUND_SYSTEM)];
@@ -69,6 +68,12 @@ const Texture2D& GameWorld::GetTexture(TextureID id) const {
     return GetAssetSystem().GetTexture(id);
 }
 
+
+/**
+ * Returns all enemy sprites by a given ID
+ * \param id
+ * \return
+ */
 const std::vector<const Sprite *> GameWorld::GetEnemySprites(const EnemyID id) const {
 
     return {GetAssetSystem().GetEnemySprites(id)};
@@ -82,7 +87,6 @@ void GameWorld::RenderBackground() const {
 
     GetBackgroundSystem().Render();
 }
-
 
 /**
  * Returns a  read-only reference to the player
@@ -112,7 +116,6 @@ void GameWorld::SpawnEnemy(const std::vector<const Sprite *> &sprites, const Vec
             size.x * RenderConstants::ENEMY_SCALING,
             size.y * RenderConstants::ENEMY_SCALING}
         });
-
 }
 
 /**
@@ -142,19 +145,6 @@ void GameWorld::SpawnPlayerProjectile(const Vector2& playerPosition) {
         }
     );
 }
-
-void GameWorld::BlockSlot(FormationSlot &slot) const {
-
-
-    GetWaveSystem().BlockSlot(slot);
-}
-
-void GameWorld::CompleteDive() {
-
-
-    GetWaveSystem().CompleteDive();
-}
-
 
 //--------------------------------------------------------------------------
 
@@ -207,15 +197,6 @@ const BackgroundSystem& GameWorld::GetBackgroundSystem() const {
     assert(ptr && "BackgroundSystem is not initialized!");
     return static_cast<const BackgroundSystem&>(*ptr);
 }
-
- WaveSystem& GameWorld::GetWaveSystem() const {
-
-    auto& ptr = gameSystems[ToIndex(GameSystemID::WAVE_SYSTEM)];
-
-    assert(ptr && "WaveSystem is not initialized!");
-    return static_cast<WaveSystem&>(*ptr);
-}
-
 
 /**
  * Removes all enemies and projectiles from the collection respectively GameWorld
@@ -276,12 +257,5 @@ void GameWorld::KillProjectiles() {
 
     projectilesToRemove.clear();
 }
-
-
-void GameWorld::TickTimers() {
-
-    player.GetTimer().Tick( 1 / GameConstants::UPS);
-}
-
 
 
