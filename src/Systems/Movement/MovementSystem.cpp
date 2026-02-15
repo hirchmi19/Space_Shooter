@@ -66,15 +66,13 @@ void MovementSystem::MoveProjectiles(GameWorld& world) {
 void MovementSystem::MoveEnemies(GameWorld &world) {
 
     auto& enemies = world.GetEnemies();
-    //std::cout << "Enemies:" << enemies.size() << std::endl;
 
     for (auto& enemy : enemies) {
 
-        if (enemy.wave.state != WaveState::DIVING) continue;
+        if (enemy.wave.state != WaveState::DIVING && enemy.wave.state != WaveState::SOLO_ATTACK) continue;
 
         if ( enemy.wave.t >= 1.0f) {
-
-            enemy.wave.worldPosition = enemy.wave.formationPosition;
+            // enemy.wave.worldPosition = enemy.wave.formationPosition;
             enemy.wave.state = WaveState::IN_FORMATION;
             continue;
         }

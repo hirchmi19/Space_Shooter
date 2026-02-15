@@ -42,7 +42,7 @@ class GameWorld {
     void SpawnPlayerProjectile(const Vector2& playerPosition);
 
     void SpawnEnemy(const std::vector<const Sprite*>& sprites, const Vector2& spawnPosition);
-    //void SpawnEnemyProjectile(const Vector2& enemyPosition);
+    void SpawnEnemyProjectile(const Vector2& enemyPosition);
 
     const Player& GetPlayer() const;
     Player& GetPlayer();

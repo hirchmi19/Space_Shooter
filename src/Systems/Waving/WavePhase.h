@@ -14,6 +14,7 @@ enum class WavePhase : uint32_t {
     FORMATION_ON,
     FORMATION_OFF,
     SOLO_ATTACK,
-    SWARM_OUT,
+    READY_FOR_SWARM,
+    SWARM_ATTACK,
     COUNT
 };

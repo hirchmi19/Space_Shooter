@@ -23,22 +23,32 @@ void WaveSystem::Run(GameWorld& world)
 
     diveTimer.Tick( 1 / GameConstants::UPS);
     phaseTimer.Tick( 1 / GameConstants::UPS);
+    attackTimer.Tick( 1 / GameConstants::UPS);
+
 
     if (waveCompleted) currentPhase = WavePhase::INITIALIZE;
 
     switch (currentPhase)
     {
         case WavePhase::INITIALIZE:
+            std::cout << "WaveSystem::Initialize()" << std::endl;
             StartWave(world);
             break;
 
         case WavePhase::FORMATION_OFF:
-
+            std::cout << "WaveSystem::InformationOff()" << std::endl;
             HandleDiving(world);
             break;
 
         case WavePhase::FORMATION_ON:
-            //attack
+            std::cout << "WaveSystem::InformationOn()" << std::endl;
+            HandleSoloAttacks(world);
+            HandleFormationAttacks(world);
+            break;
+
+        case WavePhase::READY_FOR_SWARM:
+            HandleSwarmAttacks(world);
+            HandleFormationAttacks(world);
             break;
     }
 }
@@ -52,14 +62,15 @@ void WaveSystem::Run(GameWorld& world)
  */
 void WaveSystem::Init() {
 
-    formationPositions.reserve(44);
-    formationSlots.reserve(44);
-    topDiveSpawns.reserve(44);
-    sideDiveSpawns.reserve(44);
+    formationPositions.resize(44);
+    formationSlots.resize(44);
+    topDiveSpawns.resize(44);
+    sideDiveSpawns.resize(44);
 
     CalcFormationPositions();
     CalcTopDiveSpawns();
     CalcSideDiveSpawns();
+    BuildFormationSlots();
     DefinePatterns();
 }
 
@@ -71,9 +82,16 @@ void WaveSystem::StartWave(GameWorld& world) {
 
     waveCounter++;
     waveCompleted = false;
-    currentPattern = patterns[0]; // later random
+
+    diveCount = 0;
+    diveSpawned = false;
+    diveCompleted = false;
+
+    currentPattern = patterns[0];
     BuildDivingGroups(currentPattern);
+    waveCreated = true;
     currentPhase = WavePhase::FORMATION_OFF;
+    std::cout << "WaveSystem::StartWave()" << std::endl;
 }
 
 
@@ -83,17 +101,19 @@ void WaveSystem::StartWave(GameWorld& world) {
  */
 void WaveSystem::HandleDiving(GameWorld& world)
 {
-    if (diveTimer.IsRunning()) return;
-
+    if (diveTimer.IsRunning() && diveSpawned) return;
 
     if (diveCount >= currentPattern.numberOfDives)
     {
         currentPhase = WavePhase::FORMATION_ON;
+        diveCount = 0;
+        phaseTimer.Start(1.2f);
         return;
     }
 
     if (!diveSpawned)
     {
+        std::cout << "WaveSystem::HandleDiving()" << std::endl;
         const DiveType type = currentPattern.dives[diveCount];
 
         SpawnDive(world, type);
@@ -109,11 +129,92 @@ void WaveSystem::HandleDiving(GameWorld& world)
         diveSpawned = false;
         diveCompleted = true;
         diveCount++;
-        diveTimer.Start(1.5);
+        diveTimer.Start(0.85f);
     }
 }
 
+/**
+ * Random number of enemies swarm out and attack player directly
+ * \param world
+ */
+void WaveSystem::HandleSoloAttacks(GameWorld& world) {
 
+    if (phaseTimer.IsRunning() || diveTimer.IsRunning()) return;
+
+    auto& enemies = world.GetEnemies();
+    const int maxEnemies = std::max(4, GetRandomValue(4, static_cast<int>(enemies.size() * 0.25f)));
+    int enemyIndex = 0;
+
+    if (diveCount >= maxEnemies) {
+
+        currentPhase = WavePhase::READY_FOR_SWARM;
+        diveCount = 0;
+        shootsFired = 0;
+        return;
+    }
+
+    do {
+        enemyIndex = GetRandomValue(0, static_cast<int>(enemies.size() - 1));
+    }while (enemies[enemyIndex].wave.state != WaveState::IN_FORMATION);
+
+    AssignBezierSolo(enemies[enemyIndex], enemies[enemyIndex].wave.formationPosition, world.GetPlayer().GetPosition());
+
+    enemies[enemyIndex].wave.state = WaveState::SOLO_ATTACK;
+    diveCount++;
+    diveTimer.Start(1.0);
+}
+
+/**
+ * Remaining enemies swarm out and attack player directly
+ * \param world
+ */
+void WaveSystem::HandleSwarmAttacks(GameWorld &world) {
+
+
+}
+
+/**
+ * Random number of enemies inside the formation shoot
+ * \param world
+ */
+void WaveSystem::HandleFormationAttacks(GameWorld &world) {
+
+    const int maxShots = static_cast<int>(world.GetEnemies().size() / 2);
+
+    if (shootsFired >= maxShots || attackTimer.IsRunning()) return;
+
+    const auto& enemies = world.GetEnemies();
+    int enemyIndex = 0;
+
+    do {
+        enemyIndex = GetRandomValue(0, static_cast<int>(enemies.size() - 1));
+    }while (enemies[enemyIndex].wave.state != WaveState::IN_FORMATION);
+
+    world.SpawnEnemyProjectile(enemies[enemyIndex].wave.formationPosition);
+    attackTimer.Start(0.5);
+    shootsFired++;
+}
+
+void WaveSystem::BuildFormationSlots() {
+
+    formationSlots.clear();
+
+    for (size_t i = 0; i < formationPositions.size(); ++i)
+    {
+        FormationSlot slot;
+        slot.position = formationPositions[i];
+
+        if (i < 4)
+            slot.id = EnemyID::BLACK_ENEMY;
+        else if (i < 20)
+            slot.id = EnemyID::RED_ENEMY;
+        else
+            slot.id = EnemyID::YELLOW_ENEMY;
+
+        formationSlots.push_back(slot);
+    }
+
+}
 
 /**
  * Separates enemies in diving groups or sub-waves
@@ -121,27 +222,14 @@ void WaveSystem::HandleDiving(GameWorld& world)
  */
 void WaveSystem::BuildDivingGroups(const WavePattern& pattern)
 {
-    formationSlots.clear();
-
     size_t index = 0;
 
-    for (int i = 0; i < pattern.numberOfDives; ++i)
+    for (int dive = 0; dive < pattern.numberOfDives; ++dive)
     {
-        for (int j = 0; j < pattern.groupSizes[i]; ++j)
+        for (int j = 0; j < pattern.groupSizes[dive]; ++j)
         {
-            FormationSlot slot;
-
-            slot.position = formationPositions[index];
-            slot.group.groupID = i;
-            slot.group.pattern = pattern.dives[i];
-            slot.slotIndex = index;
-
-            // Assign enemy type depending on slot
-            if (index < 4)slot.id = EnemyID::BLACK_ENEMY;
-            else if (index < 20)slot.id = EnemyID::RED_ENEMY;
-            else slot.id = EnemyID::YELLOW_ENEMY;
-
-            formationSlots.push_back(slot);
+            formationSlots[index].group.groupID = dive;
+            formationSlots[index].group.pattern = pattern.dives[dive];
             index++;
         }
     }
@@ -191,15 +279,26 @@ void WaveSystem::AssignDiveCurves(GameWorld& world, const DiveType type)
 
             case DiveType::FROM_TOP:
 
-                DefineBezierTop(enemy, enemy.wave.spawnPosition, enemy.wave.formationPosition);
+                AssignBezierTop(enemy, enemy.wave.spawnPosition, enemy.wave.formationPosition);
                 enemy.wave.state = WaveState::DIVING;
                 break;
 
             case DiveType::FROM_SIDES:
 
-                DefineBezierSide(enemy, enemy.wave.spawnPosition, enemy.wave.formationPosition);
+                AssignBezierSide(enemy, enemy.wave.spawnPosition, enemy.wave.formationPosition);
                 enemy.wave.state = WaveState::DIVING;
         }
+    }
+}
+
+void WaveSystem::ResetEnemies(GameWorld &world) {
+
+
+    auto& enemies = world.GetEnemies();
+
+    for (auto& enemy : enemies) {
+
+        enemy.wave.worldPosition = enemy.wave.spawnPosition;
     }
 }
 
@@ -242,6 +341,12 @@ std::vector<size_t> WaveSystem::GetGroupMemberIndices(const int id) const {
     }
 
     return result;
+}
+
+WavePattern WaveSystem::PickWavePattern() const {
+
+    const int patternIndex = GetRandomValue(0, 1);
+    return patterns[patternIndex];
 }
 
 
@@ -348,36 +453,44 @@ void WaveSystem::DefinePatterns() {
 
 // Define all Bézier curves here
 
-void WaveSystem::DefineBezierTop(Enemy& enemy, const Vector2& spawn, const Vector2& slotPosition) {
+void WaveSystem::AssignBezierTop(Enemy& enemy, const Vector2& start, const Vector2& end) {
 
-    enemy.wave.controlPoints[0] = spawn;
+    enemy.wave.controlPoints[0] = start;
 
-    enemy.wave.controlPoints[1] = {spawn.x * 0.8f + slotPosition.x * 0.2f,spawn.y + 400.0f };
-    enemy.wave.controlPoints[2] = {slotPosition.x,spawn.y + 600.0f };
+    enemy.wave.controlPoints[1] = {start.x * 0.8f + end.x * 0.2f,start.y + 400.0f };
+    enemy.wave.controlPoints[2] = {end.x,start.y + 600.0f };
 
-    enemy.wave.controlPoints[3] = slotPosition;
+    enemy.wave.controlPoints[3] = end;
 
     enemy.wave.t = 0.0f;
 }
 
-void WaveSystem::DefineBezierSide(Enemy &enemy, const Vector2 &spawn, const Vector2 &slotPosition) {
+void WaveSystem::AssignBezierSide(Enemy &enemy, const Vector2 &start, const Vector2 &end) {
 
-    enemy.wave.controlPoints[0] = spawn;
+    enemy.wave.controlPoints[0] = start;
 
-    const bool fromLeft = spawn.x < 0;
+    const bool fromLeft = start.x < 0;
 
     float horizontalPull = 200.0f;
     float verticalPull1  = 800.0f;
 
-    enemy.wave.controlPoints[1] = {spawn.x + (fromLeft ? horizontalPull : -horizontalPull),spawn.y + verticalPull1};
-    enemy.wave.controlPoints[2].x = slotPosition.x + (fromLeft ? -40.0f : 40.0f);
-    enemy.wave.controlPoints[3] = slotPosition;
+    enemy.wave.controlPoints[1] = {start.x + (fromLeft ? horizontalPull : -horizontalPull),start.y + verticalPull1};
+    enemy.wave.controlPoints[2].x = end.x + (fromLeft ? -40.0f : 40.0f);
+    enemy.wave.controlPoints[3] = end;
 
     enemy.wave.t = 0.0f;
 }
 
+void WaveSystem::AssignBezierSolo(Enemy &enemy, const Vector2 &start, const Vector2 &end) {
 
+    enemy.wave.controlPoints[0] = start;
 
+    const bool fromLeft = start.x < GameConstants::SCREEN_WIDTH / 2;
+    constexpr float horizontalPull = 450.0f;
 
+    enemy.wave.controlPoints[1] = {start.x + (fromLeft ? horizontalPull : -horizontalPull),start.y + 300.0f};
+    enemy.wave.controlPoints[2] = {end.x + (fromLeft ? -60.0f : 60.0f),end.y - 150.0f};
+    enemy.wave.controlPoints[3] = {end.x, end.y + 100.0f};
 
-
+    enemy.wave.t = 0.0f;
+}

@@ -14,8 +14,8 @@ void RenderSystem::Run(GameWorld& world) {
 
     RenderBackground(world);
     RenderPlayer(world);
-    RenderProjectiles(world);
     RenderEnemies(world);
+    RenderProjectiles(world);
 }
 
 //--------------------------------------------------------------------------

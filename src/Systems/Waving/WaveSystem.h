@@ -34,15 +34,17 @@ class WaveSystem : public IGameSystem{
     private:
 
     bool waveCompleted = true;
+    bool waveCreated = false;
     bool diveSpawned = false;
     bool diveCompleted = true;
     int diveCount = 0;
+    int shootsFired = 0;
 
     TimerComponent phaseTimer;
     TimerComponent diveTimer;
+    TimerComponent attackTimer;
 
     std::vector<Vector2> formationPositions{};
-
     std::vector<FormationSlot> formationSlots{};
 
     std::vector<Vector2> topDiveSpawns{};
@@ -57,18 +59,26 @@ class WaveSystem : public IGameSystem{
     void StartWave(GameWorld& world);
 
     void DefinePatterns();
-    //void PickWavePattern();
+    WavePattern PickWavePattern() const;
 
-    void DefineBezierTop(Enemy& enemy, const Vector2& spawn, const Vector2& slotPosition);
-    void DefineBezierSide(Enemy& enemy, const Vector2& spawn, const Vector2& slotPosition);
+    void AssignBezierTop(Enemy& enemy, const Vector2& start, const Vector2& end);
+    void AssignBezierSide(Enemy& enemy, const Vector2& start, const Vector2& end);
+    void AssignBezierSolo(Enemy& enemy, const Vector2& start, const Vector2& end);
 
     void BuildDivingGroups(const WavePattern &pattern);
+    void BuildFormationSlots();
     std::vector<size_t> GetGroupMemberIndices(int id) const;
 
     void SpawnDive(GameWorld& world, const DiveType type);
     void AssignDiveCurves(GameWorld& world, DiveType type);
+    void ResetEnemies(GameWorld& world);
 
     void HandleDiving(GameWorld& world);
+
+    void HandleSoloAttacks(GameWorld& world);
+    void HandleSwarmAttacks(GameWorld& world);
+    void HandleFormationAttacks(GameWorld& world);
+
     bool IsCurrentDiveFinished(GameWorld& world) const;
 
     void CalcFormationPositions();

@@ -146,6 +146,32 @@ void GameWorld::SpawnPlayerProjectile(const Vector2& playerPosition) {
     );
 }
 
+void GameWorld::SpawnEnemyProjectile(const Vector2 &enemyPosition) {
+
+    const Sprite& projectileSprite = GetAssetSystem().GetSprite(SpriteID::ENEMY_PROJECTILE);
+
+    const Vector2 projectileSize {projectileSprite.src.width,projectileSprite.src.height};
+    const float playerWidth = player.GetSize().x * RenderConstants::ENEMY_SCALING;
+    const Vector2 spawnPosition {enemyPosition.x + (playerWidth * 0.5f) - (projectileSize.x * 0.5f),enemyPosition.y};
+    constexpr int32_t speed = 1;
+
+    const auto sprites = GetAssetSystem().GetProjectileSprite(SpriteID::ENEMY_PROJECTILE);
+
+    projectiles.emplace_back(
+        Movement1D{spawnPosition, speed},
+        RenderComponent{sprites, projectileSize},
+        CombatComponent{1,Rectangle{
+                spawnPosition.x,
+                spawnPosition.y,
+                projectileSize.x * RenderConstants::PROJECTILE_SCALING,
+                projectileSize.y * RenderConstants::PROJECTILE_SCALING
+            }
+        }
+    );
+
+
+}
+
 //--------------------------------------------------------------------------
 
 /**
