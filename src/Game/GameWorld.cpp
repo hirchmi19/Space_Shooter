@@ -227,7 +227,7 @@ const BackgroundSystem& GameWorld::GetBackgroundSystem() const {
 /**
  * Removes all enemies and projectiles from the collection respectively GameWorld
  */
-void GameWorld::KillEntities() {
+void GameWorld::KillEntities() {        //TODO: create an separate entity system for entity creation and destruction
 
     KillEnemies();
     KillProjectiles();

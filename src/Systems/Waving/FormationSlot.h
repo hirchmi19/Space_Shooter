@@ -13,7 +13,7 @@ struct FormationSlot {
 
     Vector2 position;
     DivingGroup group;
-    EnemyID id = EnemyID::COUNT;
+    EnemyID id = EnemyID::NONE;
     uint32_t slotIndex;
 
 };

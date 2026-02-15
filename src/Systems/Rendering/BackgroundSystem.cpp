@@ -18,7 +18,7 @@ void BackgroundSystem::Run(GameWorld& world) {
 
     for (size_t i = 0; i < stars.size(); ++i) {
 
-        stars[i].position.y += std::min(25, WaveConstants::waveCounter + 1);
+        stars[i].position.y += std::min(25, WaveConstants::WAVE_COUNTER + 1);
 
         if (stars[i].position.y >= GameConstants::SCREEN_HEIGHT) { RespawnStar(i);}
     }
@@ -49,7 +49,7 @@ void BackgroundSystem::InitStars() {
 
     for (size_t i = 0; i < stars.size(); ++i) {
 
-        Star s;
+        Star s{};
         s.position.x = static_cast<float>(GetRandomValue(0, GameConstants::SCREEN_WIDTH));
         s.position.y = static_cast<float>(GetRandomValue(0, GameConstants::SCREEN_HEIGHT));
         s.colorValue = static_cast<unsigned char>(GetRandomValue(120, 255));

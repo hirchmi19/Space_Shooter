@@ -19,8 +19,6 @@
 constexpr std::array ROW_COUNTS = {4, 8, 8, 12, 12};
 constexpr float HORIZONTAL_SPACING = 60.0f;
 constexpr float VERTICAL_SPACING   = 65.0f;
-static uint32_t waveCounter = 0;
-
 
 class WaveSystem : public IGameSystem{
 
@@ -37,6 +35,8 @@ class WaveSystem : public IGameSystem{
     bool waveCreated = false;
     bool diveSpawned = false;
     bool diveCompleted = true;
+    bool enemiesSpawned = false;
+
     int diveCount = 0;
     int shootsFired = 0;
 
@@ -44,7 +44,7 @@ class WaveSystem : public IGameSystem{
     TimerComponent diveTimer;
     TimerComponent attackTimer;
 
-    std::vector<Vector2> formationPositions{};
+    std::vector<Vector2> formationPositions{}; //TODO: change to arrays
     std::vector<FormationSlot> formationSlots{};
 
     std::vector<Vector2> topDiveSpawns{};
@@ -70,8 +70,13 @@ class WaveSystem : public IGameSystem{
     std::vector<size_t> GetGroupMemberIndices(int id) const;
 
     void SpawnDive(GameWorld& world, const DiveType type);
+
     void AssignDiveCurves(GameWorld& world, DiveType type);
+    void AssignAttackCurves(GameWorld& world, DiveType type);
+    void AssignCurve(Enemy& enemy,const Vector2& start, const Vector2& end, DiveType type);
+
     void ResetEnemies(GameWorld& world);
+
 
     void HandleDiving(GameWorld& world);
 
