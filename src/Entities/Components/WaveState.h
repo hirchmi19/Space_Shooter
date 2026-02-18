@@ -8,8 +8,8 @@ enum class WaveState : uint32_t {
 
   NONE,
   IN_FORMATION,
-  DIVING,
-  SOLO_ATTACK,
+  ENTER_FORMATION,
+  ATTACK,
   OUT_FORMATION,
   COUNT
 

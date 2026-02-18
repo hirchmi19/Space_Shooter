@@ -75,11 +75,7 @@ class WaveSystem : public IGameSystem{
     void AssignAttackCurves(GameWorld& world, DiveType type);
     void AssignCurve(Enemy& enemy,const Vector2& start, const Vector2& end, DiveType type);
 
-    void ResetEnemies(GameWorld& world);
-
-
     void HandleDiving(GameWorld& world);
-
     void HandleSoloAttacks(GameWorld& world);
     void HandleSwarmAttacks(GameWorld& world);
     void HandleFormationAttacks(GameWorld& world);

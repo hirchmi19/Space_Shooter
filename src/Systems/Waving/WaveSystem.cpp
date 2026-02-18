@@ -50,7 +50,6 @@ void WaveSystem::Run(GameWorld& world)
 
         case WavePhase::READY_FOR_SWARM:
             HandleSwarmAttacks(world);
-            //HandleFormationAttacks(world);
             break;
     }
 
@@ -167,7 +166,7 @@ void WaveSystem::HandleSoloAttacks(GameWorld& world) {
 
     AssignBezierSolo(enemies[enemyIndex], enemies[enemyIndex].wave.formationPosition, world.GetPlayer().GetPosition());
 
-    enemies[enemyIndex].wave.state = WaveState::SOLO_ATTACK;
+    enemies[enemyIndex].wave.state = WaveState::ATTACK;
     diveCount++;
     diveTimer.Start(1.0);
 }
@@ -182,7 +181,6 @@ void WaveSystem::HandleSwarmAttacks(GameWorld &world) {
 
     if (diveCount  < 0) {
 
-        ResetEnemies(world);
         currentPhase = WavePhase::FORMATION_OFF;
         diveCount = 0;
         phaseTimer.Start(1.5f);
@@ -320,14 +318,17 @@ void WaveSystem::AssignDiveCurves(GameWorld& world, const DiveType type)
 void WaveSystem::AssignAttackCurves(GameWorld &world, const DiveType type) {
 
     auto& enemies = world.GetEnemies();
-    const Vector2& end = {world.GetPlayer().GetPosition().x, world.GetPlayer().GetPosition().y + 100.f};
 
     for (auto& enemy : enemies) {
+
+
+        const Vector2& end = {enemy.wave.formationPosition.x, world.GetPlayer().GetPosition().y + 100.f};
 
         if (enemy.wave.diveGroup != diveCount)continue;
         if (enemy.wave.state != WaveState::IN_FORMATION) continue;
 
-        AssignCurve(enemy, enemy.wave.formationPosition, end, type);
+        AssignBezierSide(enemy, enemy.wave.formationPosition, end);
+        enemy.wave.state = WaveState::ATTACK;
     }
 }
 
@@ -338,26 +339,16 @@ void WaveSystem::AssignCurve(Enemy &enemy, const Vector2& start, const Vector2 &
         case DiveType::FROM_TOP:
 
             AssignBezierTop(enemy, start, end);
-            enemy.wave.state = WaveState::DIVING;
+            enemy.wave.state = WaveState::ENTER_FORMATION;
             break;
 
         case DiveType::FROM_SIDES:
 
             AssignBezierSide(enemy, start, end);
-            enemy.wave.state = WaveState::DIVING;
+            enemy.wave.state = WaveState::ENTER_FORMATION;
             break;
     }
 
-}
-
-void WaveSystem::ResetEnemies(GameWorld &world) {
-
-    auto& enemies = world.GetEnemies();
-
-    for (auto& enemy : enemies) {
-
-        enemy.wave.worldPosition = enemy.wave.spawnPosition;
-    }
 }
 
 /**
@@ -453,7 +444,7 @@ void WaveSystem::CalcTopDiveSpawns() {
         Vector2 spawn;
 
         spawn.x = (i % 2 == 0) ? leftX : rightX;
-        spawn.y = -static_cast<float>(i / 2) * VERTICAL_SPACING;
+        spawn.y = -static_cast<float>(i / 2) * VERTICAL_SPACING - 50.f;
 
         topDiveSpawns[i] = spawn;
     }

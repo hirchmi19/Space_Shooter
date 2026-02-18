@@ -28,7 +28,7 @@ void RenderSystem::RenderBackground(const GameWorld& world) const {
 }
 
 /**
- *Renders all enemies and shift their sprites
+ * Renders all enemies and shift their sprites
  * \param world
  */
 void RenderSystem::RenderEnemies(GameWorld& world) const {
@@ -38,6 +38,8 @@ void RenderSystem::RenderEnemies(GameWorld& world) const {
     const size_t spriteToDraw = static_cast<size_t>(time * 4) % 2; // flip between sprites to simulate animation
 
     for (const auto& enemy : enemies) {
+
+        if (enemy.wave.state == WaveState::OUT_FORMATION) continue;
 
         const auto& texture = world.GetTexture(TextureID::ENEMY_SHIP_CANVAS);
         const auto& sprite = *(enemy.render.sprites[spriteToDraw]);

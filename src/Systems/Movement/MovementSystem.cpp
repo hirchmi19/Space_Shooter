@@ -69,11 +69,19 @@ void MovementSystem::MoveEnemies(GameWorld &world) {
 
     for (auto& enemy : enemies) {
 
-        if (enemy.wave.state != WaveState::DIVING && enemy.wave.state != WaveState::SOLO_ATTACK) continue;
+        if (enemy.wave.state != WaveState::ENTER_FORMATION &&
+            enemy.wave.state != WaveState::ATTACK) continue;
 
-        if ( enemy.wave.t >= 1.0f) {
-            // enemy.wave.worldPosition = enemy.wave.formationPosition;
+        if (enemy.wave.t >= 1.0f && enemy.wave.state == WaveState::ENTER_FORMATION) {
+            enemy.wave.worldPosition = enemy.wave.formationPosition;
             enemy.wave.state = WaveState::IN_FORMATION;
+            continue;
+        }
+
+        if (enemy.wave.t >= 1.0f && enemy.wave.state == WaveState::ATTACK) {
+
+            enemy.wave.worldPosition = enemy.wave.spawnPosition;
+            enemy.wave.state = WaveState::OUT_FORMATION;
             continue;
         }
 
