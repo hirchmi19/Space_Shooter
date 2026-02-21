@@ -55,6 +55,7 @@ class GameWorld {
 
     std::vector<Projectile>& GetProjectiles() {return projectiles;};
     std::vector<Enemy>& GetEnemies() {return enemies;};
+    bool AllEnemiesKilled() const {return enemies.empty();};
 
     private:
 

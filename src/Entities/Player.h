@@ -29,7 +29,7 @@ class Player {
 
     const Vector2& GetPosition() const { return movement.position; }
     const Vector2& GetSize() const  { return render.size; }
-    int32_t GetSpeed() const { return movement.speed; }
+    int GetSpeed() const { return movement.speed; }
     const Rectangle& GetHitBox() const { return combat.hitbox; }
     TimerComponent& GetTimer() {return cooldownTimer;}
 

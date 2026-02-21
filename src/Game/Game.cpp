@@ -22,7 +22,7 @@ Game::~Game() {
 /**
  * Runs the Game Loop
  */
-void Game::Run() {
+void Game::Run() const {
 
     constexpr double timePerUpdate = 1.0 / GameConstants::UPS;
 

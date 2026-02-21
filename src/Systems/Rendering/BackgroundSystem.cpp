@@ -18,7 +18,7 @@ void BackgroundSystem::Run(GameWorld& world) {
 
     for (size_t i = 0; i < stars.size(); ++i) {
 
-        stars[i].position.y += std::min(25, WaveConstants::WAVE_COUNTER + 1);
+        stars[i].position.y += static_cast<float>(std::min(25, WaveConstants::WAVE_COUNTER + 1));
 
         if (stars[i].position.y >= GameConstants::SCREEN_HEIGHT) { RespawnStar(i);}
     }

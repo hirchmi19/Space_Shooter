@@ -5,7 +5,6 @@
 #pragma once
 #include <type_traits>
 
-
 /**
  * Casts an enumeration type into a size_t integer
  * \tparam Enum

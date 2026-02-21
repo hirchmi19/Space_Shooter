@@ -19,7 +19,7 @@ struct WaveComponent {
   WaveState state = WaveState::OUT_FORMATION;
 
   std::array<Vector2, 4> controlPoints;
-  float t = 0.0f; // displays dive progress t = {0,1}; 0 at the beginning of the dive; 1 at the end
+  float t = 0.0f; // expresses dive progress t = {0,1}; 0 at the beginning of the dive; 1 at the end
   float speed = 0.7f;
 
 };

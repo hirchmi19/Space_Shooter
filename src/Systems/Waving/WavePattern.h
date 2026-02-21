@@ -3,14 +3,13 @@
 //
 
 #pragma once
-#include <cstdint>
 
 #include "WaveType.h"
 
 struct WavePattern {
 
     WaveType type;
-    int numberOfDives;
+    uint32_t numberOfDives;
     std::vector<int> groupSizes;
     std::vector<DiveType> dives;
 

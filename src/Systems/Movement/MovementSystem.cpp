@@ -37,7 +37,7 @@ void MovementSystem::MovePlayer(GameWorld& world) {
     if (playerPosXRight > GameConstants::SCREEN_WIDTH && playerSpeed > 0)return;
     if (playerPosition.x <= 0 && playerSpeed < 0) return;
 
-    CalcNewPlayerPosition(player);
+    MovePlayer(player);
 }
 
 /**
@@ -55,7 +55,7 @@ void MovementSystem::MoveProjectiles(GameWorld& world) {
         if (projectile.movement.position.y <= 0 || posYUp >= GameConstants::SCREEN_HEIGHT)
             projectile.combat.Kill();
 
-        CalcNewProjectilePosition(projectile);
+        MoveProjectile(projectile);
     }
 }
 
@@ -73,14 +73,15 @@ void MovementSystem::MoveEnemies(GameWorld &world) {
             enemy.wave.state != WaveState::ATTACK) continue;
 
         if (enemy.wave.t >= 1.0f && enemy.wave.state == WaveState::ENTER_FORMATION) {
-            enemy.wave.worldPosition = enemy.wave.formationPosition;
+
+            MoveEnemy(enemy, enemy.wave.formationPosition);
             enemy.wave.state = WaveState::IN_FORMATION;
             continue;
         }
 
         if (enemy.wave.t >= 1.0f && enemy.wave.state == WaveState::ATTACK) {
 
-            enemy.wave.worldPosition = enemy.wave.spawnPosition;
+            MoveEnemy(enemy, enemy.wave.worldPosition);
             enemy.wave.state = WaveState::OUT_FORMATION;
             continue;
         }
@@ -88,7 +89,8 @@ void MovementSystem::MoveEnemies(GameWorld &world) {
         enemy.wave.t += enemy.wave.speed * GetFrameTime();
 
         auto& bezierPoints = enemy.wave.controlPoints;
-        enemy.wave.worldPosition = GetSplinePointBezierCubic(bezierPoints[0], bezierPoints[1], bezierPoints[2], bezierPoints[3], enemy.wave.t);
+        const Vector2 newPos = GetSplinePointBezierCubic(bezierPoints[0], bezierPoints[1], bezierPoints[2], bezierPoints[3], enemy.wave.t);
+        MoveEnemy(enemy, newPos);
     }
 
 
@@ -96,14 +98,14 @@ void MovementSystem::MoveEnemies(GameWorld &world) {
 
 }
 
-void MovementSystem::CalcNewPlayerPosition(Player& player) {
+void MovementSystem::MovePlayer(Player& player) {
 
     Vector2 playerPosition = player.GetPosition();
     playerPosition.x += player.GetSpeed() * MovementConstants::PLAYER_WORLD_SPEED;
     player.SetPosition(playerPosition);
 }
 
-void MovementSystem::CalcNewProjectilePosition(Projectile& projectile) {
+void MovementSystem::MoveProjectile(Projectile& projectile) {
 
     projectile.movement.position.y += projectile.movement.speed * MovementConstants::PROJECTILE_WORLD_SPEED;
     projectile.combat.hitbox.x = projectile.movement.position.x;
@@ -111,3 +113,10 @@ void MovementSystem::CalcNewProjectilePosition(Projectile& projectile) {
 
 }
 
+void MovementSystem::MoveEnemy(Enemy &enemy, const Vector2& newPos) {
+
+    enemy.wave.worldPosition = newPos;
+    enemy.combat.hitbox.x = newPos.x;
+    enemy.combat.hitbox.y = newPos.y;
+
+}

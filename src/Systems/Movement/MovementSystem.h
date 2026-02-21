@@ -5,6 +5,7 @@
 #pragma once
 #include "../IGameSystem.h"
 #include "../../Entities/Projectile.h"
+#include "../../Entities/Enemy.h"
 
 class Player;
 
@@ -22,8 +23,9 @@ class MovementSystem : public IGameSystem{
     void MoveEnemies(GameWorld& world);
 
 
-    void CalcNewPlayerPosition(Player& player);
-    void CalcNewProjectilePosition(Projectile& projectile);
+    void MovePlayer(Player& player);
+    void MoveProjectile(Projectile& projectile);
+    void MoveEnemy(Enemy& enemy, const Vector2& newPos);
 };
 
 

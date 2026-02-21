@@ -14,7 +14,8 @@ AssetSystem::AssetSystem() : IGameSystem(GameSystemID::ASSET_SYSTEM) {
 
 AssetSystem::~AssetSystem() {
 
-    for (const Texture2D texture : textures) {
+    for (const auto& texture : textures) {
+
         UnloadTexture(texture);
     }
 }

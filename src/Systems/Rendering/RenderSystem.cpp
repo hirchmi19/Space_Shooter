@@ -51,6 +51,7 @@ void RenderSystem::RenderEnemies(GameWorld& world) const {
             enemy.render.size.y * RenderConstants::ENEMY_SCALING};
 
         DrawTexturePro(texture, sprite.src, dest, { 0, 0 }, 0.0f, WHITE);
+        DrawRectangleLinesEx(enemy.combat.hitbox, 1.0f, PINK);
     }
 }
 

@@ -27,33 +27,36 @@ void WaveSystem::Run(GameWorld& world)
     phaseTimer.Tick( 1 / GameConstants::UPS);
     attackTimer.Tick( 1 / GameConstants::UPS);
 
-
-    if (waveCompleted) currentPhase = WavePhase::INITIALIZE;
-
     switch (currentPhase)
     {
         case WavePhase::INITIALIZE:
-            std::cout << "WaveSystem::Initialize()" << std::endl;
+
             StartWave(world);
             break;
 
         case WavePhase::FORMATION_OFF:
-            std::cout << "WaveSystem::InformationOff()" << std::endl;
-            HandleDiving(world);
+
+            BuildFormation(world);
             break;
 
         case WavePhase::FORMATION_ON:
-            std::cout << "WaveSystem::InformationOn()" << std::endl;
+
             HandleSoloAttacks(world);
             HandleFormationAttacks(world);
             break;
 
         case WavePhase::READY_FOR_SWARM:
+
             HandleSwarmAttacks(world);
             break;
     }
 
+    if (world.AllEnemiesKilled() && waveInitialized) {
 
+        WaveConstants::WAVE_COUNTER++;
+        currentPhase = WavePhase::INITIALIZE;
+
+    }
 
 }
 
@@ -86,19 +89,17 @@ void WaveSystem::Init() {
  */
 void WaveSystem::StartWave(GameWorld& world) {
 
-    WaveConstants::WAVE_COUNTER++;
-    std::cout << WaveConstants::WAVE_COUNTER << std::endl;
-    waveCompleted = false;
+    waveInitialized = false;
 
     diveCount = 0;
     diveSpawned = false;
     diveCompleted = false;
+    enemiesSpawned = false;
+    shootsFired = 0;
 
     currentPattern = patterns[0];
     BuildDivingGroups(currentPattern);
-    waveCreated = true;
     currentPhase = WavePhase::FORMATION_OFF;
-    std::cout << "WaveSystem::StartWave()" << std::endl;
 }
 
 
@@ -106,7 +107,7 @@ void WaveSystem::StartWave(GameWorld& world) {
  * Handles diving when all enemies are outside the screen
  * \param world
  */
-void WaveSystem::HandleDiving(GameWorld& world)
+void WaveSystem::BuildFormation(GameWorld& world)
 {
     if (diveTimer.IsRunning() && diveSpawned) return;
 
@@ -115,6 +116,7 @@ void WaveSystem::HandleDiving(GameWorld& world)
         currentPhase = WavePhase::FORMATION_ON;
         diveCount = 0;
         enemiesSpawned = true;
+        waveInitialized = true;
         phaseTimer.Start(1.5f);
         return;
     }
@@ -320,7 +322,6 @@ void WaveSystem::AssignAttackCurves(GameWorld &world, const DiveType type) {
     auto& enemies = world.GetEnemies();
 
     for (auto& enemy : enemies) {
-
 
         const Vector2& end = {enemy.wave.formationPosition.x, world.GetPlayer().GetPosition().y + 100.f};
 

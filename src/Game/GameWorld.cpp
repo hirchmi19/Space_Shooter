@@ -8,6 +8,7 @@
 #include <ostream>
 
 #include "../Systems/Assets/AssetSystem.h"
+#include "../Systems/Collsion/CollisionSystem.h"
 #include "../Systems/Movement/MovementSystem.h"
 #include  "../Systems/Rendering/RenderSystem.h"
 #include "../Systems/Waving/WaveSystem.h"
@@ -28,10 +29,12 @@ void GameWorld::RunGameplaySystems() {
     const auto& bgSys = gameSystems[ToIndex(GameSystemID::BACKGROUND_SYSTEM)];
     const auto& moveSys = gameSystems[ToIndex(GameSystemID::MOVEMENT_SYSTEM)];
     const auto& waveSys = gameSystems[ToIndex(GameSystemID::WAVE_SYSTEM)];
+    const auto& collisionSys = gameSystems[ToIndex(GameSystemID::COLLISION_SYSTEM)];
 
     if (bgSys) bgSys->Run(*this);
-    if (moveSys) moveSys->Run(*this);
     if (waveSys) waveSys->Run(*this);
+    if (moveSys) moveSys->Run(*this);
+    if (collisionSys) collisionSys->Run(*this);
 
     FindDeadEntities();
     KillEntities();
@@ -74,7 +77,7 @@ const Texture2D& GameWorld::GetTexture(TextureID id) const {
  * \param id
  * \return
  */
-const std::vector<const Sprite *> GameWorld::GetEnemySprites(const EnemyID id) const {
+const std::vector<const Sprite*> GameWorld::GetEnemySprites(const EnemyID id) const {
 
     return {GetAssetSystem().GetEnemySprites(id)};
 
@@ -184,6 +187,7 @@ void GameWorld::CreateSystems() {
     AddSystem(std::make_unique<BackgroundSystem>());
     AddSystem(std::make_unique<MovementSystem>());
     AddSystem(std::make_unique<WaveSystem>());
+    AddSystem(std::make_unique<CollisionSystem>());
 
     enemies.reserve(44);
     projectiles.reserve(25);
@@ -208,7 +212,7 @@ const AssetSystem& GameWorld::GetAssetSystem() const {
 
     const auto& ptr = gameSystems[ToIndex(GameSystemID::ASSET_SYSTEM)];
 
-    //assert(ptr && "AssetSystem is not initialized!");
+    //assert(ptr && "AssetSystem is not initialized");
     return static_cast<const AssetSystem&>(*ptr);
 }
 
@@ -220,7 +224,7 @@ const BackgroundSystem& GameWorld::GetBackgroundSystem() const {
 
     const auto& ptr = gameSystems[ToIndex(GameSystemID::BACKGROUND_SYSTEM)];
 
-    assert(ptr && "BackgroundSystem is not initialized!");
+    //assert(ptr && "BackgroundSystem is not initialized");
     return static_cast<const BackgroundSystem&>(*ptr);
 }
 

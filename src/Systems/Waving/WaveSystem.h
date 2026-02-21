@@ -27,12 +27,13 @@ class WaveSystem : public IGameSystem{
     WaveSystem();
     ~WaveSystem() override = default;
 
+    static int WaveCounter;
+
     void Run(GameWorld &world) override;
 
     private:
 
-    bool waveCompleted = true;
-    bool waveCreated = false;
+    bool waveInitialized = false;
     bool diveSpawned = false;
     bool diveCompleted = true;
     bool enemiesSpawned = false;
@@ -50,7 +51,7 @@ class WaveSystem : public IGameSystem{
     std::vector<Vector2> topDiveSpawns{};
     std::vector<Vector2> sideDiveSpawns{};
 
-    WavePhase currentPhase = WavePhase::NONE;
+    WavePhase currentPhase = WavePhase::INITIALIZE;
     WavePattern currentPattern;
 
     std::array<WavePattern, ToIndex(WaveType::COUNT)> patterns{};
@@ -75,7 +76,7 @@ class WaveSystem : public IGameSystem{
     void AssignAttackCurves(GameWorld& world, DiveType type);
     void AssignCurve(Enemy& enemy,const Vector2& start, const Vector2& end, DiveType type);
 
-    void HandleDiving(GameWorld& world);
+    void BuildFormation(GameWorld& world);
     void HandleSoloAttacks(GameWorld& world);
     void HandleSwarmAttacks(GameWorld& world);
     void HandleFormationAttacks(GameWorld& world);

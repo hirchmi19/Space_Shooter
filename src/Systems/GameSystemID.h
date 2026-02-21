@@ -13,6 +13,7 @@ enum class GameSystemID : uint32_t {
     RENDERER_SYSTEM,
     MOVEMENT_SYSTEM,
     WAVE_SYSTEM,
+    COLLISION_SYSTEM,
     SOUND_SYSTEM,
     COUNT
 };

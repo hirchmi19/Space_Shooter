@@ -7,6 +7,6 @@
 
 namespace MovementConstants {
 
-    constexpr int PLAYER_WORLD_SPEED = 6;
-    constexpr int PROJECTILE_WORLD_SPEED = 10;
+    inline constexpr int PLAYER_WORLD_SPEED = 6;
+    inline constexpr int PROJECTILE_WORLD_SPEED = 10;
 }
