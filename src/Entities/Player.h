@@ -32,6 +32,8 @@ class Player {
     int GetSpeed() const { return movement.speed; }
     const Rectangle& GetHitBox() const { return combat.hitbox; }
     TimerComponent& GetTimer() {return cooldownTimer;}
+    void Revive() {combat.Revive();}
+    void Kill() {combat.Kill();}
 
     bool IsAlive() const { return combat.IsAlive(); }
     bool CanShoot() const { return cooldownTimer.IsFinished(); }

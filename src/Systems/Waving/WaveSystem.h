@@ -30,6 +30,7 @@ class WaveSystem : public IGameSystem{
     static int WaveCounter;
 
     void Run(GameWorld &world) override;
+    void SetWavePhase(const WavePhase phase) {currentPhase = phase;}
 
     private:
 

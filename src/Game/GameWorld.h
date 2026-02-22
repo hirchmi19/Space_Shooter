@@ -7,6 +7,7 @@
 #include  "raylib.h"
 #include <vector>
 
+#include "GameState.h"
 #include "../Constants/GameConstants.h"
 #include "../Entities/Enemy.h"
 #include "../Entities/Player.h"
@@ -15,6 +16,7 @@
 #include "../Systems/GameSystemID.h"
 #include "../Systems/Assets/AssetSystem.h"
 #include "../Systems/Rendering/BackgroundSystem.h"
+#include "../Systems/Rendering/RenderSystem.h"
 #include "../Systems/Waving/FormationSlot.h"
 #include "../Systems/Waving/WaveSystem.h"
 
@@ -49,7 +51,9 @@ class GameWorld {
 
     const Texture2D& GetTexture(TextureID id) const;
     const Sprite& GetSprite(SpriteID id) const;
+    const Font& GetFont() const {return GetAssetSystem().GetFont();};
     const std::vector<const Sprite*> GetEnemySprites(EnemyID id) const;
+    const GameState& GetGameState() const { return currentGameState; };
 
     void RenderBackground() const;
 
@@ -69,15 +73,21 @@ class GameWorld {
 
     std::array<std::unique_ptr<IGameSystem>, ToIndex(GameSystemID::COUNT)> gameSystems{};
 
+    GameState currentGameState = GameState::IN_GAME;
+
     void CreateSystems();
     void AddSystem(std::unique_ptr<IGameSystem> system);
 
     const AssetSystem& GetAssetSystem() const;
     const BackgroundSystem& GetBackgroundSystem() const;
+    const RenderSystem& GetRenderSystem() const;
+    WaveSystem& GetWaveSystem() const;
 
     void KillEntities();
     void KillEnemies();
     void KillProjectiles();
+
+    void Restart();
 
     void FindDeadEntities();
     void FindDeadProjectiles();

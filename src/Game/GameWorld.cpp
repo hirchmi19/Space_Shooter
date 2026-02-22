@@ -24,20 +24,35 @@ GameWorld::GameWorld() : player(playerSpawn, playerSize, GetAssetSystem().GetPla
  */
 void GameWorld::RunGameplaySystems() {
 
-    player.HandleInput(*this);
-
     const auto& bgSys = gameSystems[ToIndex(GameSystemID::BACKGROUND_SYSTEM)];
     const auto& moveSys = gameSystems[ToIndex(GameSystemID::MOVEMENT_SYSTEM)];
     const auto& waveSys = gameSystems[ToIndex(GameSystemID::WAVE_SYSTEM)];
     const auto& collisionSys = gameSystems[ToIndex(GameSystemID::COLLISION_SYSTEM)];
 
-    if (bgSys) bgSys->Run(*this);
-    if (waveSys) waveSys->Run(*this);
-    if (moveSys) moveSys->Run(*this);
-    if (collisionSys) collisionSys->Run(*this);
+    if (bgSys) bgSys->Run(*this); // background is always moving
 
-    FindDeadEntities();
-    KillEntities();
+    switch (currentGameState) {
+
+        case GameState::IN_GAME:
+
+            player.HandleInput(*this);
+
+            if (waveSys) waveSys->Run(*this);
+            if (moveSys) moveSys->Run(*this);
+            if (collisionSys) collisionSys->Run(*this);
+
+            if (!player.IsAlive()) currentGameState = GameState::GAME_OVER;
+
+            FindDeadEntities();
+            KillEntities();
+
+            break;
+
+        case GameState::GAME_OVER:
+
+            if (IsKeyPressed(KEY_ENTER)) Restart();
+            break;
+    }
 
 }
 
@@ -228,6 +243,22 @@ const BackgroundSystem& GameWorld::GetBackgroundSystem() const {
     return static_cast<const BackgroundSystem&>(*ptr);
 }
 
+const RenderSystem &GameWorld::GetRenderSystem() const {
+
+    const auto& ptr = gameSystems[ToIndex(GameSystemID::RENDERER_SYSTEM)];
+
+    //assert(ptr && "RenderSystem is not initialized");
+    return static_cast<const RenderSystem&>(*ptr);
+}
+
+WaveSystem &GameWorld::GetWaveSystem() const {
+
+    const auto& ptr = gameSystems[ToIndex(GameSystemID::WAVE_SYSTEM)];
+
+    //assert(ptr && "WaveSystem is not initialized");
+    return static_cast<WaveSystem&>(*ptr);
+}
+
 /**
  * Removes all enemies and projectiles from the collection respectively GameWorld
  */
@@ -287,5 +318,19 @@ void GameWorld::KillProjectiles() {
 
     projectilesToRemove.clear();
 }
+
+void GameWorld::Restart() {
+
+    enemies.clear();
+    projectiles.clear();
+    projectilesToRemove.clear();
+    enemiesToRemove.clear();
+
+    GetWaveSystem().SetWavePhase(WavePhase::INITIALIZE);
+    player.Revive();
+    player.SetPosition(playerSpawn);
+    currentGameState = GameState::IN_GAME;
+}
+
 
 

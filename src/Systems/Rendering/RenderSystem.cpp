@@ -4,6 +4,7 @@
 
 #include "RenderSystem.h"
 
+#include <iostream>
 #include "raylib.h"
 #include "../../Game/GameWorld.h"
 
@@ -13,6 +14,13 @@ RenderSystem::RenderSystem() : IGameSystem(GameSystemID::RENDERER_SYSTEM) {}
 void RenderSystem::Run(GameWorld& world) {
 
     RenderBackground(world);
+
+    if (world.GetGameState() == GameState::GAME_OVER) {
+
+        RenderGameOver(world);
+        return;
+    }
+
     RenderPlayer(world);
     RenderEnemies(world);
     RenderProjectiles(world);
@@ -85,7 +93,6 @@ void RenderSystem::RenderPlayer(const GameWorld& world) const {
  */
 void RenderSystem::RenderProjectiles(GameWorld& world) const  {
 
-
     const auto& projectiles = world.GetProjectiles();
 
     for (const auto& projectile : projectiles ) {
@@ -102,6 +109,21 @@ void RenderSystem::RenderProjectiles(GameWorld& world) const  {
         DrawTexturePro(texture, sprite.src, dest, { 0, 0 }, 0.0f, WHITE);
        // DrawRectangleLinesEx(projectile.combat.hitbox, 1.0f, PINK);
     }
+}
 
+void RenderSystem::RenderGameOver(const GameWorld &world) const {
 
+    if (world.GetGameState() != GameState::GAME_OVER) return;
+
+    const char* caption = "GAME OVER";
+    const char* subCaption = "PRESS `ENTER` TO RESTART";
+
+    const Vector2 captionWidth = MeasureTextEx(world.GetFont(), caption, RenderConstants::CAPTION_SIZE, RenderConstants::SPACING);
+    const Vector2 subCaptionWidth = MeasureTextEx(world.GetFont(), subCaption, RenderConstants::SUBCAPTION_SIZE, RenderConstants::SPACING);
+
+    const Vector2 captionPos = {GameConstants::SCREEN_ORIGIN.x - captionWidth.x / 2, GameConstants::SCREEN_HEIGHT * .2f};
+    const Vector2 subCaptionPos = {GameConstants::SCREEN_ORIGIN.x - subCaptionWidth.x / 2, captionPos.y + 225};
+
+    DrawTextEx(world.GetFont(), caption, captionPos, RenderConstants::CAPTION_SIZE, RenderConstants::SPACING, RED);
+    DrawTextEx(world.GetFont(), subCaption, subCaptionPos, RenderConstants::SUBCAPTION_SIZE, RenderConstants::SPACING, WHITE);
 }

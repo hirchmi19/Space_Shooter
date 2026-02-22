@@ -23,6 +23,7 @@ class AssetSystem : public IGameSystem {
 
     const Texture2D& GetTexture(TextureID id) const;
     const Sprite& GetSprite(SpriteID id) const;
+    const Font& GetFont() const { return pixelFont; }
     std::vector<const Sprite*> GetPlayerSprites() const;
     std::vector<const Sprite*> GetEnemySprites(EnemyID id) const;
     std::vector<const Sprite*> GetProjectileSprite(SpriteID id) const;
@@ -34,6 +35,8 @@ class AssetSystem : public IGameSystem {
     void LoadTex(TextureID id, const char* path);
     void DefineSprite (SpriteID id, TextureID textureID, Rectangle src);
 
+
+    Font pixelFont;
     std::array<Texture2D, ToIndex(TextureID::COUNT)> textures{};
     std::array<Sprite, ToIndex(SpriteID::COUNT)> sprites{};
 

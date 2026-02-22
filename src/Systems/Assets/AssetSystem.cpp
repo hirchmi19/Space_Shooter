@@ -4,6 +4,7 @@
 
 #include "AssetSystem.h"
 #include "raylib.h"
+#include "../../Constants/RenderConstants.h"
 #include "../../Entities/EnemyID.h"
 
 AssetSystem::AssetSystem() : IGameSystem(GameSystemID::ASSET_SYSTEM) {
@@ -133,5 +134,11 @@ void AssetSystem::InitAssets() {
     //Projectile sprites
     DefineSprite(SpriteID::PLAYER_PROJECTILE, TextureID::ENEMY_SHIP_CANVAS, {20, 42, 1, 4});
     DefineSprite(SpriteID::ENEMY_PROJECTILE, TextureID::ENEMY_SHIP_CANVAS, {12, 42, 1, 4});
+
+    //--------------------------------------------------------------------------
+
+    // pixel_font
+    pixelFont = LoadFont("assets/pixelFont.ttf");
+    SetTextureFilter(pixelFont.texture, TEXTURE_FILTER_POINT);
 }
 

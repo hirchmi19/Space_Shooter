@@ -21,6 +21,9 @@ struct CombatComponent {
         else {health -= damage;}
     }
 
+    public:
+    void Revive() { health = 1; }
+
     private:
     int health = 0;
 };

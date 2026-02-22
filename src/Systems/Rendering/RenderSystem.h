@@ -18,6 +18,7 @@ class RenderSystem : public IGameSystem {
     void RenderEnemies(GameWorld& world) const;
     void RenderBackground(const GameWorld& world) const;
     void RenderProjectiles(GameWorld& world) const;
+    void RenderGameOver(const GameWorld& world) const;
 
 };
 
