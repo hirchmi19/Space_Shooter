@@ -13,22 +13,43 @@ RenderSystem::RenderSystem() : IGameSystem(GameSystemID::RENDERER_SYSTEM) {}
 
 void RenderSystem::Run(GameWorld& world) {
 
-    RenderBackground(world);
-
-    if (world.GetGameState() == GameState::GAME_OVER) {
-
-        RenderGameOver(world);
-        return;
-    }
-
-    RenderPlayer(world);
-    RenderEnemies(world);
-    RenderProjectiles(world);
+    RenderGameState(world, world.GetGameState());
 }
 
 //--------------------------------------------------------------------------
 
+void RenderSystem::RenderGameState(GameWorld &world, const GameState state) const {
 
+    std::string text;
+
+    RenderBackground(world);
+
+    switch (state) {
+
+        case GameState::GAME_OVER:
+            RenderGameOver(world);
+            break;
+
+        case GameState::IN_GAME:
+            RenderPlayer(world);
+            RenderEnemies(world);
+            RenderProjectiles(world);
+            break;
+
+        case GameState::BEGIN_WAVE:
+
+            text = "WAVE " + std::to_string(world.GetWaveCounter());
+            RenderWaveTransition(world,text);
+            break;
+
+
+        case GameState::END_WAVE:
+
+            text = "WAVE COMPLETED";
+            RenderWaveTransition(world, text);
+            break;
+    }
+}
 
 void RenderSystem::RenderBackground(const GameWorld& world) const {
 
@@ -115,15 +136,23 @@ void RenderSystem::RenderGameOver(const GameWorld &world) const {
 
     if (world.GetGameState() != GameState::GAME_OVER) return;
 
-    const char* caption = "GAME OVER";
-    const char* subCaption = "PRESS `ENTER` TO RESTART";
+    std::string caption = "GAME OVER";
+    std::string subCaption = "PRESS `ENTER` TO RESTART";
 
-    const Vector2 captionWidth = MeasureTextEx(world.GetFont(), caption, RenderConstants::CAPTION_SIZE, RenderConstants::SPACING);
-    const Vector2 subCaptionWidth = MeasureTextEx(world.GetFont(), subCaption, RenderConstants::SUBCAPTION_SIZE, RenderConstants::SPACING);
+    const Vector2 captionWidth = MeasureTextEx(world.GetFont(), caption.c_str(), RenderConstants::GAME_OVER_CAPTION_SIZE, RenderConstants::SPACING);
+    const Vector2 subCaptionWidth = MeasureTextEx(world.GetFont(), subCaption.c_str(), RenderConstants::GAME_OVER_SUBCAPTION_SIZE, RenderConstants::SPACING);
 
     const Vector2 captionPos = {GameConstants::SCREEN_ORIGIN.x - captionWidth.x / 2, GameConstants::SCREEN_HEIGHT * .2f};
     const Vector2 subCaptionPos = {GameConstants::SCREEN_ORIGIN.x - subCaptionWidth.x / 2, captionPos.y + 225};
 
-    DrawTextEx(world.GetFont(), caption, captionPos, RenderConstants::CAPTION_SIZE, RenderConstants::SPACING, RED);
-    DrawTextEx(world.GetFont(), subCaption, subCaptionPos, RenderConstants::SUBCAPTION_SIZE, RenderConstants::SPACING, WHITE);
+    DrawTextEx(world.GetFont(), caption.c_str(), captionPos, RenderConstants::GAME_OVER_CAPTION_SIZE, RenderConstants::SPACING, RED);
+    DrawTextEx(world.GetFont(), subCaption.c_str(), subCaptionPos, RenderConstants::GAME_OVER_SUBCAPTION_SIZE, RenderConstants::SPACING, WHITE);
+}
+
+void RenderSystem::RenderWaveTransition(const GameWorld &world, std::string caption) const {
+
+    const Vector2 captionWidth = MeasureTextEx(world.GetFont(), caption.c_str(), RenderConstants::WAVE_TRANSITION_CAPTION_SIZE, RenderConstants::SPACING);
+    const Vector2 captionPos = {(GameConstants::SCREEN_ORIGIN.x - captionWidth.x / 2) + 30, GameConstants::SCREEN_HEIGHT * .22f};
+
+    DrawTextEx(world.GetFont(), caption.c_str(), captionPos, RenderConstants::WAVE_TRANSITION_CAPTION_SIZE, RenderConstants::SPACING, WHITE);
 }

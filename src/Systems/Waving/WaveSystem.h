@@ -30,7 +30,9 @@ class WaveSystem : public IGameSystem{
     static int WaveCounter;
 
     void Run(GameWorld &world) override;
-    void SetWavePhase(const WavePhase phase) {currentPhase = phase;}
+    void Start();
+    void ResetWaveCounter() {waveCounter = 1 ;}
+    int GetWaveCounter() const {return waveCounter;};
 
     private:
 
@@ -41,6 +43,7 @@ class WaveSystem : public IGameSystem{
 
     int diveCount = 0;
     int shootsFired = 0;
+    int waveCounter = 1;
 
     TimerComponent phaseTimer;
     TimerComponent diveTimer;
@@ -58,7 +61,7 @@ class WaveSystem : public IGameSystem{
     std::array<WavePattern, ToIndex(WaveType::COUNT)> patterns{};
 
     void Init();
-    void StartWave(GameWorld& world);
+    void StartWave();
 
     void DefinePatterns();
     WavePattern PickWavePattern() const;
@@ -69,6 +72,7 @@ class WaveSystem : public IGameSystem{
 
     void BuildDivingGroups(const WavePattern &pattern);
     void BuildFormationSlots();
+
     std::vector<size_t> GetGroupMemberIndices(int id) const;
 
     void SpawnDive(GameWorld& world, const DiveType type);

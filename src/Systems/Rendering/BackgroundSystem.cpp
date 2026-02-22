@@ -6,6 +6,7 @@
 
 #include "../../Constants/GameConstants.h"
 #include "../../Constants/WaveConstants.h"
+#include "../../Game/GameWorld.h"
 
 
 BackgroundSystem::BackgroundSystem() : IGameSystem(GameSystemID::BACKGROUND_SYSTEM){
@@ -18,7 +19,7 @@ void BackgroundSystem::Run(GameWorld& world) {
 
     for (size_t i = 0; i < stars.size(); ++i) {
 
-        stars[i].position.y += static_cast<float>(std::min(25, WaveConstants::WAVE_COUNTER + 1));
+        stars[i].position.y += static_cast<float>(std::min(25,world.GetWaveCounter()));
 
         if (stars[i].position.y >= GameConstants::SCREEN_HEIGHT) { RespawnStar(i);}
     }

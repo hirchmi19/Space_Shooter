@@ -53,13 +53,18 @@ class GameWorld {
     const Sprite& GetSprite(SpriteID id) const;
     const Font& GetFont() const {return GetAssetSystem().GetFont();};
     const std::vector<const Sprite*> GetEnemySprites(EnemyID id) const;
+
     const GameState& GetGameState() const { return currentGameState; };
+    void EndWave() {currentGameState = GameState::END_WAVE;};
+
+    int GetWaveCounter() const { return GetWaveSystem().GetWaveCounter(); };
 
     void RenderBackground() const;
 
     std::vector<Projectile>& GetProjectiles() {return projectiles;};
     std::vector<Enemy>& GetEnemies() {return enemies;};
-    bool AllEnemiesKilled() const {return enemies.empty();};
+
+
 
     private:
 
@@ -73,7 +78,10 @@ class GameWorld {
 
     std::array<std::unique_ptr<IGameSystem>, ToIndex(GameSystemID::COUNT)> gameSystems{};
 
-    GameState currentGameState = GameState::IN_GAME;
+    GameState currentGameState = GameState::BEGIN_WAVE;
+
+    TimerComponent waveTimer;
+    bool timerStarted = false;
 
     void CreateSystems();
     void AddSystem(std::unique_ptr<IGameSystem> system);
@@ -88,6 +96,7 @@ class GameWorld {
     void KillProjectiles();
 
     void Restart();
+    void ClearEntities();
 
     void FindDeadEntities();
     void FindDeadProjectiles();

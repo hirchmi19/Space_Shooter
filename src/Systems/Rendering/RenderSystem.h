@@ -3,7 +3,11 @@
 //
 
 #pragma once
+#include <string>
+
 #include "../IGameSystem.h"
+
+enum class GameState : uint32_t;
 
 class RenderSystem : public IGameSystem {
 
@@ -18,7 +22,11 @@ class RenderSystem : public IGameSystem {
     void RenderEnemies(GameWorld& world) const;
     void RenderBackground(const GameWorld& world) const;
     void RenderProjectiles(GameWorld& world) const;
+
     void RenderGameOver(const GameWorld& world) const;
+    void RenderGamer(GameWorld& world) const;
+    void RenderWaveTransition(const GameWorld& world, std::string caption) const;
+    void RenderGameState(GameWorld& world, GameState state) const;
 
 };
 

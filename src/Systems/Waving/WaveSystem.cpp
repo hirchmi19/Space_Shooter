@@ -51,12 +51,19 @@ void WaveSystem::Run(GameWorld& world)
             break;
     }
 
-    if (world.AllEnemiesKilled() && waveInitialized) {
+    if (world.GetEnemies().empty() && waveInitialized) {
 
-        WaveConstants::WAVE_COUNTER++;
-        currentPhase = WavePhase::INITIALIZE;
+        waveCounter++;
+        std::cout << "waveCounter: " << waveCounter << std::endl;
+        world.EndWave();
 
     }
+
+}
+
+void WaveSystem::Start() {
+
+    currentPhase = WavePhase::INITIALIZE;
 
 }
 
@@ -87,7 +94,7 @@ void WaveSystem::Init() {
  * Inits a new Wave and starts the state machine
  * \param world
  */
-void WaveSystem::StartWave(GameWorld& world) {
+void WaveSystem::StartWave() {
 
     waveInitialized = false;
 
@@ -138,7 +145,7 @@ void WaveSystem::BuildFormation(GameWorld& world)
         diveSpawned = false;
         diveCompleted = true;
         diveCount++;
-        diveTimer.Start(0.85f);
+        diveTimer.Start(1.f);
     }
 }
 

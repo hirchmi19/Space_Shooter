@@ -31,7 +31,25 @@ void GameWorld::RunGameplaySystems() {
 
     if (bgSys) bgSys->Run(*this); // background is always moving
 
+    waveTimer.Tick(1 / GameConstants::UPS);
+
     switch (currentGameState) {
+
+        case GameState::BEGIN_WAVE:
+
+            if (!timerStarted) {
+
+                waveTimer.Start(3.f);
+                timerStarted = true;
+            }
+
+            if (waveTimer.IsFinished() && timerStarted) {
+
+                currentGameState = GameState::IN_GAME;
+                timerStarted = false;
+                GetWaveSystem().Start();
+            }
+            break;
 
         case GameState::IN_GAME:
 
@@ -48,8 +66,26 @@ void GameWorld::RunGameplaySystems() {
 
             break;
 
+        case GameState::END_WAVE:
+
+            ClearEntities();
+
+            if (!timerStarted) {
+
+                waveTimer.Start(3.f);
+                timerStarted = true;
+            }
+
+            if (waveTimer.IsFinished() && timerStarted) {
+
+                currentGameState = GameState::BEGIN_WAVE;
+                timerStarted = false;
+            }
+            break;
+
         case GameState::GAME_OVER:
 
+            ClearEntities();
             if (IsKeyPressed(KEY_ENTER)) Restart();
             break;
     }
@@ -319,17 +355,20 @@ void GameWorld::KillProjectiles() {
     projectilesToRemove.clear();
 }
 
-void GameWorld::Restart() {
+void GameWorld::ClearEntities() {
 
     enemies.clear();
     projectiles.clear();
     projectilesToRemove.clear();
     enemiesToRemove.clear();
+}
 
-    GetWaveSystem().SetWavePhase(WavePhase::INITIALIZE);
+void GameWorld::Restart() {
+
+    GetWaveSystem().ResetWaveCounter();
     player.Revive();
     player.SetPosition(playerSpawn);
-    currentGameState = GameState::IN_GAME;
+    currentGameState = GameState::BEGIN_WAVE;
 }
 
 

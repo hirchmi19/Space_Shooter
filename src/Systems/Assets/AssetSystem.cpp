@@ -140,5 +140,10 @@ void AssetSystem::InitAssets() {
     // pixel_font
     pixelFont = LoadFont("assets/pixelFont.ttf");
     SetTextureFilter(pixelFont.texture, TEXTURE_FILTER_POINT);
+
+    //--------------------------------------------------------------------------
+
+    //Explosion "key frames" (used for entity deaths)
+
 }
 
