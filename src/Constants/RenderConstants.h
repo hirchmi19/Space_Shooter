@@ -13,5 +13,6 @@ namespace RenderConstants {
     inline constexpr uint32_t GAME_OVER_CAPTION_SIZE = 80;
     inline constexpr uint32_t GAME_OVER_SUBCAPTION_SIZE = 35;
     inline constexpr uint32_t WAVE_TRANSITION_CAPTION_SIZE = 25;
+    inline constexpr uint32_t HIGHSCORE_CAPTION_SIZE = 20;
     inline constexpr uint32_t SPACING = 5;
 }

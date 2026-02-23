@@ -1,0 +1,35 @@
+//
+// Created by Michael Hirsch on 23.02.26.
+//
+
+#pragma once
+#include "../IGameSystem.h"
+#include "../../Entities/EnemyID.h"
+
+
+inline constexpr uint32_t MAX_SCORE = 99999999;
+
+class ScoreSystem: public IGameSystem{
+
+    public:
+    ScoreSystem();
+    ~ScoreSystem() override = default;
+
+    void Run(GameWorld &world) override;
+    const uint32_t GetHighScore() const {return highScore;};
+    void AddHighScore(uint32_t score);
+    const uint32_t GetEnemyScore(const EnemyID& id);
+    void ResetScore() {highScore = 0;};
+
+
+    private:
+    uint32_t highScore;
+    uint32_t yellowEnemyScore = 300;
+    uint32_t redEnemyScore = 500;
+    uint32_t blackEnemyScore = 1000;
+
+
+
+};
+
+

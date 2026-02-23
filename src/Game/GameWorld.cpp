@@ -7,13 +7,15 @@
 #include <iostream>
 #include <ostream>
 
+#include "../Constants/GameWorldConstants.h"
 #include "../Systems/Assets/AssetSystem.h"
-#include "../Systems/Collsion/CollisionSystem.h"
+#include "../Systems/Collision/CollisionSystem.h"
 #include "../Systems/Movement/MovementSystem.h"
 #include  "../Systems/Rendering/RenderSystem.h"
+#include "../Systems/Scoring/ScoreSystem.h"
 #include "../Systems/Waving/WaveSystem.h"
 
-GameWorld::GameWorld() : player(playerSpawn, playerSize, GetAssetSystem().GetPlayerSprites()) {
+GameWorld::GameWorld() : player(GameWorldConstants::playerSpawn, GameWorldConstants::playerSize, GetAssetSystem().GetPlayerSprites()) {
 
     CreateSystems();
 
@@ -156,19 +158,21 @@ Player& GameWorld::GetPlayer() { return player; }
 
 /**
  * Creates an Enemy
- * \param sprites
+ * \param id
  * \param spawnPosition
  */
-void GameWorld::SpawnEnemy(const std::vector<const Sprite *> &sprites, const Vector2 &spawnPosition) {
+void GameWorld::SpawnEnemy(const EnemyID id, const Vector2 &spawnPosition) {
 
-
+    const auto& sprites = GetAssetSystem().GetEnemySprites(id);
     const Vector2 size = {sprites[0]->src.width, sprites[0]->src.height};
+
+    auto score = GetScoreSystem().GetEnemyScore(id);
 
     enemies.emplace_back(RenderComponent{sprites, size},
         CombatComponent{1,
             Rectangle{spawnPosition.x, spawnPosition.y,
             size.x * RenderConstants::ENEMY_SCALING,
-            size.y * RenderConstants::ENEMY_SCALING}
+            size.y * RenderConstants::ENEMY_SCALING}, score
         });
 }
 
@@ -239,6 +243,7 @@ void GameWorld::CreateSystems() {
     AddSystem(std::make_unique<MovementSystem>());
     AddSystem(std::make_unique<WaveSystem>());
     AddSystem(std::make_unique<CollisionSystem>());
+    AddSystem(std::make_unique<ScoreSystem>());
 
     enemies.reserve(44);
     projectiles.reserve(25);
@@ -295,6 +300,14 @@ WaveSystem &GameWorld::GetWaveSystem() const {
     return static_cast<WaveSystem&>(*ptr);
 }
 
+ScoreSystem &GameWorld::GetScoreSystem() const {
+
+    const auto& ptr = gameSystems[ToIndex(GameSystemID::SCORE_SYSTEM)];
+
+    //assert(ptr && "ScoreSystem is not initialized");
+    return static_cast<ScoreSystem&>(*ptr);
+}
+
 /**
  * Removes all enemies and projectiles from the collection respectively GameWorld
  */
@@ -322,6 +335,7 @@ void GameWorld::FindDeadEnemies() {
         Enemy& enemy = enemies[i];
         if (enemy.combat.IsAlive()) continue;
         enemiesToRemove.push_back(i);
+        GetScoreSystem().AddHighScore(enemy.combat.score);
     }
 }
 
@@ -366,8 +380,9 @@ void GameWorld::ClearEntities() {
 void GameWorld::Restart() {
 
     GetWaveSystem().ResetWaveCounter();
+    GetScoreSystem().ResetScore();
     player.Revive();
-    player.SetPosition(playerSpawn);
+    player.SetPosition(GameWorldConstants::playerSpawn);
     currentGameState = GameState::BEGIN_WAVE;
 }
 

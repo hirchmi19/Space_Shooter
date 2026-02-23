@@ -17,20 +17,13 @@
 #include "../Systems/Assets/AssetSystem.h"
 #include "../Systems/Rendering/BackgroundSystem.h"
 #include "../Systems/Rendering/RenderSystem.h"
+#include "../Systems/Scoring/ScoreSystem.h"
 #include "../Systems/Waving/FormationSlot.h"
 #include "../Systems/Waving/WaveSystem.h"
 
 class Player;
 class IGameSystem;
 enum class SpriteID : uint32_t;
-
-//Constants for Player Spawn
-constexpr float playerSpawnX = GameConstants::SCREEN_WIDTH / 2.0f - 8; // minus texture width
-constexpr float playerSpawnY = GameConstants::SCREEN_HEIGHT - 100.0f; // minus an offset so player isn't at the bottom
-
-constexpr Vector2 playerSpawn = {playerSpawnX, playerSpawnY};
-constexpr Vector2 playerSize = {8, 7}; // player texture values
-//----------------------------------------------------------------------
 
 class GameWorld {
 
@@ -43,7 +36,7 @@ class GameWorld {
 
     void SpawnPlayerProjectile(const Vector2& playerPosition);
 
-    void SpawnEnemy(const std::vector<const Sprite*>& sprites, const Vector2& spawnPosition);
+    void SpawnEnemy(const EnemyID id, const Vector2& spawnPosition);
     void SpawnEnemyProjectile(const Vector2& enemyPosition);
 
     const Player& GetPlayer() const;
@@ -58,6 +51,7 @@ class GameWorld {
     void EndWave() {currentGameState = GameState::END_WAVE;};
 
     int GetWaveCounter() const { return GetWaveSystem().GetWaveCounter(); };
+    const uint32_t GetHighScore() const { return GetScoreSystem().GetHighScore(); };
 
     void RenderBackground() const;
 
@@ -83,6 +77,8 @@ class GameWorld {
     TimerComponent waveTimer;
     bool timerStarted = false;
 
+    uint32_t highScore = 0;
+
     void CreateSystems();
     void AddSystem(std::unique_ptr<IGameSystem> system);
 
@@ -90,6 +86,7 @@ class GameWorld {
     const BackgroundSystem& GetBackgroundSystem() const;
     const RenderSystem& GetRenderSystem() const;
     WaveSystem& GetWaveSystem() const;
+    ScoreSystem& GetScoreSystem() const;
 
     void KillEntities();
     void KillEnemies();

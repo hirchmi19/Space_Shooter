@@ -50,9 +50,12 @@ add_executable(Space_Shooter
         src/Systems/Waving/WavePattern.h
         src/Systems/Waving/WaveType.h
         src/Constants/WaveConstants.h
-        src/Systems/Collsion/CollisionSystem.cpp
-        src/Systems/Collsion/CollisionSystem.h
+        src/Systems/Collision/CollisionSystem.cpp
+        src/Systems/Collision/CollisionSystem.h
         src/Game/GameState.h
+        src/Constants/GameWorldConstants.h
+        src/Systems/Scoring/ScoreSystem.cpp
+        src/Systems/Scoring/ScoreSystem.h
 )
 
 target_link_libraries(Space_Shooter PRIVATE raylib)

@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include "raylib.h"
+#include "../../Constants/GameWorldConstants.h"
 #include "../../Game/GameWorld.h"
 
 RenderSystem::RenderSystem() : IGameSystem(GameSystemID::RENDERER_SYSTEM) {}
@@ -34,6 +35,7 @@ void RenderSystem::RenderGameState(GameWorld &world, const GameState state) cons
             RenderPlayer(world);
             RenderEnemies(world);
             RenderProjectiles(world);
+            RenderHighScore(world);
             break;
 
         case GameState::BEGIN_WAVE:
@@ -152,7 +154,36 @@ void RenderSystem::RenderGameOver(const GameWorld &world) const {
 void RenderSystem::RenderWaveTransition(const GameWorld &world, std::string caption) const {
 
     const Vector2 captionWidth = MeasureTextEx(world.GetFont(), caption.c_str(), RenderConstants::WAVE_TRANSITION_CAPTION_SIZE, RenderConstants::SPACING);
-    const Vector2 captionPos = {(GameConstants::SCREEN_ORIGIN.x - captionWidth.x / 2) + 30, GameConstants::SCREEN_HEIGHT * .22f};
+    constexpr uint32_t xOffset = 30;
+
+    const Vector2 captionPos = {(GameConstants::SCREEN_ORIGIN.x - captionWidth.x / 2) + xOffset, GameConstants::SCREEN_HEIGHT * .22f};
+
+
 
     DrawTextEx(world.GetFont(), caption.c_str(), captionPos, RenderConstants::WAVE_TRANSITION_CAPTION_SIZE, RenderConstants::SPACING, WHITE);
+}
+
+
+void RenderSystem::RenderHighScore(const GameWorld &world) const {
+
+    std::string caption = "HIGH SCORE";
+    std::string highScore = std::to_string(world.GetHighScore());
+
+    if (highScore.length() < GameWorldConstants::HIGHSCORE_DIGITS) {
+
+        const int delta = GameWorldConstants::HIGHSCORE_DIGITS - highScore.length();
+        highScore.insert(0, delta, '0');
+
+    }
+
+    const Vector2 captionWidth = MeasureTextEx(world.GetFont(), caption.c_str(), RenderConstants::HIGHSCORE_CAPTION_SIZE, RenderConstants::SPACING);
+    const Vector2 highScoreWidth = MeasureTextEx(world.GetFont(), highScore.c_str(), RenderConstants::HIGHSCORE_CAPTION_SIZE, RenderConstants::SPACING);
+    constexpr int xOffset = 30;
+
+    const Vector2 captionPos = {GameConstants::SCREEN_ORIGIN.x - captionWidth.x / 2 + xOffset, GameConstants::SCREEN_HEIGHT * .02f};
+    const Vector2 highScorePos = {GameConstants::SCREEN_ORIGIN.x - highScoreWidth.x / 2 + xOffset, GameConstants::SCREEN_HEIGHT * .055f};
+
+    DrawTextEx(world.GetFont(), caption.c_str(), captionPos, RenderConstants::HIGHSCORE_CAPTION_SIZE, RenderConstants::SPACING, WHITE);
+    DrawTextEx(world.GetFont(), highScore.c_str(), highScorePos, RenderConstants::HIGHSCORE_CAPTION_SIZE, RenderConstants::SPACING, WHITE);
+
 }

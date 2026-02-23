@@ -31,7 +31,7 @@ void WaveSystem::Run(GameWorld& world)
     {
         case WavePhase::INITIALIZE:
 
-            StartWave(world);
+            StartWave();
             break;
 
         case WavePhase::FORMATION_OFF:
@@ -295,7 +295,7 @@ void WaveSystem::SpawnDive(GameWorld &world, const DiveType type) {
         const auto& slot = formationSlots[indices[i]];
         const Vector2 spawn = spawns[i];
 
-        world.SpawnEnemy(world.GetEnemySprites(slot.id), spawn);
+        world.SpawnEnemy(slot.id, spawn);
 
         Enemy& enemy = world.GetEnemies().back();
         enemy.wave.formationPosition = slot.position;
