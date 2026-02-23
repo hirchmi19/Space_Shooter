@@ -149,14 +149,5 @@ void AssetSystem::InitAssets() {
     // pixel_font
     pixelFont = LoadFont("assets/pixelFont.ttf");
     SetTextureFilter(pixelFont.texture, TEXTURE_FILTER_POINT);
-
-    //--------------------------------------------------------------------------
-
-    //Explosion "key frames" (used for entity deaths)
-    DefineSprite(SpriteID::EXPLOSION_0, TextureID::EFFECT_CANVAS, {98, 50, 4, 4});
-    DefineSprite(SpriteID::EXPLOSION_1, TextureID::EFFECT_CANVAS, {89, 49, 6, 6});
-    DefineSprite(SpriteID::EXPLOSION_2 , TextureID::EFFECT_CANVAS, {80, 48, 8, 8});
-    DefineSprite(SpriteID::EXPLOSION_3, TextureID::EFFECT_CANVAS, {75, 51, 2, 2});
-
 }
 
