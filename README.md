@@ -1,7 +1,7 @@
 # Space_Shooter
 
-A small **C++** project using **raylib**, built with **CMake**.  
-The project uses **Git submodules**, so no global raylib installation is required.
+A small but structured **C++ arcade-style space shooter** built with **raylib** and **CMake**.
+The project does not require a global raylib installation thanks to Git submodules.
 
 ---
 
@@ -17,9 +17,11 @@ The project uses **Git submodules**, so no global raylib installation is require
 `git clone --recurse-submodules https://github.com/hirchmi19/Space_Shooter.git` <br>
 `cd Space_Shooter`
 
-### The `--recurse-submodules` flag is required to automatically clone raylib.
+## The `--recurse-submodules` flag is required to automatically clone raylib.
 
-**if you forget: `git submodule update --init --recursive`**
+**if you forget:** `git submodule update --init --recursive`
+
+**If raylib updates or you switch branches:** `git submodule update --recursive --remote`
 
 # Build & Run:
 
@@ -29,6 +31,34 @@ The project uses **Git submodules**, so no global raylib installation is require
 ### Run the exe (example):
 
 `./build/Space_Shooter`
+
+
+# Projec Sructure:
+
+Space_Shooter/
+│
+├── src/                # Game source code
+│   ├── Game/
+│   ├── Systems/
+│   ├── Entities/
+│   ├── Constants/
+│   └── main.cpp
+│
+├── external/
+│   └── raylib/         # Git submodule
+│
+├── CMakeLists.txt
+└── README.md
+
+# Architecture Overview:
+
+**The project follows a system-oriented structure:**
+
+GameWorld manages entities
+
+Systems operate on entities (Movement, Rendering, Wave, etc.)
+
+Assets are mapped via enum → texture lookup
 
 
 
