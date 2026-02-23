@@ -68,7 +68,7 @@ std::vector<const Sprite*> AssetSystem::GetProjectileSprite(const SpriteID id) c
 }
 
 /**
- * Returns the enemy sprites of an specific enemy type
+ * Returns the enemy sprites of a specific enemy type
  * \param id
  * \return
  */
@@ -80,6 +80,14 @@ std::vector<const Sprite *> AssetSystem::GetEnemySprites(const EnemyID id) const
 
     return {};
 
+}
+
+std::vector<const Sprite *> AssetSystem::GetExplosionSprites() const {
+
+    return {&GetSprite(SpriteID::EXPLOSION_0),
+        &GetSprite(SpriteID::EXPLOSION_1),
+        &GetSprite(SpriteID::EXPLOSION_2),
+        &GetSprite(SpriteID::EXPLOSION_3)};
 }
 
 //--------------------------------------------------------------------------
@@ -109,8 +117,9 @@ void AssetSystem::InitAssets() {
 
     //Load textures
     LoadTex(TextureID::PLAYER_SHIP_CANVAS, "assets/SpaceShooterAssetPack_Ships.png");
-    LoadTex(TextureID::ENEMY_SHIP_CANVAS, "assets/pico8_invaders_sprites_LARGE.png");
+    LoadTex(TextureID::ENEMY_CANVAS, "assets/pico8_invaders_sprites_LARGE.png");
     LoadTex(TextureID::PROJECTILE_CANVAS, "assets/SpaceShooterAssetPack_Projectiles.png");
+    LoadTex(TextureID::EFFECT_CANVAS, "assets/SpaceShooterAssetPack_Miscellaneous.png");
 
     //Player sprites
     DefineSprite(SpriteID::PLAYER_SHIP_MIDDLE, TextureID::PLAYER_SHIP_CANVAS, {8, 0, 8, 8});
@@ -120,20 +129,20 @@ void AssetSystem::InitAssets() {
     //--------------------------------------------------------------------------
 
     //Enemy sprites
-    DefineSprite(SpriteID::YELLOW_ENEMY_0, TextureID::ENEMY_SHIP_CANVAS, {56, 0, 8, 8});
-    DefineSprite(SpriteID::YELLOW_ENEMY_1, TextureID::ENEMY_SHIP_CANVAS, {56, 8, 8, 7});
+    DefineSprite(SpriteID::YELLOW_ENEMY_0, TextureID::ENEMY_CANVAS, {56, 0, 8, 8});
+    DefineSprite(SpriteID::YELLOW_ENEMY_1, TextureID::ENEMY_CANVAS, {56, 8, 8, 7});
 
-    DefineSprite(SpriteID::RED_ENEMY_0, TextureID::ENEMY_SHIP_CANVAS, {40, 0, 8, 8});
-    DefineSprite(SpriteID::RED_ENEMY_1, TextureID::ENEMY_SHIP_CANVAS, {40, 8, 8 ,8});
+    DefineSprite(SpriteID::RED_ENEMY_0, TextureID::ENEMY_CANVAS, {40, 0, 8, 8});
+    DefineSprite(SpriteID::RED_ENEMY_1, TextureID::ENEMY_CANVAS, {40, 8, 8 ,8});
 
-    DefineSprite(SpriteID::BLACK_ENEMY_0, TextureID::ENEMY_SHIP_CANVAS, {72, 0, 8, 8});
-    DefineSprite(SpriteID::BLACK_ENEMY_1, TextureID::ENEMY_SHIP_CANVAS, {72, 8, 8 ,8});
+    DefineSprite(SpriteID::BLACK_ENEMY_0, TextureID::ENEMY_CANVAS, {72, 0, 8, 8});
+    DefineSprite(SpriteID::BLACK_ENEMY_1, TextureID::ENEMY_CANVAS, {72, 8, 8 ,8});
 
     //--------------------------------------------------------------------------
 
     //Projectile sprites
-    DefineSprite(SpriteID::PLAYER_PROJECTILE, TextureID::ENEMY_SHIP_CANVAS, {20, 42, 1, 4});
-    DefineSprite(SpriteID::ENEMY_PROJECTILE, TextureID::ENEMY_SHIP_CANVAS, {12, 42, 1, 4});
+    DefineSprite(SpriteID::PLAYER_PROJECTILE, TextureID::ENEMY_CANVAS, {20, 42, 1, 4});
+    DefineSprite(SpriteID::ENEMY_PROJECTILE, TextureID::ENEMY_CANVAS, {12, 42, 1, 4});
 
     //--------------------------------------------------------------------------
 
@@ -144,6 +153,10 @@ void AssetSystem::InitAssets() {
     //--------------------------------------------------------------------------
 
     //Explosion "key frames" (used for entity deaths)
+    DefineSprite(SpriteID::EXPLOSION_0, TextureID::EFFECT_CANVAS, {98, 50, 4, 4});
+    DefineSprite(SpriteID::EXPLOSION_1, TextureID::EFFECT_CANVAS, {89, 49, 6, 6});
+    DefineSprite(SpriteID::EXPLOSION_2 , TextureID::EFFECT_CANVAS, {80, 48, 8, 8});
+    DefineSprite(SpriteID::EXPLOSION_3, TextureID::EFFECT_CANVAS, {75, 51, 2, 2});
 
 }
 

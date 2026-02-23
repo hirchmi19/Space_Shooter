@@ -16,10 +16,6 @@
 #include "../../Utilities/utils.h"
 
 
-constexpr std::array ROW_COUNTS = {4, 8, 8, 12, 12};
-constexpr float HORIZONTAL_SPACING = 60.0f;
-constexpr float VERTICAL_SPACING   = 65.0f;
-
 class WaveSystem : public IGameSystem{
 
 
@@ -64,7 +60,7 @@ class WaveSystem : public IGameSystem{
     void StartWave();
 
     void DefinePatterns();
-    WavePattern PickWavePattern() const;
+    const WavePattern& PickWavePattern() const;
 
     void AssignBezierTop(Enemy& enemy, const Vector2& start, const Vector2& end);
     void AssignBezierSide(Enemy& enemy, const Vector2& start, const Vector2& end);

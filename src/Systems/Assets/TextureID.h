@@ -9,7 +9,8 @@ enum class TextureID : uint32_t {
     NONE,
     BACKGROUND_CANVAS,
     PLAYER_SHIP_CANVAS,
-    ENEMY_SHIP_CANVAS,
+    ENEMY_CANVAS,
     PROJECTILE_CANVAS,
+    EFFECT_CANVAS,
     COUNT
 };

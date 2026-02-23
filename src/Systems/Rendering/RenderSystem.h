@@ -5,7 +5,9 @@
 #pragma once
 #include <string>
 
+#include "raylib.h"
 #include "../IGameSystem.h"
+#include "../../Entities/Components/TimerComponent.h"
 
 enum class GameState : uint32_t;
 
@@ -18,6 +20,7 @@ class RenderSystem : public IGameSystem {
     void Run(GameWorld& world) override;
 
     private:
+
     void RenderPlayer(const GameWorld& world) const;
     void RenderEnemies(GameWorld& world) const;
     void RenderBackground(const GameWorld& world) const;

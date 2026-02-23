@@ -97,7 +97,7 @@ void GameWorld::RunGameplaySystems() {
 /**
  * Renders EVERYTHING
  */
-void GameWorld::RunRenderSystems() {
+void GameWorld::RunRenderSystem() {
 
     auto& renderSys = gameSystems[ToIndex(GameSystemID::RENDERER_SYSTEM)];
     if (renderSys) renderSys->Run(*this);
@@ -105,68 +105,16 @@ void GameWorld::RunRenderSystems() {
 }
 
 /**
- * Returns a Sprite struct
- * \param id
- * \return
- */
-const Sprite& GameWorld::GetSprite(const SpriteID id) const {
-
-    return GetAssetSystem().GetSprite(id);
-}
-
-/**
- * Returns a Raylib Texture
- * \param id
- * \return
- */
-const Texture2D& GameWorld::GetTexture(TextureID id) const {
-
-    return GetAssetSystem().GetTexture(id);
-}
-
-
-/**
- * Returns all enemy sprites by a given ID
- * \param id
- * \return
- */
-const std::vector<const Sprite*> GameWorld::GetEnemySprites(const EnemyID id) const {
-
-    return {GetAssetSystem().GetEnemySprites(id)};
-
-}
-
-/**
- * Calls the render function of the background system
- */
-void GameWorld::RenderBackground() const {
-
-    GetBackgroundSystem().Render();
-}
-
-/**
- * Returns a  read-only reference to the player
- * \return
- */
-const Player& GameWorld::GetPlayer() const {return player;}
-
-/**
- * Returns a reference to the player
- * \return
- */
-Player& GameWorld::GetPlayer() { return player; }
-
-/**
  * Creates an Enemy
  * \param id
  * \param spawnPosition
  */
-void GameWorld::SpawnEnemy(const EnemyID id, const Vector2 &spawnPosition) {
+void GameWorld::SpawnEnemy(const EnemyID& id, const Vector2 &spawnPosition) {
 
     const auto& sprites = GetAssetSystem().GetEnemySprites(id);
     const Vector2 size = {sprites[0]->src.width, sprites[0]->src.height};
 
-    auto score = GetScoreSystem().GetEnemyScore(id);
+    const auto score = GetScoreSystem().GetEnemyScore(id);
 
     enemies.emplace_back(RenderComponent{sprites, size},
         CombatComponent{1,
@@ -284,12 +232,12 @@ const BackgroundSystem& GameWorld::GetBackgroundSystem() const {
     return static_cast<const BackgroundSystem&>(*ptr);
 }
 
-const RenderSystem &GameWorld::GetRenderSystem() const {
+RenderSystem &GameWorld::GetRenderSystem() const {
 
-    const auto& ptr = gameSystems[ToIndex(GameSystemID::RENDERER_SYSTEM)];
+     auto& ptr = gameSystems[ToIndex(GameSystemID::RENDERER_SYSTEM)];
 
     //assert(ptr && "RenderSystem is not initialized");
-    return static_cast<const RenderSystem&>(*ptr);
+    return static_cast< RenderSystem&>(*ptr);
 }
 
 WaveSystem &GameWorld::GetWaveSystem() const {

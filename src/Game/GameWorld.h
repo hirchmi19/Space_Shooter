@@ -21,6 +21,7 @@
 #include "../Systems/Waving/FormationSlot.h"
 #include "../Systems/Waving/WaveSystem.h"
 
+struct Explosion;
 class Player;
 class IGameSystem;
 enum class SpriteID : uint32_t;
@@ -32,20 +33,22 @@ class GameWorld {
     ~GameWorld() = default;
 
     void RunGameplaySystems();
-    void RunRenderSystems();
+    void RunRenderSystem();
 
     void SpawnPlayerProjectile(const Vector2& playerPosition);
-
-    void SpawnEnemy(const EnemyID id, const Vector2& spawnPosition);
+    void SpawnEnemy(const EnemyID& id, const Vector2& spawnPosition);
     void SpawnEnemyProjectile(const Vector2& enemyPosition);
 
-    const Player& GetPlayer() const;
-    Player& GetPlayer();
 
-    const Texture2D& GetTexture(TextureID id) const;
-    const Sprite& GetSprite(SpriteID id) const;
+    const Player& GetPlayer() const {return player;};
+    Player& GetPlayer() {return player;};
+
+    const Texture2D& GetTexture(const TextureID& id) const {return GetAssetSystem().GetTexture(id);};
+    const Sprite& GetSprite(const SpriteID& id) const { return GetAssetSystem().GetSprite(id);};
     const Font& GetFont() const {return GetAssetSystem().GetFont();};
-    const std::vector<const Sprite*> GetEnemySprites(EnemyID id) const;
+
+    const std::vector<const Sprite*> GetEnemySprites(const EnemyID id) const {return {GetAssetSystem().GetEnemySprites(id)};};
+    const std::vector<const Sprite*> GetExplosionSprites() const {return GetAssetSystem().GetExplosionSprites();};
 
     const GameState& GetGameState() const { return currentGameState; };
     void EndWave() {currentGameState = GameState::END_WAVE;};
@@ -53,11 +56,10 @@ class GameWorld {
     int GetWaveCounter() const { return GetWaveSystem().GetWaveCounter(); };
     const uint32_t GetHighScore() const { return GetScoreSystem().GetHighScore(); };
 
-    void RenderBackground() const;
+    void RenderBackground() const { GetBackgroundSystem().Render();};
 
     std::vector<Projectile>& GetProjectiles() {return projectiles;};
     std::vector<Enemy>& GetEnemies() {return enemies;};
-
 
 
     private:
@@ -77,14 +79,12 @@ class GameWorld {
     TimerComponent waveTimer;
     bool timerStarted = false;
 
-    uint32_t highScore = 0;
-
     void CreateSystems();
     void AddSystem(std::unique_ptr<IGameSystem> system);
 
     const AssetSystem& GetAssetSystem() const;
     const BackgroundSystem& GetBackgroundSystem() const;
-    const RenderSystem& GetRenderSystem() const;
+    RenderSystem& GetRenderSystem() const;
     WaveSystem& GetWaveSystem() const;
     ScoreSystem& GetScoreSystem() const;
 

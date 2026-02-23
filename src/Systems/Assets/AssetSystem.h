@@ -27,6 +27,7 @@ class AssetSystem : public IGameSystem {
     std::vector<const Sprite*> GetPlayerSprites() const;
     std::vector<const Sprite*> GetEnemySprites(EnemyID id) const;
     std::vector<const Sprite*> GetProjectileSprite(SpriteID id) const;
+    std::vector <const Sprite*> GetExplosionSprites() const;
 
 
     private:

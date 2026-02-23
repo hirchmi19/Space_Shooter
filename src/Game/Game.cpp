@@ -45,7 +45,7 @@ void Game::Run() const {
 
         ClearBackground(BLACK);
 
-        world->RunRenderSystems();
+        world->RunRenderSystem();
 
         EndDrawing();
     }

@@ -72,7 +72,7 @@ void RenderSystem::RenderEnemies(GameWorld& world) const {
 
         if (enemy.wave.state == WaveState::OUT_FORMATION) continue;
 
-        const auto& texture = world.GetTexture(TextureID::ENEMY_SHIP_CANVAS);
+        const auto& texture = world.GetTexture(TextureID::ENEMY_CANVAS);
         const auto& sprite = *(enemy.render.sprites[spriteToDraw]);
 
         const Rectangle dest = {
@@ -82,7 +82,7 @@ void RenderSystem::RenderEnemies(GameWorld& world) const {
             enemy.render.size.y * RenderConstants::ENEMY_SCALING};
 
         DrawTexturePro(texture, sprite.src, dest, { 0, 0 }, 0.0f, WHITE);
-        DrawRectangleLinesEx(enemy.combat.hitbox, 1.0f, PINK);
+        //DrawRectangleLinesEx(enemy.combat.hitbox, 1.0f, PINK);
     }
 }
 
@@ -107,7 +107,7 @@ void RenderSystem::RenderPlayer(const GameWorld& world) const {
     if (playerSpeed < 0) playerSprite = world.GetSprite(SpriteID::PLAYER_SHIP_LEFT);
 
     DrawTexturePro(playerTexture, playerSprite.src, dest, Vector2{0, 0}, 0.0f, WHITE);
-    DrawRectangleLinesEx(world.GetPlayer().GetHitBox(), 1.0f, PINK);
+    //DrawRectangleLinesEx(world.GetPlayer().GetHitBox(), 1.0f, PINK);
 }
 
 /**
@@ -120,7 +120,7 @@ void RenderSystem::RenderProjectiles(GameWorld& world) const  {
 
     for (const auto& projectile : projectiles ) {
 
-        const auto& texture = world.GetTexture(TextureID::ENEMY_SHIP_CANVAS);
+        const auto& texture = world.GetTexture(TextureID::ENEMY_CANVAS);
         const auto& sprite = *(projectile.render.sprites[0]);
 
         const Rectangle dest = {
@@ -138,8 +138,8 @@ void RenderSystem::RenderGameOver(const GameWorld &world) const {
 
     if (world.GetGameState() != GameState::GAME_OVER) return;
 
-    std::string caption = "GAME OVER";
-    std::string subCaption = "PRESS `ENTER` TO RESTART";
+    constexpr std::string caption = "GAME OVER";
+    const std::string subCaption = "PRESS `ENTER` TO RESTART";
 
     const Vector2 captionWidth = MeasureTextEx(world.GetFont(), caption.c_str(), RenderConstants::GAME_OVER_CAPTION_SIZE, RenderConstants::SPACING);
     const Vector2 subCaptionWidth = MeasureTextEx(world.GetFont(), subCaption.c_str(), RenderConstants::GAME_OVER_SUBCAPTION_SIZE, RenderConstants::SPACING);
@@ -157,21 +157,18 @@ void RenderSystem::RenderWaveTransition(const GameWorld &world, std::string capt
     constexpr uint32_t xOffset = 30;
 
     const Vector2 captionPos = {(GameConstants::SCREEN_ORIGIN.x - captionWidth.x / 2) + xOffset, GameConstants::SCREEN_HEIGHT * .22f};
-
-
-
     DrawTextEx(world.GetFont(), caption.c_str(), captionPos, RenderConstants::WAVE_TRANSITION_CAPTION_SIZE, RenderConstants::SPACING, WHITE);
 }
 
 
 void RenderSystem::RenderHighScore(const GameWorld &world) const {
 
-    std::string caption = "HIGH SCORE";
+    constexpr std::string caption = "HIGH SCORE";
     std::string highScore = std::to_string(world.GetHighScore());
 
     if (highScore.length() < GameWorldConstants::HIGHSCORE_DIGITS) {
 
-        const int delta = GameWorldConstants::HIGHSCORE_DIGITS - highScore.length();
+        const uint32_t delta = GameWorldConstants::HIGHSCORE_DIGITS - highScore.length();
         highScore.insert(0, delta, '0');
 
     }

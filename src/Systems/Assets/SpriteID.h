@@ -18,5 +18,9 @@ enum class SpriteID : uint32_t {
     BLACK_ENEMY_1,
     PLAYER_PROJECTILE,
     ENEMY_PROJECTILE,
+    EXPLOSION_0,
+    EXPLOSION_1,
+    EXPLOSION_2,
+    EXPLOSION_3,
     COUNT
 };

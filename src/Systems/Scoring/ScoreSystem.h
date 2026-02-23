@@ -8,6 +8,9 @@
 
 
 inline constexpr uint32_t MAX_SCORE = 99999999;
+inline constexpr uint32_t yellowEnemyScore = 300;
+inline constexpr uint32_t redEnemyScore = 500;
+inline constexpr uint32_t blackEnemyScore = 1000;
 
 class ScoreSystem: public IGameSystem{
 
@@ -23,12 +26,7 @@ class ScoreSystem: public IGameSystem{
 
 
     private:
-    uint32_t highScore;
-    uint32_t yellowEnemyScore = 300;
-    uint32_t redEnemyScore = 500;
-    uint32_t blackEnemyScore = 1000;
-
-
+    uint32_t highScore = 0;
 
 };
 

@@ -87,12 +87,10 @@ void WaveSystem::Init() {
     BuildFormationSlots();
     DefinePatterns();
 
-    //phaseTimer.Start(5.f);
 }
 
 /**
  * Inits a new Wave and starts the state machine
- * \param world
  */
 void WaveSystem::StartWave() {
 
@@ -103,8 +101,8 @@ void WaveSystem::StartWave() {
     diveCompleted = false;
     enemiesSpawned = false;
     shootsFired = 0;
+    currentPattern = PickWavePattern();
 
-    currentPattern = patterns[0];
     BuildDivingGroups(currentPattern);
     currentPhase = WavePhase::FORMATION_OFF;
 }
@@ -155,7 +153,7 @@ void WaveSystem::BuildFormation(GameWorld& world)
  */
 void WaveSystem::HandleSoloAttacks(GameWorld& world) {
 
-    if (diveTimer.IsRunning()) return;
+    if (diveTimer.IsRunning() || phaseTimer.IsRunning()) return;
 
     auto& enemies = world.GetEnemies();
     const int maxEnemies = std::max(4, GetRandomValue(4, static_cast<int>(enemies.size() * 0.25f)));
@@ -400,9 +398,9 @@ std::vector<size_t> WaveSystem::GetGroupMemberIndices(const int id) const {
     return result;
 }
 
-WavePattern WaveSystem::PickWavePattern() const {
+const WavePattern& WaveSystem::PickWavePattern() const {
 
-    const int patternIndex = GetRandomValue(0, 1);
+    const int patternIndex = GetRandomValue(1, static_cast<int>(patterns.size() - 1));
     return patterns[patternIndex];
 }
 
@@ -417,19 +415,19 @@ void WaveSystem::CalcFormationPositions()
 {
     size_t slot = 0;
 
-    for (size_t row = 0; row < ROW_COUNTS.size(); ++row)
+    for (size_t row = 0; row < WaveConstants::ROW_COUNTS.size(); ++row)
     {
-        const int count = ROW_COUNTS[row];
+        const int count = WaveConstants::ROW_COUNTS[row];
 
-        const float rowWidth = (count - 1) * HORIZONTAL_SPACING;
+        const float rowWidth = (count - 1) * WaveConstants::HORIZONTAL_SPACING;
         const float startX = (GameConstants::SCREEN_WIDTH - rowWidth) / 2.0f;
 
         for (int i = 0; i < count; ++i)
         {
             constexpr float startY = 100.0f;
 
-            formationPositions[slot].x = startX + i * HORIZONTAL_SPACING;
-            formationPositions[slot].y = startY + row * VERTICAL_SPACING;
+            formationPositions[slot].x = startX + i * WaveConstants::HORIZONTAL_SPACING;
+            formationPositions[slot].y = startY + row * WaveConstants::VERTICAL_SPACING;
 
             slot++;
         }
@@ -452,7 +450,7 @@ void WaveSystem::CalcTopDiveSpawns() {
         Vector2 spawn;
 
         spawn.x = (i % 2 == 0) ? leftX : rightX;
-        spawn.y = -static_cast<float>(i / 2) * VERTICAL_SPACING - 50.f;
+        spawn.y = -static_cast<float>(i / 2) * WaveConstants::VERTICAL_SPACING - 50.f;
 
         topDiveSpawns[i] = spawn;
     }
@@ -495,11 +493,11 @@ void WaveSystem::CalcSideDiveSpawns()
  */
 void WaveSystem::DefinePatterns() {
 
-    patterns[0]= {WaveType::TOP_SIDE_TOP, 3, {16, 16, 12},
+    patterns[ToIndex(WaveType::TOP_SIDE_TOP)]= {WaveType::TOP_SIDE_TOP, 3, {16, 16, 12},
     {DiveType::FROM_TOP, DiveType::FROM_SIDES, DiveType::FROM_TOP}
     };
 
-    patterns[1] = {
+    patterns[ToIndex(WaveType::SIDE_TOP_SIDE)] = {
         WaveType::SIDE_TOP_SIDE, 3, {16, 16, 12},
 {DiveType::FROM_SIDES, DiveType::FROM_TOP, DiveType::FROM_SIDES}
     };

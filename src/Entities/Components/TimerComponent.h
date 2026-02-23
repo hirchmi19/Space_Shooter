@@ -6,13 +6,10 @@
 
 struct TimerComponent {
 
-    float duration = 0.0;
-    float elapsedTime = 0.0;
-
     void Start(const float newDuration) {
 
         duration = newDuration;
-        elapsedTime = 0.0;
+        elapsedTime = 0.0f;
     }
 
     void Tick(const float deltaTime) {
@@ -23,4 +20,8 @@ struct TimerComponent {
     bool IsRunning() const {return elapsedTime < duration;}
 
     bool IsFinished() const {return elapsedTime >= duration;}
+
+    private:
+    float duration = 0.0f;
+    float elapsedTime = 0.0f;
 };
