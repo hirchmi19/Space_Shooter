@@ -3,7 +3,6 @@
 A small but structured **C++ arcade-style space shooter** built with **raylib** and **CMake**.
 The project does not require a global raylib installation thanks to Git submodules.
 
----
 
 # Requirements:
 
@@ -42,6 +41,22 @@ GameWorld manages entities
 Systems operate on entities (Movement, Rendering, Wave, etc.)
 
 Assets are mapped via enum → texture lookup
+
+## Credits
+
+### Libraries
+- raylib – https://www.raylib.com/
+
+### Assets
+
+- Public Pixel Font – CC0 (Public Domain)  
+  https://ggbot.itch.io/public-pixel-font
+
+- “Space Eaters” sprites by cluly – Used under the license provided on itch.io
+  https://cluly.itch.io/space-eaters
+
+- Player sprite by Gustavo Vituri – Used under the license provided on itch.io
+  https://gvituri.itch.io/space-shooter
 
 
 
