@@ -1,61 +1,21 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(Space_Shooter)
+project(Space_Shooter LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
+endif()
 
 add_subdirectory(external/raylib)
 
-add_executable(Space_Shooter
-        src/main.cpp
-        src/Game/Game.cpp
-        src/Game/Game.h
-        src/Entities/Player.cpp
-        src/Constants/GameConstants.h
-        src/Systems/Assets/TextureID.h
-        src/Systems/Assets/SpriteID.h
-        src/Systems/Assets/Sprite.h
-        src/Systems/Assets/AssetSystem.cpp
-        src/Systems/Assets/AssetSystem.h
-        src/Game/GameWorld.cpp
-        src/Game/GameWorld.h
-        src/Systems/IGameSystem.h
-        src/Utilities/utils.h
-        src/Systems/GameSystemID.h
-        src/Systems/Rendering/RenderSystem.cpp
-        src/Systems/Rendering/RenderSystem.h
-        src/Entities/Enemy.h
-        src/Entities/Components/RenderComponent.h
-        src/Entities/Components/CombatComponent.h
-        src/Entities/Projectile.h
-        src/Entities/Components/Movement1D.h
-        src/Systems/Rendering/Star.h
-        src/Systems/Rendering/BackgroundSystem.cpp
-        src/Systems/Rendering/BackgroundSystem.h
-        src/Systems/Movement/MovementSystem.cpp
-        src/Systems/Movement/MovementSystem.h
-        src/Constants/RenderConstants.h
-        src/Constants/MovementConstants.h
-        src/Entities/Components/TimerComponent.h
-        src/Systems/Waving/WaveSystem.cpp
-        src/Systems/Waving/WaveSystem.h
-        src/Entities/Components/WaveComponent.h
-        src/Entities/Components/WaveState.h
-        src/Systems/Waving/FormationSlot.h
-        src/Entities/EnemyID.h
-        src/Systems/Waving/WavePhase.h
-        src/Systems/Waving/DiveType.h
-        src/Systems/Waving/DivingGroup.h
-        src/Systems/Waving/WavePattern.h
-        src/Systems/Waving/WaveType.h
-        src/Constants/WaveConstants.h
-        src/Systems/Collision/CollisionSystem.cpp
-        src/Systems/Collision/CollisionSystem.h
-        src/Game/GameState.h
-        src/Constants/GameWorldConstants.h
-        src/Systems/Scoring/ScoreSystem.cpp
-        src/Systems/Scoring/ScoreSystem.h
-)
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
+
+add_executable(Space_Shooter ${SOURCES})
+
+target_include_directories(Space_Shooter PRIVATE src)
 
 target_link_libraries(Space_Shooter PRIVATE raylib)
