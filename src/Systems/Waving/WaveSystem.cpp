@@ -54,7 +54,6 @@ void WaveSystem::Run(GameWorld& world)
     if (world.GetEnemies().empty() && waveInitialized) {
 
         waveCounter++;
-        std::cout << "waveCounter: " << waveCounter << std::endl;
         world.EndWave();
 
     }
@@ -156,7 +155,18 @@ void WaveSystem::HandleSoloAttacks(GameWorld& world) {
     if (diveTimer.IsRunning() || phaseTimer.IsRunning()) return;
 
     auto& enemies = world.GetEnemies();
-    const int maxEnemies = std::max(4, GetRandomValue(4, static_cast<int>(enemies.size() * 0.25f)));
+
+    if (enemies.empty()) return; // just in case :)
+
+    if (enemies.size() < 4) {
+
+        currentPhase = WavePhase::READY_FOR_SWARM;
+        diveCount = currentPattern.numberOfDives;
+        shootsFired = 0;
+        return;
+    }
+
+    const int maxEnemies = std::max(4, GetRandomValue(4, static_cast<int>(enemies.size() * .25f)));
     int enemyIndex = 0;
 
     if (diveCount >= maxEnemies) {
@@ -184,7 +194,7 @@ void WaveSystem::HandleSoloAttacks(GameWorld& world) {
  */
 void WaveSystem::HandleSwarmAttacks(GameWorld &world) {
 
-    if (diveTimer.IsRunning() && diveSpawned) return;
+    if (diveTimer.IsRunning() && diveSpawned || world.GetEnemies().empty()) return;
 
     if (diveCount  < 0) {
 
@@ -197,7 +207,6 @@ void WaveSystem::HandleSwarmAttacks(GameWorld &world) {
     if (!diveSpawned) {
 
         const DiveType type = currentPattern.dives[diveCount];
-        const auto& enemies = world.GetEnemies();
 
         AssignAttackCurves(world, type);
 
@@ -221,6 +230,8 @@ void WaveSystem::HandleSwarmAttacks(GameWorld &world) {
  * \param world
  */
 void WaveSystem::HandleFormationAttacks(GameWorld &world) {
+
+    if (world.GetEnemies().empty()) return;
 
     const int maxShots = static_cast<int>(world.GetEnemies().size() / 2);
 
@@ -494,13 +505,10 @@ void WaveSystem::CalcSideDiveSpawns()
 void WaveSystem::DefinePatterns() {
 
     patterns[ToIndex(WaveType::TOP_SIDE_TOP)]= {WaveType::TOP_SIDE_TOP, 3, {16, 16, 12},
-    {DiveType::FROM_TOP, DiveType::FROM_SIDES, DiveType::FROM_TOP}
-    };
+    {DiveType::FROM_TOP, DiveType::FROM_SIDES, DiveType::FROM_TOP}};
 
-    patterns[ToIndex(WaveType::SIDE_TOP_SIDE)] = {
-        WaveType::SIDE_TOP_SIDE, 3, {16, 16, 12},
-{DiveType::FROM_SIDES, DiveType::FROM_TOP, DiveType::FROM_SIDES}
-    };
+    patterns[ToIndex(WaveType::SIDE_TOP_SIDE)] = {WaveType::SIDE_TOP_SIDE, 3, {16, 16, 12},
+{DiveType::FROM_SIDES, DiveType::FROM_TOP, DiveType::FROM_SIDES}};
 
     // Define wave patterns here
 }

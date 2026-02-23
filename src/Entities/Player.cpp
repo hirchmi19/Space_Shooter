@@ -32,7 +32,7 @@ void Player::HandleInput(GameWorld& world) {
         if (!world.GetPlayer().CanShoot()) return;
 
         world.SpawnPlayerProjectile(movement.position);
-        cooldownTimer.Start(.5f);
+        cooldownTimer.Start(.35f);
     }
 
 }
