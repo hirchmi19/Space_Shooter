@@ -3,6 +3,14 @@
 A small but structured **C++ arcade-style space shooter** built with **raylib** and **CMake**.
 The project does not require a global raylib installation thanks to Git submodules.
 
+## Screenshots
+
+<p align="center">
+  <img src="assets/screenshots/gameplay.png" width="45%">
+  <img src="assets/screenshots/wave.png" width="45%">
+  <img src="assets/screenshots/game_over.png" width="45%">  
+</p>
+
 
 # Requirements:
 
