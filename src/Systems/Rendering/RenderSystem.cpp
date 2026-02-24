@@ -47,7 +47,7 @@ void RenderSystem::RenderGameState(GameWorld &world, const GameState state) cons
 
         case GameState::END_WAVE:
 
-            text = "WAVE COMPLETED";
+            text = "WAVE COMPLETED!";
             RenderWaveTransition(world, text);
             break;
     }

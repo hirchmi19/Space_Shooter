@@ -29,6 +29,8 @@ void Game::Run() const {
     double prevTime = GetTime();
     double updateAccumulator = 0.0;
 
+    HideCursor();
+
     while (!WindowShouldClose()) {
 
         const double currentTime = GetTime();
