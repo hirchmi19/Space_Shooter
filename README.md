@@ -7,7 +7,6 @@ The project does not require a global raylib installation thanks to Git submodul
 
 <p align="center">
   <img src="assets/screenshots/gameplay.png" width="45%">
-  <img src="assets/screenshots/wave.png" width="45%">
   <img src="assets/screenshots/game_over.png" width="45%">  
 </p>
 
