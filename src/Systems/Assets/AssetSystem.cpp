@@ -3,10 +3,14 @@
 //
 
 #include "AssetSystem.h"
+
+#include <iostream>
+#include <ostream>
+
 #include "raylib.h"
 #include "../../Entities/EnemyID.h"
 
-AssetSystem::AssetSystem() : IGameSystem(GameSystemID::ASSET_SYSTEM) {
+AssetSystem::AssetSystem() : IGameSystem(GameSystemID::ASSET_SYSTEM, "ASSET_SYSTEM") {
 
     InitAssets();
 }
@@ -18,6 +22,8 @@ AssetSystem::~AssetSystem() {
 
         UnloadTexture(texture);
     }
+
+    std::cout << "CUSTOM TEXTURES UNLOADED SUCCESSFULLY" << std::endl;
 }
 
 
@@ -148,5 +154,8 @@ void AssetSystem::InitAssets() {
     // pixel_font
     pixelFont = LoadFont(ASSETS_PATH "pixelFont.ttf");
     SetTextureFilter(pixelFont.texture, TEXTURE_FILTER_POINT);
+
+
+    std::cout << "Asset System initialized!" << std::endl;
 }
 

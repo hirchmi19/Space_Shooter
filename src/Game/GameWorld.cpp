@@ -18,6 +18,7 @@
 GameWorld::GameWorld() {
 
     CreateSystems();
+   // InitGameSystems();
     player = Player(GameWorldConstants::playerSpawn, GameWorldConstants::playerSize, GetAssetSystem().GetPlayerSprites());
 
 }
@@ -204,11 +205,12 @@ void GameWorld::CreateSystems() {
  */
 void GameWorld::AddSystem(std::unique_ptr<IGameSystem> system) {
 
+    const std::string name(system->GetSystemName());
     const GameSystemID id = system->GetSystemID();
     const size_t index = ToIndex(id);
     gameSystems[index] = std::move(system);
 
-    std::cout << "Added SystemID:  " << index << std::endl;
+    std::cout << "Added System:  " << name << std::endl;
 }
 
 /**

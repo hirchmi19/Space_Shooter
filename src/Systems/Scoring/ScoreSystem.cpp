@@ -4,7 +4,7 @@
 
 #include "ScoreSystem.h"
 
-ScoreSystem::ScoreSystem() : IGameSystem(GameSystemID::SCORE_SYSTEM){}
+ScoreSystem::ScoreSystem() : IGameSystem(GameSystemID::SCORE_SYSTEM, "SCORE_SYSTEM"){}
 
 
 void ScoreSystem::Run(GameWorld &world) {
@@ -15,14 +15,7 @@ void ScoreSystem::Run(GameWorld &world) {
 void ScoreSystem::AddHighScore(const uint32_t score) {
 
     const uint32_t newScore = highScore + score;
-
-    if (newScore >= MAX_SCORE) {
-
-        highScore = MAX_SCORE;
-        return;
-    }
-
-    highScore = newScore;
+    highScore = newScore >= MAX_SCORE ? MAX_SCORE : newScore;
 }
 
 const uint32_t ScoreSystem::GetEnemyScore(const EnemyID& id) {
@@ -30,13 +23,15 @@ const uint32_t ScoreSystem::GetEnemyScore(const EnemyID& id) {
     switch (id) {
 
         case EnemyID::YELLOW_ENEMY:
-            return yellowEnemyScore;
+            return YELLOW_ENEMY_SCORE;
 
         case EnemyID::RED_ENEMY:
-            return redEnemyScore;
+            return RED_ENEMY_SCORE;
 
         case EnemyID::BLACK_ENEMY:
-            return blackEnemyScore;
+            return BLACK_ENEMY_SCORE;
 
+        default:
+            return 0;
     }
 }

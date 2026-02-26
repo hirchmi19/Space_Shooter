@@ -13,7 +13,7 @@
 #include "../../Game/GameWorld.h"
 
 
-WaveSystem::WaveSystem() : IGameSystem(GameSystemID::WAVE_SYSTEM) {
+WaveSystem::WaveSystem() : IGameSystem(GameSystemID::WAVE_SYSTEM, "WAVE_SYSTEM") {
 
    Init();
 }
@@ -85,6 +85,8 @@ void WaveSystem::Init() {
     CalcSideDiveSpawns();
     BuildFormationSlots();
     DefinePatterns();
+
+    std::cout << "Wave System initialized!" << std::endl;
 
 }
 
@@ -411,11 +413,6 @@ std::vector<size_t> WaveSystem::GetGroupMemberIndices(const uint32_t id) const {
 
 const WavePattern& WaveSystem::PickWavePattern() const {
 
-    if (patterns.empty()) {
-
-        std::cout << "WaveSystem::PickWavePattern(): No patterns found!" << std::endl;
-        return WavePattern();
-    }
     const size_t patternIndex = static_cast<size_t>(GetRandomValue(1, patterns.size() - 1));
     return patterns[patternIndex];
 }

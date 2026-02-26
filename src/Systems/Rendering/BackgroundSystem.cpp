@@ -4,12 +4,15 @@
 
 #include "BackgroundSystem.h"
 
+#include <iostream>
+#include <ostream>
+
 #include "../../Constants/GameConstants.h"
 #include "../../Constants/WaveConstants.h"
 #include "../../Game/GameWorld.h"
 
 
-BackgroundSystem::BackgroundSystem() : IGameSystem(GameSystemID::BACKGROUND_SYSTEM){
+BackgroundSystem::BackgroundSystem() : IGameSystem(GameSystemID::BACKGROUND_SYSTEM, "BACKGROUND_SYSTEM"){
 
     InitStars();
 }
@@ -56,6 +59,8 @@ void BackgroundSystem::InitStars() {
         s.colorValue = static_cast<unsigned char>(GetRandomValue(120, 255));
         stars[i] = s;
     }
+
+    std::cout << "Background System initialized" << std::endl;
 }
 
 /**

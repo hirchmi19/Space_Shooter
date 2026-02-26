@@ -11,7 +11,7 @@
 #include "../../Game/GameWorld.h"
 #include "../../Constants/RenderConstants.h"
 
-MovementSystem::MovementSystem() : IGameSystem(GameSystemID::MOVEMENT_SYSTEM){}
+MovementSystem::MovementSystem() : IGameSystem(GameSystemID::MOVEMENT_SYSTEM, "MOVEMENT_SYSTEM"){}
 
 void MovementSystem::Run(GameWorld& world) {
 

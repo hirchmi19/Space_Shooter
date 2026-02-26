@@ -5,7 +5,7 @@
 #include "CollisionSystem.h"
 #include "../../Game/GameWorld.h"
 
-CollisionSystem::CollisionSystem() : IGameSystem(GameSystemID::COLLISION_SYSTEM){}
+CollisionSystem::CollisionSystem() : IGameSystem(GameSystemID::COLLISION_SYSTEM, "COLLISION_SYSTEM"){}
 
 void CollisionSystem::Run(GameWorld &world) {
 

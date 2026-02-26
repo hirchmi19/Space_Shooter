@@ -3,6 +3,7 @@
 //
 
 #pragma once
+
 #include "GameSystemID.h"
 
 class GameWorld;
@@ -12,13 +13,17 @@ class IGameSystem {
 
     public:
 
-    IGameSystem(const GameSystemID id) : id(id) {};
+    IGameSystem(const GameSystemID id, const char* name) : id(id), systemName(name) {};
     virtual ~IGameSystem() = default;
     virtual void Run(GameWorld& world) = 0;
+    //virtual void Init() = 0;
+
     const GameSystemID GetSystemID() const { return id; }
+    const char* GetSystemName() const { return systemName; }
 
     private:
     GameSystemID id;
+    const char* systemName;
 };
 
 

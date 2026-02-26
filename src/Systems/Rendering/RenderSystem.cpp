@@ -9,7 +9,7 @@
 #include "../../Constants/GameWorldConstants.h"
 #include "../../Game/GameWorld.h"
 
-RenderSystem::RenderSystem() : IGameSystem(GameSystemID::RENDERER_SYSTEM) {}
+RenderSystem::RenderSystem() : IGameSystem(GameSystemID::RENDERER_SYSTEM, "RENDER_SYSTEM") {}
 
 
 void RenderSystem::Run(GameWorld& world) {
