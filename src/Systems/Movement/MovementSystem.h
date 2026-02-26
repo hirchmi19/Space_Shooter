@@ -5,7 +5,7 @@
 #pragma once
 #include "../IGameSystem.h"
 #include "../../Entities/Projectile.h"
-#include "../../Entities/Enemy.h"
+#include "../../Entities/Enemies/Enemy.h"
 
 class Player;
 

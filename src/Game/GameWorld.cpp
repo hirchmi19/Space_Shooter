@@ -18,7 +18,7 @@
 GameWorld::GameWorld() {
 
     CreateSystems();
-   // InitGameSystems();
+    InitGameSystems();
     player = Player(GameWorldConstants::playerSpawn, GameWorldConstants::playerSize, GetAssetSystem().GetPlayerSprites());
 
 }
@@ -122,7 +122,8 @@ void GameWorld::SpawnEnemy(const EnemyID& id, const Vector2 &spawnPosition) {
         CombatComponent{1,
             Rectangle{spawnPosition.x, spawnPosition.y,
             size.x * RenderConstants::ENEMY_SCALING,
-            size.y * RenderConstants::ENEMY_SCALING}, score
+            size.y * RenderConstants::ENEMY_SCALING},
+            score
         });
 }
 
@@ -211,6 +212,21 @@ void GameWorld::AddSystem(std::unique_ptr<IGameSystem> system) {
     gameSystems[index] = std::move(system);
 
     std::cout << "Added System:  " << name << std::endl;
+}
+
+void GameWorld::InitGameSystems() {
+
+    for (const auto& gameSystem : gameSystems) {
+
+        if (!gameSystem) {
+            std::cout << "GAME SYSTEM IS NULL, skipping..." << std::endl;
+            continue;
+        }
+
+        std::string name(gameSystem->GetSystemName());
+        gameSystem->Init();
+        std::cout << "GAME SYSTEM INITIALIZED: " << name << std::endl;
+    }
 }
 
 /**

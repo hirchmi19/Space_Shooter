@@ -4,15 +4,13 @@
 
 #pragma once
 
-#include "raylib.h"
 #include <vector>
+#include "raylib.h"
+#include "AssetHeader/Assets.h"
 #include "../IGameSystem.h"
-#include "SpriteID.h"
-#include "TextureID.h"
 #include "../../Utilities/utils.h"
-#include "Sprite.h"
 
-enum class EnemyID;
+enum class EnemyID : uint32_t;
 
 class AssetSystem : public IGameSystem {
 
@@ -31,8 +29,7 @@ class AssetSystem : public IGameSystem {
 
 
     private:
-    void Run(GameWorld &world) override;
-    void InitAssets();
+    void Init() override;
     void LoadTex(TextureID id, const char* path);
     void DefineSprite (SpriteID id, TextureID textureID, Rectangle src);
 

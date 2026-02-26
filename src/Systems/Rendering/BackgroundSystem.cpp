@@ -12,10 +12,7 @@
 #include "../../Game/GameWorld.h"
 
 
-BackgroundSystem::BackgroundSystem() : IGameSystem(GameSystemID::BACKGROUND_SYSTEM, "BACKGROUND_SYSTEM"){
-
-    InitStars();
-}
+BackgroundSystem::BackgroundSystem() : IGameSystem(GameSystemID::BACKGROUND_SYSTEM, "BACKGROUND_SYSTEM"){}
 
 void BackgroundSystem::Run(GameWorld& world) {
 
@@ -48,7 +45,7 @@ void BackgroundSystem::Render() const {
 /**
  * Spawns all initial stars in the background
  */
-void BackgroundSystem::InitStars() {
+void BackgroundSystem::Init() {
 
 
     for (size_t i = 0; i < stars.size(); ++i) {
@@ -60,7 +57,6 @@ void BackgroundSystem::InitStars() {
         stars[i] = s;
     }
 
-    std::cout << "Background System initialized" << std::endl;
 }
 
 /**

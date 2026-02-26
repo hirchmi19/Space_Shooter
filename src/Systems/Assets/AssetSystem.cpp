@@ -8,12 +8,9 @@
 #include <ostream>
 
 #include "raylib.h"
-#include "../../Entities/EnemyID.h"
+#include "../../Entities/Enemies/EnemyID.h"
 
-AssetSystem::AssetSystem() : IGameSystem(GameSystemID::ASSET_SYSTEM, "ASSET_SYSTEM") {
-
-    InitAssets();
-}
+AssetSystem::AssetSystem() : IGameSystem(GameSystemID::ASSET_SYSTEM, "ASSET_SYSTEM") {}
 
 
 AssetSystem::~AssetSystem() {
@@ -110,15 +107,10 @@ void AssetSystem::DefineSprite(const SpriteID id, const TextureID textureID, con
     sprites[index] = Sprite{textureID, src};
 }
 
-void AssetSystem::Run(GameWorld &world) {
-
-    // HERE RUNS NOTHING
-}
-
 /**
  * Loads the sprite sheets and cuts out the sprites
  */
-void AssetSystem::InitAssets() {
+void AssetSystem::Init() {
 
     //Load textures
     LoadTex(TextureID::PLAYER_SHIP_CANVAS,  ASSETS_PATH "SpaceShooterAssetPack_Ships.png");
@@ -155,7 +147,5 @@ void AssetSystem::InitAssets() {
     pixelFont = LoadFont(ASSETS_PATH "pixelFont.ttf");
     SetTextureFilter(pixelFont.texture, TEXTURE_FILTER_POINT);
 
-
-    std::cout << "Asset System initialized!" << std::endl;
 }
 

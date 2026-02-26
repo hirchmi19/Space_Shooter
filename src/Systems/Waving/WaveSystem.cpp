@@ -9,14 +9,11 @@
 
 #include "../../Constants/GameConstants.h"
 #include "../../Constants/WaveConstants.h"
-#include "../../Entities/EnemyID.h"
+#include "../../Entities/Enemies/EnemyID.h"
 #include "../../Game/GameWorld.h"
 
 
-WaveSystem::WaveSystem() : IGameSystem(GameSystemID::WAVE_SYSTEM, "WAVE_SYSTEM") {
-
-   Init();
-}
+WaveSystem::WaveSystem() : IGameSystem(GameSystemID::WAVE_SYSTEM, "WAVE_SYSTEM") {}
 
 void WaveSystem::Run(GameWorld& world)
 {
@@ -70,7 +67,7 @@ void WaveSystem::Start() {
 //--------------------------------------------------------------------------
 
 /**
- * Initialize and Calculate all relevant and static gameplay data
+ * Initialize and Calculate all relevant and static wave data
  * \return
  */
 void WaveSystem::Init() {
@@ -85,8 +82,6 @@ void WaveSystem::Init() {
     CalcSideDiveSpawns();
     BuildFormationSlots();
     DefinePatterns();
-
-    std::cout << "Wave System initialized!" << std::endl;
 
 }
 
@@ -285,7 +280,7 @@ void WaveSystem::BuildDivingGroups(const WavePattern& pattern)
         for (int j = 0; j < pattern.groupSizes[dive]; ++j)
         {
             formationSlots[index].group.groupID = dive;
-            formationSlots[index].group.pattern = pattern.dives[dive];
+            formationSlots[index].group.dive = pattern.dives[dive];
             index++;
         }
     }

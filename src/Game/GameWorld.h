@@ -9,8 +9,8 @@
 
 #include "GameState.h"
 #include "../Constants/GameConstants.h"
-#include "../Entities/Enemy.h"
-#include "../Entities/Player.h"
+#include "../Entities/Enemies/Enemy.h"
+#include "../Entities/Player/Player.h"
 #include "../Entities/Projectile.h"
 #include "../Utilities/utils.h"
 #include "../Systems/GameSystemID.h"
@@ -18,11 +18,9 @@
 #include "../Systems/Rendering/BackgroundSystem.h"
 #include "../Systems/Rendering/RenderSystem.h"
 #include "../Systems/Scoring/ScoreSystem.h"
-#include "../Systems/Waving/FormationSlot.h"
+#include "../Systems/Waving/WaveHeader/FormationSlot.h"
 #include "../Systems/Waving/WaveSystem.h"
 
-struct Explosion;
-class Player;
 class IGameSystem;
 enum class SpriteID : uint32_t;
 
@@ -66,11 +64,11 @@ class GameWorld {
 
     Player player;
 
-    std::vector<Enemy> enemies;
-    std::vector<Projectile> projectiles;
+    std::vector<Enemy> enemies{};
+    std::vector<Projectile> projectiles{};
 
-    std::vector<size_t> enemiesToRemove;
-    std::vector<size_t> projectilesToRemove;
+    std::vector<size_t> enemiesToRemove{};
+    std::vector<size_t> projectilesToRemove{};
 
     std::array<std::unique_ptr<IGameSystem>, ToIndex(GameSystemID::COUNT)> gameSystems{};
 
@@ -80,6 +78,7 @@ class GameWorld {
     bool timerStarted = false;
 
     void CreateSystems();
+    void InitGameSystems();
     void AddSystem(std::unique_ptr<IGameSystem> system);
 
     const AssetSystem& GetAssetSystem() const;

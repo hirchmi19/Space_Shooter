@@ -7,13 +7,10 @@
 #include <vector>
 #include <array>
 
-#include "FormationSlot.h"
-#include "WavePattern.h"
-#include "WavePhase.h"
-#include "WaveType.h"
+#include "WaveHeader/Wave.h"
 #include "../IGameSystem.h"
-#include "../../Entities/Components/TimerComponent.h"
 #include "../../Utilities/utils.h"
+#include "../../Entities/Components/TimerComponent.h"
 
 
 class WaveSystem : public IGameSystem{
@@ -52,11 +49,11 @@ class WaveSystem : public IGameSystem{
     std::vector<Vector2> sideDiveSpawns{};
 
     WavePhase currentPhase = WavePhase::INITIALIZE;
-    WavePattern currentPattern;
+    WavePattern currentPattern{};
 
     std::array<WavePattern, ToIndex(WaveType::COUNT)> patterns{};
 
-    void Init();
+    void Init() override;
     void StartWave();
 
     void DefinePatterns();

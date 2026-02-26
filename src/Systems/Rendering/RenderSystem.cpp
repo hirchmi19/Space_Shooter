@@ -8,6 +8,7 @@
 #include "raylib.h"
 #include "../../Constants/GameWorldConstants.h"
 #include "../../Game/GameWorld.h"
+#include "Constants/ScoringConstants.h"
 
 RenderSystem::RenderSystem() : IGameSystem(GameSystemID::RENDERER_SYSTEM, "RENDER_SYSTEM") {}
 
@@ -151,7 +152,7 @@ void RenderSystem::RenderGameOver(const GameWorld &world) const {
     DrawTextEx(world.GetFont(), subCaption.c_str(), subCaptionPos, RenderConstants::GAME_OVER_SUBCAPTION_SIZE, RenderConstants::SPACING, WHITE);
 }
 
-void RenderSystem::RenderWaveTransition(const GameWorld &world, std::string caption) const {
+void RenderSystem::RenderWaveTransition(const GameWorld &world, const std::string& caption) const {
 
     const Vector2 captionWidth = MeasureTextEx(world.GetFont(), caption.c_str(), RenderConstants::WAVE_TRANSITION_CAPTION_SIZE, RenderConstants::SPACING);
     constexpr uint32_t xOffset = 30;
@@ -166,9 +167,9 @@ void RenderSystem::RenderHighScore(const GameWorld &world) const {
     constexpr std::string caption = "HIGH SCORE";
     std::string highScore = std::to_string(world.GetHighScore());
 
-    if (highScore.length() < GameWorldConstants::HIGHSCORE_DIGITS) {
+    if (highScore.length() < ScoringConstants::HIGHSCORE_DIGITS) { // add leading zeros, if needed
 
-        const uint32_t delta = GameWorldConstants::HIGHSCORE_DIGITS - highScore.length();
+        const uint32_t delta = ScoringConstants::HIGHSCORE_DIGITS - highScore.length();
         highScore.insert(0, delta, '0');
 
     }

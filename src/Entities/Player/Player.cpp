@@ -5,7 +5,7 @@
 #include "raylib.h"
 #include "Player.h"
 
-#include "../Game/GameWorld.h"
+#include "../../Game/GameWorld.h"
 
 void Player::SetPosition(const Vector2& pos) {
 
@@ -29,7 +29,7 @@ void Player::HandleInput(GameWorld& world) {
 
     if (IsKeyPressed(KEY_SPACE)) {
 
-        if (!world.GetPlayer().CanShoot()) return;
+        if (!CanShoot()) return;
 
         world.SpawnPlayerProjectile(movement.position);
         cooldownTimer.Start(.35f);

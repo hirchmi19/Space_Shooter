@@ -28,7 +28,7 @@ class RenderSystem : public IGameSystem {
     void RenderHighScore(const GameWorld& world) const;
 
     void RenderGameOver(const GameWorld& world) const;
-    void RenderWaveTransition(const GameWorld& world, std::string caption) const;
+    void RenderWaveTransition(const GameWorld& world, const std::string& caption) const;
     void RenderGameState(GameWorld& world, GameState state) const;
 
 };

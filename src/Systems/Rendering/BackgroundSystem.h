@@ -24,7 +24,7 @@ class BackgroundSystem : public IGameSystem{
 
     private:
     void RespawnStar(size_t index);
-    void InitStars();
+    void Init() override;
     std::array<Star, MAX_NUMBER_OF_STARS> stars{};
 
 };

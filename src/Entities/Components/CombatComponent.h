@@ -6,24 +6,24 @@
 
 struct CombatComponent {
 
-    public:
-    uint32_t score;
     Rectangle hitbox{};
+    uint32_t score;
+    float damage = 1;
 
-    explicit CombatComponent(const int hp = 0, const Rectangle hitbox = {}, const uint32_t score = 0)
+    explicit CombatComponent(const float hp = 0, const Rectangle hitbox = {}, const uint32_t score = 0)
         : hitbox(hitbox), health(hp), score(score) {}
 
     bool IsAlive() const { return health > 0; }
     void Kill() { health = 0; }
 
-    void TakeDamage(const int damage) {
+    void TakeDamage(const float dmg) {
 
-        if (damage >= health) {health = 0;}
-        else {health -= damage;}
+        if (dmg >= health) {health = 0;}
+        else {health -= dmg;}
     }
 
     void Revive() { health = 1; }
 
     private:
-    uint32_t health = 0;
+    float health = 0;
 };

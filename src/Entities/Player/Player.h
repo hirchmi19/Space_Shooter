@@ -6,12 +6,13 @@
 
 #include "raylib.h"
 #include <vector>
-#include "Components/CombatComponent.h"
-#include "Components/Movement1D.h"
-#include "Components/RenderComponent.h"
-#include "../Constants/RenderConstants.h"
-#include "../Systems/Assets/Sprite.h"
-#include "Components/TimerComponent.h"
+
+#include "../Components/CombatComponent.h"
+#include "../Components/Movement1D.h"
+#include "../Components/RenderComponent.h"
+#include "../../Constants/RenderConstants.h"
+#include "../../Systems/Assets/AssetHeader/Sprite.h"
+#include "../Components/TimerComponent.h"
 
 class GameWorld;
 
@@ -22,7 +23,7 @@ class Player {
     Player() = default;
 
     Player(const Vector2& position, const Vector2& size, const std::vector<const Sprite*>& sprites)
-     : movement{ position, 0 }, render{ sprites, size }, combat{3,
+     : movement{ position, 0 }, render{ sprites, size }, combat{1,
          Rectangle {position.x, position.y, size.x * RenderConstants::PLAYER_SCALING, size.y * RenderConstants::PLAYER_SCALING} }
     {}
 

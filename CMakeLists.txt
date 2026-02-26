@@ -13,7 +13,21 @@ endif()
 add_subdirectory(external/raylib)
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
-add_executable(Space_Shooter ${SOURCES})
+add_executable(Space_Shooter ${SOURCES}
+        src/Constants/ScoringConstants.h
+        src/SystemService/SystemService.cpp
+        src/SystemService/SystemService.h
+        src/SystemService/IEntityService.cpp
+        src/SystemService/IEntityService.h
+        src/Systems/Assets/AssetHeader/Assets.h
+        src/Systems/Waving/WaveHeader/Wave.h
+        src/SystemService/IAssetService.cpp
+        src/SystemService/IAssetService.h
+        src/SystemService/IScoreService.cpp
+        src/SystemService/IScoreService.h
+        src/Systems/Entities/EntitySystem.cpp
+        src/Systems/Entities/EntitySystem.h
+)
 
 target_compile_definitions(Space_Shooter PRIVATE 
     ASSETS_PATH="${CMAKE_SOURCE_DIR}/assets/"

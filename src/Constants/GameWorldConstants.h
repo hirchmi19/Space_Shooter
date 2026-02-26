@@ -14,7 +14,6 @@ namespace GameWorldConstants {
     constexpr float playerSpawnY = GameConstants::SCREEN_HEIGHT - 100.0f; // minus an offset so player isn't at the bottom
 
     constexpr Vector2 playerSpawn = {playerSpawnX, playerSpawnY};
-    constexpr Vector2 playerSize = {8, 7}; // player texture values
-    constexpr uint32_t HIGHSCORE_DIGITS = 8;
+    constexpr Vector2 playerSize = {8, 7}; // player texture value
 
 }

@@ -3,11 +3,12 @@
 //
 
 #pragma once
-#include "DiveType.h"
+
+enum class DiveType : uint32_t;
 
 struct DivingGroup {
 
     uint32_t groupID;
-    DiveType pattern;
+    DiveType dive;
 
 };

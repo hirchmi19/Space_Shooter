@@ -8,15 +8,15 @@
 
 class GameWorld;
 
-
 class IGameSystem {
 
     public:
 
     IGameSystem(const GameSystemID id, const char* name) : id(id), systemName(name) {};
     virtual ~IGameSystem() = default;
-    virtual void Run(GameWorld& world) = 0;
-    //virtual void Init() = 0;
+
+    virtual void Run(GameWorld& world){};
+    virtual void Init(){};
 
     const GameSystemID GetSystemID() const { return id; }
     const char* GetSystemName() const { return systemName; }

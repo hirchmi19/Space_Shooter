@@ -5,15 +5,17 @@
 #pragma once
 #include "DivingGroup.h"
 #include "raylib.h"
-#include "../../Entities/EnemyID.h"
+
+enum class EnemyID : uint32_t;
+struct DivingGroup;
 
 struct Enemy;
 
 struct FormationSlot {
 
-    Vector2 position;
-    DivingGroup group;
-    EnemyID id = EnemyID::NONE;
-    uint32_t slotIndex;
+    Vector2 position{};
+    DivingGroup group{};
+    EnemyID id{};
+    uint32_t slotIndex = 0;
 
 };

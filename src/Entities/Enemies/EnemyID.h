@@ -4,7 +4,7 @@
 
 #pragma once
 
-enum class EnemyID {
+enum class EnemyID : uint32_t {
 
     NONE,
     YELLOW_ENEMY,

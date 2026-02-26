@@ -4,7 +4,8 @@
 
 #pragma once
 
-#include "WaveType.h"
+enum class WaveType : uint32_t;
+enum class DiveType : uint32_t;
 
 struct WavePattern {
 
