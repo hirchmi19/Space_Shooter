@@ -397,7 +397,7 @@ bool WaveSystem::IsCurrentDiveFinished(GameWorld& world) const
  * \param id
  * \return
  */
-std::vector<size_t> WaveSystem::GetGroupMemberIndices(const int id) const {
+std::vector<size_t> WaveSystem::GetGroupMemberIndices(const uint32_t id) const {
 
     std::vector<size_t> result;
 
@@ -411,7 +411,12 @@ std::vector<size_t> WaveSystem::GetGroupMemberIndices(const int id) const {
 
 const WavePattern& WaveSystem::PickWavePattern() const {
 
-    const int patternIndex = GetRandomValue(1, static_cast<int>(patterns.size() - 1));
+    if (patterns.empty()) {
+
+        std::cout << "WaveSystem::PickWavePattern(): No patterns found!" << std::endl;
+        return WavePattern();
+    }
+    const size_t patternIndex = static_cast<size_t>(GetRandomValue(1, patterns.size() - 1));
     return patterns[patternIndex];
 }
 
@@ -430,15 +435,15 @@ void WaveSystem::CalcFormationPositions()
     {
         const int count = WaveConstants::ROW_COUNTS[row];
 
-        const float rowWidth = (count - 1) * WaveConstants::HORIZONTAL_SPACING;
+        const float rowWidth = static_cast<float>(count - 1) * WaveConstants::HORIZONTAL_SPACING;
         const float startX = (GameConstants::SCREEN_WIDTH - rowWidth) / 2.0f;
 
         for (int i = 0; i < count; ++i)
         {
             constexpr float startY = 100.0f;
 
-            formationPositions[slot].x = startX + i * WaveConstants::HORIZONTAL_SPACING;
-            formationPositions[slot].y = startY + row * WaveConstants::VERTICAL_SPACING;
+            formationPositions[slot].x = startX + static_cast<float>(i) * WaveConstants::HORIZONTAL_SPACING;
+            formationPositions[slot].y = startY + static_cast<float>(row) * WaveConstants::VERTICAL_SPACING;
 
             slot++;
         }
@@ -454,14 +459,14 @@ void WaveSystem::CalcTopDiveSpawns() {
     constexpr float leftX  = GameConstants::SCREEN_WIDTH * 0.25f;
     constexpr float rightX = GameConstants::SCREEN_WIDTH * 0.75f;
 
-    constexpr int total = 25;
+    constexpr uint32_t total = 25;
 
     for (int i = 0; i < total; ++i)
     {
         Vector2 spawn;
 
         spawn.x = (i % 2 == 0) ? leftX : rightX;
-        spawn.y = -static_cast<float>(i / 2) * WaveConstants::VERTICAL_SPACING - 50.f;
+        spawn.y = -static_cast<float>(i) / 2 * WaveConstants::VERTICAL_SPACING - 50.f;
 
         topDiveSpawns[i] = spawn;
     }
@@ -476,21 +481,21 @@ void WaveSystem::CalcSideDiveSpawns()
     constexpr float rowSpacingY      = 120.0f;
     constexpr float verticalSpacing  = 50.0f;
 
-    constexpr int total = 25;
-    constexpr int perRow = total / 2;
+    constexpr uint32_t total = 25;
+    constexpr uint32_t perRow = total / 2;
 
     for (int i = 0; i < total; ++i)
     {
         Vector2 spawn{};
 
-        const int row = i / perRow;
-        const int indexInRow = i % perRow;
+        const uint32_t row = i / perRow;
+        const uint32_t indexInRow = i % perRow;
 
         const bool fromLeft = (indexInRow % 2 == 0);
 
         spawn.x = fromLeft? -horizontalOffset : GameConstants::SCREEN_WIDTH + horizontalOffset;
 
-        spawn.y = rowSpacingY + row * 80.0f + (indexInRow / 2) * verticalSpacing;
+        spawn.y = rowSpacingY + static_cast<float>(row) * 80.0f + static_cast<float>(indexInRow) / 2 * verticalSpacing;
 
         sideDiveSpawns[i] = spawn;
     }

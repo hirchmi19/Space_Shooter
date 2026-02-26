@@ -7,14 +7,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
 endif()
 
 add_subdirectory(external/raylib)
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
-
 add_executable(Space_Shooter ${SOURCES})
+
+target_compile_definitions(Space_Shooter PRIVATE 
+    ASSETS_PATH="${CMAKE_SOURCE_DIR}/assets/"
+)
 
 target_include_directories(Space_Shooter PRIVATE src)
 

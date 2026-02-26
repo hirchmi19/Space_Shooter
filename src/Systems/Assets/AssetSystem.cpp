@@ -4,7 +4,6 @@
 
 #include "AssetSystem.h"
 #include "raylib.h"
-#include "../../Constants/RenderConstants.h"
 #include "../../Entities/EnemyID.h"
 
 AssetSystem::AssetSystem() : IGameSystem(GameSystemID::ASSET_SYSTEM) {
@@ -116,10 +115,10 @@ void AssetSystem::Run(GameWorld &world) {
 void AssetSystem::InitAssets() {
 
     //Load textures
-    LoadTex(TextureID::PLAYER_SHIP_CANVAS, "assets/SpaceShooterAssetPack_Ships.png");
-    LoadTex(TextureID::ENEMY_CANVAS, "assets/pico8_invaders_sprites_LARGE.png");
-    LoadTex(TextureID::PROJECTILE_CANVAS, "assets/SpaceShooterAssetPack_Projectiles.png");
-    LoadTex(TextureID::EFFECT_CANVAS, "assets/SpaceShooterAssetPack_Miscellaneous.png");
+    LoadTex(TextureID::PLAYER_SHIP_CANVAS,  ASSETS_PATH "SpaceShooterAssetPack_Ships.png");
+    LoadTex(TextureID::ENEMY_CANVAS,        ASSETS_PATH "pico8_invaders_sprites_LARGE.png");
+    LoadTex(TextureID::PROJECTILE_CANVAS,   ASSETS_PATH "SpaceShooterAssetPack_Projectiles.png");
+    LoadTex(TextureID::EFFECT_CANVAS,       ASSETS_PATH "SpaceShooterAssetPack_Miscellaneous.png");
 
     //Player sprites
     DefineSprite(SpriteID::PLAYER_SHIP_MIDDLE, TextureID::PLAYER_SHIP_CANVAS, {8, 0, 8, 8});
@@ -147,7 +146,7 @@ void AssetSystem::InitAssets() {
     //--------------------------------------------------------------------------
 
     // pixel_font
-    pixelFont = LoadFont("assets/pixelFont.ttf");
+    pixelFont = LoadFont(ASSETS_PATH "pixelFont.ttf");
     SetTextureFilter(pixelFont.texture, TEXTURE_FILTER_POINT);
 }
 

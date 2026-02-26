@@ -15,9 +15,10 @@
 #include "../Systems/Scoring/ScoreSystem.h"
 #include "../Systems/Waving/WaveSystem.h"
 
-GameWorld::GameWorld() : player(GameWorldConstants::playerSpawn, GameWorldConstants::playerSize, GetAssetSystem().GetPlayerSprites()) {
+GameWorld::GameWorld() {
 
     CreateSystems();
+    player = Player(GameWorldConstants::playerSpawn, GameWorldConstants::playerSize, GetAssetSystem().GetPlayerSprites());
 
 }
 
@@ -186,8 +187,8 @@ void GameWorld::SpawnEnemyProjectile(const Vector2 &enemyPosition) {
 void GameWorld::CreateSystems() {
 
     AddSystem(std::make_unique<AssetSystem>());
-    AddSystem(std::make_unique<RenderSystem>());
     AddSystem(std::make_unique<BackgroundSystem>());
+    AddSystem(std::make_unique<RenderSystem>());
     AddSystem(std::make_unique<MovementSystem>());
     AddSystem(std::make_unique<WaveSystem>());
     AddSystem(std::make_unique<CollisionSystem>());
@@ -206,6 +207,8 @@ void GameWorld::AddSystem(std::unique_ptr<IGameSystem> system) {
     const GameSystemID id = system->GetSystemID();
     const size_t index = ToIndex(id);
     gameSystems[index] = std::move(system);
+
+    std::cout << "Added SystemID:  " << index << std::endl;
 }
 
 /**
@@ -216,8 +219,8 @@ const AssetSystem& GameWorld::GetAssetSystem() const {
 
     const auto& ptr = gameSystems[ToIndex(GameSystemID::ASSET_SYSTEM)];
 
-    //assert(ptr && "AssetSystem is not initialized");
-    return static_cast<const AssetSystem&>(*ptr);
+    assert(ptr && "AssetSystem is not initialized");
+    return dynamic_cast<const AssetSystem&>(*ptr);
 }
 
 /**
@@ -228,32 +231,32 @@ const BackgroundSystem& GameWorld::GetBackgroundSystem() const {
 
     const auto& ptr = gameSystems[ToIndex(GameSystemID::BACKGROUND_SYSTEM)];
 
-    //assert(ptr && "BackgroundSystem is not initialized");
-    return static_cast<const BackgroundSystem&>(*ptr);
+    assert(ptr && "BackgroundSystem is not initialized");
+    return dynamic_cast<const BackgroundSystem&>(*ptr);
 }
 
 RenderSystem &GameWorld::GetRenderSystem() const {
 
      auto& ptr = gameSystems[ToIndex(GameSystemID::RENDERER_SYSTEM)];
 
-    //assert(ptr && "RenderSystem is not initialized");
-    return static_cast< RenderSystem&>(*ptr);
+    assert(ptr && "RenderSystem is not initialized");
+    return dynamic_cast< RenderSystem&>(*ptr);
 }
 
 WaveSystem &GameWorld::GetWaveSystem() const {
 
     const auto& ptr = gameSystems[ToIndex(GameSystemID::WAVE_SYSTEM)];
 
-    //assert(ptr && "WaveSystem is not initialized");
-    return static_cast<WaveSystem&>(*ptr);
+    assert(ptr && "WaveSystem is not initialized");
+    return dynamic_cast<WaveSystem&>(*ptr);
 }
 
 ScoreSystem &GameWorld::GetScoreSystem() const {
 
     const auto& ptr = gameSystems[ToIndex(GameSystemID::SCORE_SYSTEM)];
 
-    //assert(ptr && "ScoreSystem is not initialized");
-    return static_cast<ScoreSystem&>(*ptr);
+    assert(ptr && "ScoreSystem is not initialized");
+    return dynamic_cast<ScoreSystem&>(*ptr);
 }
 
 /**

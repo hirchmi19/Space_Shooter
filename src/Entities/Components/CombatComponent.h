@@ -10,7 +10,7 @@ struct CombatComponent {
     uint32_t score;
     Rectangle hitbox{};
 
-    explicit CombatComponent(const int hp, const Rectangle hitbox, const uint32_t score = 0)
+    explicit CombatComponent(const int hp = 0, const Rectangle hitbox = {}, const uint32_t score = 0)
         : hitbox(hitbox), health(hp), score(score) {}
 
     bool IsAlive() const { return health > 0; }

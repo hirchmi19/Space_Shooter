@@ -18,6 +18,9 @@ class GameWorld;
 class Player {
 
     public:
+
+    Player() = default;
+
     Player(const Vector2& position, const Vector2& size, const std::vector<const Sprite*>& sprites)
      : movement{ position, 0 }, render{ sprites, size }, combat{3,
          Rectangle {position.x, position.y, size.x * RenderConstants::PLAYER_SCALING, size.y * RenderConstants::PLAYER_SCALING} }

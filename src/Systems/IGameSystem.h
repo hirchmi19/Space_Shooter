@@ -18,7 +18,7 @@ class IGameSystem {
     const GameSystemID GetSystemID() const { return id; }
 
     private:
-    GameSystemID id = GameSystemID::NONE;
+    GameSystemID id;
 };
 
 

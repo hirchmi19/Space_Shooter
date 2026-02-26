@@ -37,7 +37,7 @@ class AssetSystem : public IGameSystem {
     void DefineSprite (SpriteID id, TextureID textureID, Rectangle src);
 
 
-    Font pixelFont;
+    Font pixelFont = Font();
     std::array<Texture2D, ToIndex(TextureID::COUNT)> textures{};
     std::array<Sprite, ToIndex(SpriteID::COUNT)> sprites{};
 

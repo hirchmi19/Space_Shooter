@@ -69,7 +69,7 @@ class WaveSystem : public IGameSystem{
     void BuildDivingGroups(const WavePattern &pattern);
     void BuildFormationSlots();
 
-    std::vector<size_t> GetGroupMemberIndices(int id) const;
+    std::vector<size_t> GetGroupMemberIndices(uint32_t id) const;
 
     void SpawnDive(GameWorld& world, const DiveType type);
 
