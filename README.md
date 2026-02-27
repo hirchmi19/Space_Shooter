@@ -1,7 +1,7 @@
 # Space_Shooter
 
 A small but structured **C++ arcade-style space shooter** built with **raylib** and **CMake**.
-The project does not require a global raylib installation thanks to Git submodules.
+The project uses Raylib version 5.5, which is installed by its CMake config. 
 
 ## Game
 
@@ -20,6 +20,7 @@ The project does not require a global raylib installation thanks to Git submodul
 - C++ compiler (Clang, GCC, or MSVC)
 - CMake ≥ 3.15
 - Git
+- Raylib 5.5
 
 # Clone the Project:
 
@@ -35,25 +36,14 @@ The project does not require a global raylib installation thanks to Git submodul
 
 # Build & Run:
 
-`cmake -S . -B build` <br>
-`cmake --build build`
+`cmake -B cmake-build-debug` <br>
+`cmake --build cmake-build-debug`
 
 ### Run the exe (example):
 
-`./build/Space_Shooter`
+`./cmake-build-debug/Space_Shooter`
 
-
-# Architecture Overview:
-
-**The project follows a system-oriented structure:**
-
-GameWorld manages entities
-
-Systems operate on entities (Movement, Rendering, Wave, etc.)
-
-Assets are mapped via enum → texture lookup
-
-## Credits
+# Credits
 
 ### Libraries
 - raylib – https://www.raylib.com/

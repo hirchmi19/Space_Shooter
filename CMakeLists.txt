@@ -10,27 +10,19 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
 endif()
 
-add_subdirectory(external/raylib)
+include(FetchContent)
+FetchContent_Declare(
+        raylib
+        GIT_REPOSITORY https://github.com/raysan5/raylib.git
+        GIT_TAG 5.5
+)
+FetchContent_MakeAvailable(raylib)
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
-add_executable(Space_Shooter ${SOURCES}
-        src/Constants/ScoringConstants.h
-        src/SystemService/SystemService.cpp
-        src/SystemService/SystemService.h
-        src/SystemService/IEntityService.cpp
-        src/SystemService/IEntityService.h
-        src/Systems/Assets/AssetHeader/Assets.h
-        src/Systems/Waving/WaveHeader/Wave.h
-        src/SystemService/IAssetService.cpp
-        src/SystemService/IAssetService.h
-        src/SystemService/IScoreService.cpp
-        src/SystemService/IScoreService.h
-        src/Systems/Entities/EntitySystem.cpp
-        src/Systems/Entities/EntitySystem.h
-)
+add_executable(Space_Shooter ${SOURCES})
 
-target_compile_definitions(Space_Shooter PRIVATE 
-    ASSETS_PATH="${CMAKE_SOURCE_DIR}/assets/"
+target_compile_definitions(Space_Shooter PRIVATE
+        ASSETS_PATH="${CMAKE_SOURCE_DIR}/assets/"
 )
 
 target_include_directories(Space_Shooter PRIVATE src)
