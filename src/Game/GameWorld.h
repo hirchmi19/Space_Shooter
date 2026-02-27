@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <cassert>
+
 #include  "raylib.h"
 #include <vector>
 
@@ -54,8 +56,6 @@ class GameWorld {
     int GetWaveCounter() const { return GetWaveSystem().GetWaveCounter(); };
     const uint32_t GetHighScore() const { return GetScoreSystem().GetHighScore(); };
 
-    void RenderBackground() const { GetBackgroundSystem().Render();};
-
     std::vector<Projectile>& GetProjectiles() {return projectiles;};
     std::vector<Enemy>& GetEnemies() {return enemies;};
 
@@ -74,12 +74,23 @@ class GameWorld {
 
     GameState currentGameState = GameState::BEGIN_WAVE;
 
-    TimerComponent waveTimer;
+    TimerComponent transitionTimer;
     bool timerStarted = false;
 
     void CreateSystems();
-    void InitGameSystems();
+    void InitGameSystems() const;
     void AddSystem(std::unique_ptr<IGameSystem> system);
+
+
+    template<typename T>
+     T& GetGameSystem(const GameSystemID& id) {
+
+        const auto& ptr = gameSystems[ToIndex(id)];
+        assert(ptr && "GameSystem is not initialized");
+        return dynamic_cast<T&>(*ptr);
+    }
+
+
 
     const AssetSystem& GetAssetSystem() const;
     const BackgroundSystem& GetBackgroundSystem() const;

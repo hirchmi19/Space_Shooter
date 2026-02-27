@@ -23,7 +23,6 @@ class RenderSystem : public IGameSystem {
 
     void RenderPlayer(const GameWorld& world) const;
     void RenderEnemies(GameWorld& world) const;
-    void RenderBackground(const GameWorld& world) const;
     void RenderProjectiles(GameWorld& world) const;
     void RenderHighScore(const GameWorld& world) const;
 

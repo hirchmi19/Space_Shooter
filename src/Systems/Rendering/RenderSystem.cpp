@@ -24,8 +24,6 @@ void RenderSystem::RenderGameState(GameWorld &world, const GameState state) cons
 
     std::string text;
 
-    RenderBackground(world);
-
     switch (state) {
 
         case GameState::GAME_OVER:
@@ -52,11 +50,6 @@ void RenderSystem::RenderGameState(GameWorld &world, const GameState state) cons
             RenderWaveTransition(world, text);
             break;
     }
-}
-
-void RenderSystem::RenderBackground(const GameWorld& world) const {
-
-    world.RenderBackground();
 }
 
 /**

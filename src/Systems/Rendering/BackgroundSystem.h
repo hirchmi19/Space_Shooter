@@ -20,7 +20,7 @@ class BackgroundSystem : public IGameSystem{
     ~BackgroundSystem() override = default;
 
     void Run(GameWorld& world) override;
-    void Render() const;
+    void Render();
 
     private:
     void RespawnStar(size_t index);

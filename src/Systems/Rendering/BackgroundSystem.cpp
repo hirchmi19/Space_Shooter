@@ -21,19 +21,19 @@ void BackgroundSystem::Run(GameWorld& world) {
 
         stars[i].position.y += static_cast<float>(std::min(25,world.GetWaveCounter()));
 
-        if (stars[i].position.y >= GameConstants::SCREEN_HEIGHT) { RespawnStar(i);}
+        if (stars[i].position.y >= GameConstants::SCREEN_HEIGHT) RespawnStar(i);
     }
 }
 
 /**
  * Renders all stars
  */
-void BackgroundSystem::Render() const {
+void BackgroundSystem::Render()  {
 
 
     for (size_t i = 0; i < stars.size(); ++i) {
 
-        DrawPixel(stars[i].position.x, stars[i].position.y,
+        DrawPixel(static_cast<int>(stars[i].position.x), static_cast<int>(stars[i].position.y),
             Color {stars[i].colorValue, stars[i].colorValue, stars[i].colorValue, 255});
     }
 }
@@ -60,7 +60,7 @@ void BackgroundSystem::Init() {
 }
 
 /**
- * Respawns an start, after he leaves the screen space
+ * Respawns a start, after he leaves the screen space
  * \param index
  */
 void BackgroundSystem::RespawnStar(const size_t index) {

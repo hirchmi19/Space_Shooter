@@ -28,14 +28,14 @@ GameWorld::GameWorld() {
  */
 void GameWorld::RunGameplaySystems() {
 
-    const auto& bgSys = gameSystems[ToIndex(GameSystemID::BACKGROUND_SYSTEM)];
-    const auto& moveSys = gameSystems[ToIndex(GameSystemID::MOVEMENT_SYSTEM)];
-    const auto& waveSys = gameSystems[ToIndex(GameSystemID::WAVE_SYSTEM)];
-    const auto& collisionSys = gameSystems[ToIndex(GameSystemID::COLLISION_SYSTEM)];
+    auto& bgSys = GetGameSystem<BackgroundSystem>(GameSystemID::BACKGROUND_SYSTEM);
+    auto& waveSys = GetGameSystem<WaveSystem>(GameSystemID::WAVE_SYSTEM);
+    auto& moveSys = GetGameSystem<MovementSystem>(GameSystemID::MOVEMENT_SYSTEM);
+    auto& collSys = GetGameSystem<CollisionSystem>(GameSystemID::COLLISION_SYSTEM);
 
-    if (bgSys) bgSys->Run(*this); // background is always moving
+    bgSys.Run(*this);    // background is always moving
 
-    waveTimer.Tick(1 / GameConstants::UPS);
+    transitionTimer.Tick(1 / GameConstants::UPS);
 
     switch (currentGameState) {
 
@@ -43,11 +43,11 @@ void GameWorld::RunGameplaySystems() {
 
             if (!timerStarted) {
 
-                waveTimer.Start(3.f);
+                transitionTimer.Start(3.f);
                 timerStarted = true;
             }
 
-            if (waveTimer.IsFinished() && timerStarted) {
+            if (transitionTimer.IsFinished() && timerStarted) {
 
                 currentGameState = GameState::IN_GAME;
                 timerStarted = false;
@@ -59,11 +59,9 @@ void GameWorld::RunGameplaySystems() {
 
             player.HandleInput(*this);
 
-            if (waveSys) waveSys->Run(*this);
-            if (moveSys) moveSys->Run(*this);
-            if (collisionSys) collisionSys->Run(*this);
-
-            if (!player.IsAlive()) currentGameState = GameState::GAME_OVER;
+            waveSys.Run(*this);
+            moveSys.Run(*this);
+            collSys.Run(*this);
 
             FindDeadEntities();
             KillEntities();
@@ -76,11 +74,11 @@ void GameWorld::RunGameplaySystems() {
 
             if (!timerStarted) {
 
-                waveTimer.Start(3.f);
+                transitionTimer.Start(3.f);
                 timerStarted = true;
             }
 
-            if (waveTimer.IsFinished() && timerStarted) {
+            if (transitionTimer.IsFinished() && timerStarted) {
 
                 currentGameState = GameState::BEGIN_WAVE;
                 timerStarted = false;
@@ -101,8 +99,11 @@ void GameWorld::RunGameplaySystems() {
  */
 void GameWorld::RunRenderSystem() {
 
-    auto& renderSys = gameSystems[ToIndex(GameSystemID::RENDERER_SYSTEM)];
-    if (renderSys) renderSys->Run(*this);
+    if (gameSystems[ToIndex(GameSystemID::BACKGROUND_SYSTEM)])
+        GetGameSystem<BackgroundSystem>(GameSystemID::BACKGROUND_SYSTEM).Render();
+
+    if (gameSystems[ToIndex(GameSystemID::RENDERER_SYSTEM)])
+        GetGameSystem<RenderSystem>(GameSystemID::RENDERER_SYSTEM).Run(*this);
 
 }
 
@@ -214,7 +215,7 @@ void GameWorld::AddSystem(std::unique_ptr<IGameSystem> system) {
     std::cout << "Added System:  " << name << std::endl;
 }
 
-void GameWorld::InitGameSystems() {
+void GameWorld::InitGameSystems() const {
 
     for (const auto& gameSystem : gameSystems) {
 
