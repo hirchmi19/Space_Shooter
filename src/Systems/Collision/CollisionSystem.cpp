@@ -14,6 +14,7 @@ void CollisionSystem::Run(GameWorld &world) {
     CheckPlayerEnemies(world);
 }
 
+//--------------------------------------------------------------------------
 
 void CollisionSystem::CheckEnemiesProjectiles(GameWorld &world) {
 
@@ -25,7 +26,7 @@ void CollisionSystem::CheckEnemiesProjectiles(GameWorld &world) {
 
         for (auto& projectile : projectiles) {
 
-            if (CheckCollisionRecs(enemy.combat.hitbox, projectile.combat.hitbox) && projectile.movement.speed == -1) {
+            if (CheckCollisionRecs(enemy.combat.hitbox, projectile.combat.hitbox) && projectile.isPlayerProjectile) {
 
                 enemy.combat.Kill();
                 projectile.combat.Kill();
@@ -48,13 +49,13 @@ void CollisionSystem::CheckPlayerEnemies(GameWorld &world) {
 
 void CollisionSystem::CheckPlayerProjectiles(GameWorld &world) {
 
-    auto& projectiles = world.GetProjectiles();
+    const auto& projectiles = world.GetProjectiles();
     auto& player = world.GetPlayer();
 
     for (auto& projectile : projectiles) {
 
         if (projectile.movement.position.y < player.GetPosition().y) continue;
-        if (CheckCollisionRecs(projectile.combat.hitbox, player.GetHitBox()) && projectile.movement.speed == 1) player.Kill();
+        if (CheckCollisionRecs(projectile.combat.hitbox, player.GetHitBox()) && !projectile.isPlayerProjectile) player.Kill();
     }
 
 }

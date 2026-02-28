@@ -6,6 +6,7 @@
 #include "Player.h"
 
 #include "../../Game/GameWorld.h"
+#include "Constants/GameConstants.h"
 
 void Player::SetPosition(const Vector2& pos) {
 
@@ -17,9 +18,8 @@ void Player::SetPosition(const Vector2& pos) {
 
 /**
  * Reads the player inputs
- * \param world
  */
-void Player::HandleInput(GameWorld& world) {
+void Player::HandleInput() {
 
     movement.speed = 0;
     cooldownTimer.Tick(1 / GameConstants::UPS);
@@ -31,7 +31,10 @@ void Player::HandleInput(GameWorld& world) {
 
         if (!CanShoot()) return;
 
-        world.SpawnPlayerProjectile(movement.position);
+        SystemLocator::entityLocator->RequestEntitySpawn(
+            EntityType::PLAYER_PROJECTILE,
+            SpawnType::PROJECTILE,
+            movement.position);
         cooldownTimer.Start(.35f);
     }
 

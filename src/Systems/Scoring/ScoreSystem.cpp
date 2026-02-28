@@ -8,23 +8,24 @@
 
 ScoreSystem::ScoreSystem() : IGameSystem(GameSystemID::SCORE_SYSTEM, "SCORE_SYSTEM"){}
 
+
 void ScoreSystem::AddHighScore(const uint32_t score) {
 
     const uint32_t newScore = highScore + score;
     highScore = newScore >= ScoringConstants::MAX_SCORE ? ScoringConstants::MAX_SCORE : newScore;
 }
 
-const uint32_t ScoreSystem::GetEnemyScore(const EnemyID& id) {
+ uint32_t ScoreSystem::GetEnemyScore(const EntityType& id) {
 
     switch (id) {
 
-        case EnemyID::YELLOW_ENEMY:
+        case EntityType::YELLOW_E:
             return ScoringConstants::YELLOW_ENEMY_SCORE;
 
-        case EnemyID::RED_ENEMY:
+        case EntityType::RED_E:
             return ScoringConstants::RED_ENEMY_SCORE;
 
-        case EnemyID::BLACK_ENEMY:
+        case EntityType::BLACK_E:
             return ScoringConstants::BLACK_ENEMY_SCORE;
 
         default:

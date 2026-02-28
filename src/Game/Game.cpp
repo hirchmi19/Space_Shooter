@@ -37,7 +37,7 @@ void Game::Run() const {
         updateAccumulator += (currentTime - prevTime) / timePerUpdate;
         prevTime = currentTime;
 
-        while (updateAccumulator >= 1.0) {
+        while (updateAccumulator >= 1.0) { // ensures an frame independent game loop
 
             world->RunGameplaySystems();
             updateAccumulator--;

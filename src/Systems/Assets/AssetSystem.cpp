@@ -8,7 +8,8 @@
 #include <ostream>
 
 #include "raylib.h"
-#include "../../Entities/Enemies/EnemyID.h"
+#include "../../Entities/EntityType.h"
+#include "Entities/Enemies/EnemyType.h"
 
 AssetSystem::AssetSystem() : IGameSystem(GameSystemID::ASSET_SYSTEM, "ASSET_SYSTEM") {}
 
@@ -61,35 +62,30 @@ std::vector<const Sprite*> AssetSystem::GetPlayerSprites() const {
 
 /**
  * Returns a projectile Sprite
- * \param id
+ * \param eType
  * \return
  */
-std::vector<const Sprite*> AssetSystem::GetProjectileSprite(const SpriteID id) const {
+std::vector<const Sprite*> AssetSystem::GetProjectileSprite(const EntityType &eType) const {
 
-    return {&GetSprite(id)};
+    if (eType == EntityType::ENEMY_PROJECTILE) return {&GetSprite(SpriteID::ENEMY_PROJECTILE)};
+    if (eType == EntityType::PLAYER_PROJECTILE) return {&GetSprite(SpriteID::PLAYER_PROJECTILE)};
+
+    return {};
 }
 
 /**
  * Returns the enemy sprites of a specific enemy type
- * \param id
+ * \param eType
  * \return
  */
-std::vector<const Sprite *> AssetSystem::GetEnemySprites(const EnemyID id) const {
+std::vector<const Sprite *> AssetSystem::GetEnemySprites(const EntityType &eType) const {
 
-    if (id == EnemyID::YELLOW_ENEMY) return {&GetSprite(SpriteID::YELLOW_ENEMY_0), &GetSprite(SpriteID::YELLOW_ENEMY_1)};
-    if (id == EnemyID::RED_ENEMY) return {&GetSprite(SpriteID::RED_ENEMY_0), &GetSprite(SpriteID::RED_ENEMY_1)};
-    if (id == EnemyID::BLACK_ENEMY) return {&GetSprite(SpriteID::BLACK_ENEMY_0), &GetSprite(SpriteID::BLACK_ENEMY_1)};
+    if (eType == EntityType::YELLOW_E) return {&GetSprite(SpriteID::YELLOW_ENEMY_0), &GetSprite(SpriteID::YELLOW_ENEMY_1)};
+    if (eType == EntityType::RED_E) return {&GetSprite(SpriteID::RED_ENEMY_0), &GetSprite(SpriteID::RED_ENEMY_1)};
+    if (eType == EntityType::BLACK_E) return {&GetSprite(SpriteID::BLACK_ENEMY_0), &GetSprite(SpriteID::BLACK_ENEMY_1)};
 
     return {};
 
-}
-
-std::vector<const Sprite *> AssetSystem::GetExplosionSprites() const {
-
-    return {&GetSprite(SpriteID::EXPLOSION_0),
-        &GetSprite(SpriteID::EXPLOSION_1),
-        &GetSprite(SpriteID::EXPLOSION_2),
-        &GetSprite(SpriteID::EXPLOSION_3)};
 }
 
 //--------------------------------------------------------------------------
@@ -118,6 +114,15 @@ void AssetSystem::Init() {
     LoadTex(TextureID::PROJECTILE_CANVAS,   ASSETS_PATH "SpaceShooterAssetPack_Projectiles.png");
     LoadTex(TextureID::EFFECT_CANVAS,       ASSETS_PATH "SpaceShooterAssetPack_Miscellaneous.png");
 
+    // pixel font
+    pixelFont = LoadFont(ASSETS_PATH "pixelFont.ttf");
+    SetTextureFilter(pixelFont.texture, TEXTURE_FILTER_POINT);
+
+    for (const auto& texture : textures) {
+
+        SetTextureFilter(texture, TEXTURE_FILTER_POINT);
+    }
+
     //Player sprites
     DefineSprite(SpriteID::PLAYER_SHIP_MIDDLE, TextureID::PLAYER_SHIP_CANVAS, {8, 0, 8, 8});
     DefineSprite(SpriteID::PLAYER_SHIP_LEFT, TextureID::PLAYER_SHIP_CANVAS, {0, 0, 6, 8});
@@ -143,9 +148,7 @@ void AssetSystem::Init() {
 
     //--------------------------------------------------------------------------
 
-    // pixel_font
-    pixelFont = LoadFont(ASSETS_PATH "pixelFont.ttf");
-    SetTextureFilter(pixelFont.texture, TEXTURE_FILTER_POINT);
+
 
 }
 

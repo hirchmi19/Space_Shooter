@@ -10,18 +10,11 @@
 #include <vector>
 
 #include "GameState.h"
-#include "../Constants/GameConstants.h"
-#include "../Entities/Enemies/Enemy.h"
-#include "../Entities/Player/Player.h"
-#include "../Entities/Projectile.h"
 #include "../Utilities/utils.h"
 #include "../Systems/GameSystemID.h"
-#include "../Systems/Assets/AssetSystem.h"
-#include "../Systems/Rendering/BackgroundSystem.h"
-#include "../Systems/Rendering/RenderSystem.h"
 #include "../Systems/Scoring/ScoreSystem.h"
-#include "../Systems/Waving/WaveHeader/FormationSlot.h"
 #include "../Systems/Waving/WaveSystem.h"
+#include "SystemService/SystemLocator.h"
 
 class IGameSystem;
 enum class SpriteID : uint32_t;
@@ -35,42 +28,16 @@ class GameWorld {
     void RunGameplaySystems();
     void RunRenderSystem();
 
-    void SpawnPlayerProjectile(const Vector2& playerPosition);
-    void SpawnEnemy(const EnemyID& id, const Vector2& spawnPosition);
-    void SpawnEnemyProjectile(const Vector2& enemyPosition);
-
-
-    const Player& GetPlayer() const {return player;};
-    Player& GetPlayer() {return player;};
-
-    const Texture2D& GetTexture(const TextureID& id) const {return GetAssetSystem().GetTexture(id);};
-    const Sprite& GetSprite(const SpriteID& id) const { return GetAssetSystem().GetSprite(id);};
-    const Font& GetFont() const {return GetAssetSystem().GetFont();};
-
-    const std::vector<const Sprite*> GetEnemySprites(const EnemyID id) const {return {GetAssetSystem().GetEnemySprites(id)};};
-    const std::vector<const Sprite*> GetExplosionSprites() const {return GetAssetSystem().GetExplosionSprites();};
-
     const GameState& GetGameState() const { return currentGameState; };
     void EndWave() {currentGameState = GameState::END_WAVE;};
 
-    int GetWaveCounter() const { return GetWaveSystem().GetWaveCounter(); };
-    const uint32_t GetHighScore() const { return GetScoreSystem().GetHighScore(); };
-
-    std::vector<Projectile>& GetProjectiles() {return projectiles;};
-    std::vector<Enemy>& GetEnemies() {return enemies;};
+    int GetWaveCounter() { return GetGameSystemStatic<WaveSystem>(GameSystemID::WAVE_SYSTEM).GetWaveCounter(); };
+    uint32_t GetHighScore() { return GetGameSystemStatic<ScoreSystem>(GameSystemID::SCORE_SYSTEM).GetHighScore(); };
 
 
     private:
 
-    Player player;
-
-    std::vector<Enemy> enemies{};
-    std::vector<Projectile> projectiles{};
-
-    std::vector<size_t> enemiesToRemove{};
-    std::vector<size_t> projectilesToRemove{};
-
-    std::array<std::unique_ptr<IGameSystem>, ToIndex(GameSystemID::COUNT)> gameSystems{};
+    std::array<std::shared_ptr<IGameSystem>, ToIndex(GameSystemID::COUNT)> gameSystems{};
 
     GameState currentGameState = GameState::BEGIN_WAVE;
 
@@ -79,35 +46,25 @@ class GameWorld {
 
     void CreateSystems();
     void InitGameSystems() const;
-    void AddSystem(std::unique_ptr<IGameSystem> system);
+    void AddSystem(std::shared_ptr<IGameSystem> system);
 
+    void Restart();
 
     template<typename T>
-     T& GetGameSystem(const GameSystemID& id) {
+       T& GetGameSystemStatic(const GameSystemID& id) {
+        const auto& ptr = gameSystems[ToIndex(id)];
+        assert(ptr && "GameSystem is not initialized");
+        return static_cast<T&>(*ptr);
+    }
+
+    /*    template<typename T>
+     T& GetGameSystemDynamic(const GameSystemID& id) {
 
         const auto& ptr = gameSystems[ToIndex(id)];
         assert(ptr && "GameSystem is not initialized");
         return dynamic_cast<T&>(*ptr);
-    }
+    }*/
 
-
-
-    const AssetSystem& GetAssetSystem() const;
-    const BackgroundSystem& GetBackgroundSystem() const;
-    RenderSystem& GetRenderSystem() const;
-    WaveSystem& GetWaveSystem() const;
-    ScoreSystem& GetScoreSystem() const;
-
-    void KillEntities();
-    void KillEnemies();
-    void KillProjectiles();
-
-    void Restart();
-    void ClearEntities();
-
-    void FindDeadEntities();
-    void FindDeadProjectiles();
-    void FindDeadEnemies();
 
 };
 

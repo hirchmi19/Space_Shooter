@@ -6,8 +6,8 @@
 
 #include <iostream>
 #include "raylib.h"
-#include "../../Constants/GameWorldConstants.h"
 #include "../../Game/GameWorld.h"
+#include "Constants/GameConstants.h"
 #include "Constants/ScoringConstants.h"
 
 RenderSystem::RenderSystem() : IGameSystem(GameSystemID::RENDERER_SYSTEM, "RENDER_SYSTEM") {}

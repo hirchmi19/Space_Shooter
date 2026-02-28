@@ -42,7 +42,7 @@ class Player {
     bool IsAlive() const { return combat.IsAlive(); }
     bool CanShoot() const { return cooldownTimer.IsFinished(); }
 
-    void HandleInput(GameWorld& world);
+    void HandleInput();
 
     private:
     Movement1D movement;

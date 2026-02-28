@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include "../Components/CombatComponent.h"
-#include "../Components/RenderComponent.h"
-#include "../Components/WaveComponent.h"
+#include "Components/CombatComponent.h"
+#include "Components/RenderComponent.h"
+#include "Components/WaveComponent.h"
 
 struct Enemy {
 

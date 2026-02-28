@@ -9,7 +9,7 @@
 
 #include "../../Constants/GameConstants.h"
 #include "../../Constants/WaveConstants.h"
-#include "../../Entities/Enemies/EnemyID.h"
+#include "../../Entities/EntityType.h"
 #include "../../Game/GameWorld.h"
 
 
@@ -256,11 +256,11 @@ void WaveSystem::BuildFormationSlots() {
         slot.position = formationPositions[i];
 
         if (i < 4)
-            slot.id = EnemyID::BLACK_ENEMY;
+            slot.id = EntityType::BLACK_ENEMY;
         else if (i < 20)
-            slot.id = EnemyID::RED_ENEMY;
+            slot.id = EntityType::RED_ENEMY;
         else
-            slot.id = EnemyID::YELLOW_ENEMY;
+            slot.id = EntityType::YELLOW_ENEMY;
 
         formationSlots.push_back(slot);
     }

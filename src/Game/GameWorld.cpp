@@ -14,12 +14,12 @@
 #include  "../Systems/Rendering/RenderSystem.h"
 #include "../Systems/Scoring/ScoreSystem.h"
 #include "../Systems/Waving/WaveSystem.h"
+#include "Systems/Entities/EntitySystem.h"
 
 GameWorld::GameWorld() {
 
     CreateSystems();
     InitGameSystems();
-    player = Player(GameWorldConstants::playerSpawn, GameWorldConstants::playerSize, GetAssetSystem().GetPlayerSprites());
 
 }
 
@@ -28,12 +28,13 @@ GameWorld::GameWorld() {
  */
 void GameWorld::RunGameplaySystems() {
 
-    auto& bgSys = GetGameSystem<BackgroundSystem>(GameSystemID::BACKGROUND_SYSTEM);
-    auto& waveSys = GetGameSystem<WaveSystem>(GameSystemID::WAVE_SYSTEM);
-    auto& moveSys = GetGameSystem<MovementSystem>(GameSystemID::MOVEMENT_SYSTEM);
-    auto& collSys = GetGameSystem<CollisionSystem>(GameSystemID::COLLISION_SYSTEM);
+    const auto& bgSys = gameSystems[ToIndex(GameSystemID::BACKGROUND_SYSTEM)];
+    const auto& entSys = gameSystems[ToIndex(GameSystemID::ENTITY_SYSTEM)];
+    const auto& waveSys = gameSystems[ToIndex(GameSystemID::WAVE_SYSTEM)];
+    const auto& moveSys = gameSystems[ToIndex(GameSystemID::MOVEMENT_SYSTEM)];
+    const auto& collSys = gameSystems[ToIndex(GameSystemID::COLLISION_SYSTEM)];
 
-    bgSys.Run(*this);    // background is always moving
+    if (bgSys) bgSys->Run(*this);   // background is always moving
 
     transitionTimer.Tick(1 / GameConstants::UPS);
 
@@ -51,26 +52,29 @@ void GameWorld::RunGameplaySystems() {
 
                 currentGameState = GameState::IN_GAME;
                 timerStarted = false;
-                GetWaveSystem().Start();
+                if (waveSys) GetGameSystemStatic<WaveSystem>(GameSystemID::WAVE_SYSTEM).Start();
             }
             break;
 
         case GameState::IN_GAME:
 
-            player.HandleInput(*this);
+            if (entSys)
+                GetGameSystemStatic<EntitySystem>(GameSystemID::ENTITY_SYSTEM).HandleInputs(); // 1. read inputs (begin of frame)
 
-            waveSys.Run(*this);
-            moveSys.Run(*this);
-            collSys.Run(*this);
+            if (waveSys) waveSys->Run(*this); // 2. let the gameplay systems do their thing
+            if (moveSys) moveSys->Run(*this);
+            if (collSys) collSys->Run(*this);
 
-            FindDeadEntities();
-            KillEntities();
+            if (entSys && !GetGameSystemStatic<EntitySystem>(GameSystemID::ENTITY_SYSTEM).PlayerAlive())
+                currentGameState = GameState::GAME_OVER; // 3. check if game is over
+
+           if (entSys) entSys->Run(*this); // 4. entities spawn and destruction
 
             break;
 
         case GameState::END_WAVE:
 
-            ClearEntities();
+            GetGameSystemStatic<EntitySystem>(GameSystemID::ENTITY_SYSTEM).ClearEntities();
 
             if (!timerStarted) {
 
@@ -83,11 +87,12 @@ void GameWorld::RunGameplaySystems() {
                 currentGameState = GameState::BEGIN_WAVE;
                 timerStarted = false;
             }
+
             break;
 
         case GameState::GAME_OVER:
 
-            ClearEntities();
+            GetGameSystemStatic<EntitySystem>(GameSystemID::ENTITY_SYSTEM).ClearEntities();
             if (IsKeyPressed(KEY_ENTER)) Restart();
             break;
     }
@@ -99,86 +104,10 @@ void GameWorld::RunGameplaySystems() {
  */
 void GameWorld::RunRenderSystem() {
 
-    if (gameSystems[ToIndex(GameSystemID::BACKGROUND_SYSTEM)])
-        GetGameSystem<BackgroundSystem>(GameSystemID::BACKGROUND_SYSTEM).Render();
+    const auto renderSys = gameSystems[ToIndex(GameSystemID::RENDERER_SYSTEM)];
 
-    if (gameSystems[ToIndex(GameSystemID::RENDERER_SYSTEM)])
-        GetGameSystem<RenderSystem>(GameSystemID::RENDERER_SYSTEM).Run(*this);
-
-}
-
-/**
- * Creates an Enemy
- * \param id
- * \param spawnPosition
- */
-void GameWorld::SpawnEnemy(const EnemyID& id, const Vector2 &spawnPosition) {
-
-    const auto& sprites = GetAssetSystem().GetEnemySprites(id);
-    const Vector2 size = {sprites[0]->src.width, sprites[0]->src.height};
-
-    const auto score = GetScoreSystem().GetEnemyScore(id);
-
-    enemies.emplace_back(RenderComponent{sprites, size},
-        CombatComponent{1,
-            Rectangle{spawnPosition.x, spawnPosition.y,
-            size.x * RenderConstants::ENEMY_SCALING,
-            size.y * RenderConstants::ENEMY_SCALING},
-            score
-        });
-}
-
-/**
- * Creates a Projectile
- * \param playerPosition
- */
-void GameWorld::SpawnPlayerProjectile(const Vector2& playerPosition) {
-
-    const Sprite& projectileSprite = GetAssetSystem().GetSprite(SpriteID::PLAYER_PROJECTILE);
-
-    const Vector2 projectileSize {projectileSprite.src.width,projectileSprite.src.height};
-    const float playerWidth = player.GetSize().x * RenderConstants::PLAYER_SCALING;
-    const Vector2 spawnPosition {playerPosition.x + (playerWidth * 0.5f) - (projectileSize.x * 0.5f),playerPosition.y};
-    constexpr int32_t speed = -1;
-
-    const auto sprites = GetAssetSystem().GetProjectileSprite(SpriteID::PLAYER_PROJECTILE);
-
-    projectiles.emplace_back(
-        Movement1D{spawnPosition, speed},
-        RenderComponent{sprites, projectileSize},
-        CombatComponent{1,Rectangle{
-                spawnPosition.x,
-                spawnPosition.y,
-                projectileSize.x * RenderConstants::PROJECTILE_SCALING,
-                projectileSize.y * RenderConstants::PROJECTILE_SCALING
-            }
-        }
-    );
-}
-
-void GameWorld::SpawnEnemyProjectile(const Vector2 &enemyPosition) {
-
-    const Sprite& projectileSprite = GetAssetSystem().GetSprite(SpriteID::ENEMY_PROJECTILE);
-
-    const Vector2 projectileSize {projectileSprite.src.width,projectileSprite.src.height};
-    const float playerWidth = player.GetSize().x * RenderConstants::ENEMY_SCALING;
-    const Vector2 spawnPosition {enemyPosition.x + (playerWidth * 0.5f) - (projectileSize.x * 0.5f),enemyPosition.y};
-    constexpr int32_t speed = 1;
-
-    const auto sprites = GetAssetSystem().GetProjectileSprite(SpriteID::ENEMY_PROJECTILE);
-
-    projectiles.emplace_back(
-        Movement1D{spawnPosition, speed},
-        RenderComponent{sprites, projectileSize},
-        CombatComponent{1,Rectangle{
-                spawnPosition.x,
-                spawnPosition.y,
-                projectileSize.x * RenderConstants::PROJECTILE_SCALING,
-                projectileSize.y * RenderConstants::PROJECTILE_SCALING
-            }
-        }
-    );
-
+    GetGameSystemStatic<BackgroundSystem>(GameSystemID::BACKGROUND_SYSTEM).Render();
+    if (renderSys) renderSys->Run(*this);
 
 }
 
@@ -189,31 +118,39 @@ void GameWorld::SpawnEnemyProjectile(const Vector2 &enemyPosition) {
  */
 void GameWorld::CreateSystems() {
 
-    AddSystem(std::make_unique<AssetSystem>());
-    AddSystem(std::make_unique<BackgroundSystem>());
-    AddSystem(std::make_unique<RenderSystem>());
-    AddSystem(std::make_unique<MovementSystem>());
-    AddSystem(std::make_unique<WaveSystem>());
-    AddSystem(std::make_unique<CollisionSystem>());
-    AddSystem(std::make_unique<ScoreSystem>());
+    const auto assetSystem = std::make_shared<AssetSystem>();
+    SystemLocator::assetLocator = assetSystem;
+    AddSystem(assetSystem);
 
-    enemies.reserve(44);
-    projectiles.reserve(25);
+    const auto entSys = std::make_shared<EntitySystem>();
+    SystemLocator::entityLocator = entSys;
+    AddSystem(entSys);
+
+    AddSystem(std::make_shared<BackgroundSystem>());
+    AddSystem(std::make_shared<RenderSystem>());
+    AddSystem(std::make_shared<MovementSystem>());
+    AddSystem(std::make_shared<WaveSystem>());
+    AddSystem(std::make_shared<CollisionSystem>());
+
+    const auto scoreSystem = std::make_shared<ScoreSystem>();
+    SystemLocator::scoreLocator = scoreSystem;
+    AddSystem(scoreSystem);
 }
 
 /**
  * Adds a system and gives GameWorld the ownership
  * \param system
  */
-void GameWorld::AddSystem(std::unique_ptr<IGameSystem> system) {
+void GameWorld::AddSystem(std::shared_ptr<IGameSystem> system) {
 
     const std::string name(system->GetSystemName());
     const GameSystemID id = system->GetSystemID();
     const size_t index = ToIndex(id);
     gameSystems[index] = std::move(system);
 
-    std::cout << "Added System:  " << name << std::endl;
+    std::cout << "ADDED SYSTEM:  " << name << std::endl;
 }
+
 
 void GameWorld::InitGameSystems() const {
 
@@ -230,129 +167,15 @@ void GameWorld::InitGameSystems() const {
     }
 }
 
-/**
-* Returns a read-only reference to the asset system
- * \return
- */
-const AssetSystem& GameWorld::GetAssetSystem() const {
-
-    const auto& ptr = gameSystems[ToIndex(GameSystemID::ASSET_SYSTEM)];
-
-    assert(ptr && "AssetSystem is not initialized");
-    return dynamic_cast<const AssetSystem&>(*ptr);
-}
-
-/**
- * Returns a read-only reference to the background system
- * \return
- */
-const BackgroundSystem& GameWorld::GetBackgroundSystem() const {
-
-    const auto& ptr = gameSystems[ToIndex(GameSystemID::BACKGROUND_SYSTEM)];
-
-    assert(ptr && "BackgroundSystem is not initialized");
-    return dynamic_cast<const BackgroundSystem&>(*ptr);
-}
-
-RenderSystem &GameWorld::GetRenderSystem() const {
-
-     auto& ptr = gameSystems[ToIndex(GameSystemID::RENDERER_SYSTEM)];
-
-    assert(ptr && "RenderSystem is not initialized");
-    return dynamic_cast< RenderSystem&>(*ptr);
-}
-
-WaveSystem &GameWorld::GetWaveSystem() const {
-
-    const auto& ptr = gameSystems[ToIndex(GameSystemID::WAVE_SYSTEM)];
-
-    assert(ptr && "WaveSystem is not initialized");
-    return dynamic_cast<WaveSystem&>(*ptr);
-}
-
-ScoreSystem &GameWorld::GetScoreSystem() const {
-
-    const auto& ptr = gameSystems[ToIndex(GameSystemID::SCORE_SYSTEM)];
-
-    assert(ptr && "ScoreSystem is not initialized");
-    return dynamic_cast<ScoreSystem&>(*ptr);
-}
-
-/**
- * Removes all enemies and projectiles from the collection respectively GameWorld
- */
-void GameWorld::KillEntities() {        //TODO: create an separate entity system for entity creation and destruction
-
-    KillEnemies();
-    KillProjectiles();
-}
-
-/**
- * Finds all enemies and projectiles which are marked for death and adds them to their respective removal queues
- */
-void GameWorld::FindDeadEntities() {
-
-    FindDeadEnemies();
-    FindDeadProjectiles();
-
-}
-
-
-void GameWorld::FindDeadEnemies() {
-
-    for (size_t i = 0; i < enemies.size(); ++i) {
-
-        Enemy& enemy = enemies[i];
-        if (enemy.combat.IsAlive()) continue;
-        enemiesToRemove.push_back(i);
-        GetScoreSystem().AddHighScore(enemy.combat.score);
-    }
-}
-
-void GameWorld::FindDeadProjectiles() {
-
-    for (size_t i = 0; i < projectiles.size(); ++i) {
-
-        Projectile& projectile = projectiles[i];
-        if (projectile.combat.IsAlive()) continue;
-        projectilesToRemove.push_back(i);
-    }
-}
-
-void GameWorld::KillEnemies() {
-
-    for (auto i = enemiesToRemove.rbegin(); i != enemiesToRemove.rend(); ++i) {
-
-        enemies.erase(enemies.begin() + *i);
-    }
-
-    enemiesToRemove.clear();
-}
-
-void GameWorld::KillProjectiles() {
-
-    for (auto i = projectilesToRemove.rbegin(); i != projectilesToRemove.rend(); ++i) {
-
-        projectiles.erase(projectiles.begin() + *i);
-    }
-
-    projectilesToRemove.clear();
-}
-
-void GameWorld::ClearEntities() {
-
-    enemies.clear();
-    projectiles.clear();
-    projectilesToRemove.clear();
-    enemiesToRemove.clear();
-}
-
 void GameWorld::Restart() {
 
-    GetWaveSystem().ResetWaveCounter();
-    GetScoreSystem().ResetScore();
-    player.Revive();
-    player.SetPosition(GameWorldConstants::playerSpawn);
+    const auto player = GetGameSystemStatic<EntitySystem>(GameSystemID::ENTITY_SYSTEM).getPlayer();
+
+    GetGameSystemStatic<WaveSystem>(GameSystemID::WAVE_SYSTEM).ResetWaveCounter();
+    GetGameSystemStatic<ScoreSystem>(GameSystemID::SCORE_SYSTEM).ResetScore();
+    player->Revive();
+    player->SetPosition(GameWorldConstants::playerSpawn);
+
     currentGameState = GameState::BEGIN_WAVE;
 }
 

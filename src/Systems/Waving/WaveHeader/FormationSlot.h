@@ -6,7 +6,7 @@
 #include "DivingGroup.h"
 #include "raylib.h"
 
-enum class EnemyID : uint32_t;
+enum class EntityType : uint32_t;
 struct DivingGroup;
 
 struct Enemy;
@@ -15,7 +15,7 @@ struct FormationSlot {
 
     Vector2 position{};
     DivingGroup group{};
-    EnemyID id{};
+    EntityType id{};
     uint32_t slotIndex = 0;
 
 };
