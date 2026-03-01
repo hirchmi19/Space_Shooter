@@ -4,7 +4,7 @@
 
 #pragma once
 
-enum class SpriteID : uint32_t {
+enum class SpriteID {
 
     NONE,
     PLAYER_SHIP_LEFT,

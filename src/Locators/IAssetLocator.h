@@ -3,14 +3,13 @@
 //
 
 #pragma once
-#include <vector>
 
-#include "../Entities/EntityType.h"
+#include <vector>
 #include "../Entities/Projectiles/ProjectileType.h"
 #include "Systems/Assets/AssetHeader/Sprite.h"
 #include "Systems/Assets/AssetHeader/SpriteID.h"
 
-enum class EnemyType : uint32_t;
+enum class EnemyType;
 
 struct IAssetLocator {
 

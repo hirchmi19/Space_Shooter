@@ -3,14 +3,15 @@
 //
 
 #pragma once
+#include <sys/types.h>
 
 struct CombatComponent {
 
     Rectangle hitbox{};
-    uint32_t score;
+    int score;
     float damage = 1;
 
-    explicit CombatComponent(const float hp = 0, const Rectangle hitbox = {}, const uint32_t score = 0)
+    explicit CombatComponent(const float hp = 0, const Rectangle hitbox = {}, const int score = 0)
         : hitbox(hitbox), score(score), hp(hp) {}
 
     bool IsAlive() const { return hp > 0; }

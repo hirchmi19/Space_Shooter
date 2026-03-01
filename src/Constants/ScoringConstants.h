@@ -7,10 +7,10 @@
 
 namespace ScoringConstants {
 
-    inline constexpr uint32_t MAX_SCORE = 99999999;
-    constexpr uint32_t HIGHSCORE_DIGITS = 8;
+    inline constexpr int MAX_SCORE = 99999999;
+    constexpr int HIGHSCORE_DIGITS = 8;
 
-    inline constexpr uint32_t YELLOW_ENEMY_SCORE = 300;
-    inline constexpr uint32_t RED_ENEMY_SCORE = 500;
-    inline constexpr uint32_t BLACK_ENEMY_SCORE = 1000;
+    inline constexpr int YELLOW_ENEMY_SCORE = 300;
+    inline constexpr int RED_ENEMY_SCORE = 500;
+    inline constexpr int BLACK_ENEMY_SCORE = 1000;
 }

@@ -5,10 +5,7 @@
 #pragma once
 
 #include <cassert>
-
-#include  "raylib.h"
 #include <vector>
-
 #include "GameState.h"
 #include "../Utilities/utils.h"
 #include "../Systems/GameSystemID.h"
@@ -17,7 +14,7 @@
 #include "Locators/SystemLocator.h"
 
 class IGameSystem;
-enum class SpriteID : uint32_t;
+enum class SpriteID;
 
 class GameWorld {
 
@@ -32,7 +29,7 @@ class GameWorld {
     void EndWave() {currentGameState = GameState::END_WAVE;};
 
     int GetWaveCounter() { return GetGameSystemStatic<WaveSystem>(GameSystemID::WAVE_SYSTEM).GetWaveCounter(); };
-    uint32_t GetHighScore() { return GetGameSystemStatic<ScoreSystem>(GameSystemID::SCORE_SYSTEM).GetHighScore(); };
+    int GetHighScore() { return GetGameSystemStatic<ScoreSystem>(GameSystemID::SCORE_SYSTEM).GetHighScore(); };
 
 
     private:

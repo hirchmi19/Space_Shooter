@@ -6,13 +6,13 @@
 #include <cstdint>
 
 
-enum class EnemyType : uint32_t;
+enum class EnemyType;
 
 struct IScoreLocator {
 
     virtual ~IScoreLocator() = default;
-    virtual uint32_t GetEnemyScore(const EnemyType& id) = 0;
-    virtual void AddHighScore(uint32_t score) = 0;
+    virtual int GetEnemyScore(const EnemyType& id) = 0;
+    virtual void AddHighScore(int score) = 0;
     virtual void ResetScore() = 0;
 
 };

@@ -4,8 +4,7 @@
 
 #pragma once
 
-#include <cstdint>
-enum class EnemyType : uint32_t {
+enum class EnemyType {
 
     YELLOW_E,
     RED_E,

@@ -3,7 +3,7 @@
 //
 
 #include <cstdint>
-enum class GameState : uint32_t {
+enum class GameState {
 
     NONE,
     BEGIN_WAVE,

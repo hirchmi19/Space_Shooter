@@ -4,7 +4,7 @@
 
 #pragma once
 
-enum class WaveState : uint32_t {
+enum class WaveState  {
 
   NONE,
   IN_FORMATION,

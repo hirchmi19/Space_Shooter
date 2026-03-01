@@ -42,7 +42,7 @@ class WaveSystem : public IGameSystem{
     TimerComponent diveTimer;
     TimerComponent attackTimer;
 
-    std::vector<Vector2> formationPositions{}; //TODO: change to arrays
+    std::vector<Vector2> formationPositions{};
     std::vector<FormationSlot> formationSlots{};
 
     std::vector<Vector2> topDiveSpawns{};
@@ -66,9 +66,9 @@ class WaveSystem : public IGameSystem{
     void BuildDivingGroups(const WavePattern &pattern);
     void BuildFormationSlots();
 
-    std::vector<size_t> GetGroupMemberIndices(uint32_t id) const;
+    std::vector<size_t> GetGroupMemberIndices(int id) const;
 
-    void SpawnDive(GameWorld& world, const DiveType type);
+    void SpawnDive(GameWorld& world, DiveType type);
 
     void AssignDiveCurves(GameWorld& world, DiveType type);
     void AssignAttackCurves(GameWorld& world, DiveType type);

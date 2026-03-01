@@ -394,7 +394,7 @@ bool WaveSystem::IsCurrentDiveFinished(GameWorld& world) const
  * \param id
  * \return
  */
-std::vector<size_t> WaveSystem::GetGroupMemberIndices(const uint32_t id) const {
+std::vector<size_t> WaveSystem::GetGroupMemberIndices(const int id) const {
 
     std::vector<size_t> result;
 
@@ -451,7 +451,7 @@ void WaveSystem::CalcTopDiveSpawns() {
     constexpr float leftX  = GameConstants::SCREEN_WIDTH * 0.25f;
     constexpr float rightX = GameConstants::SCREEN_WIDTH * 0.75f;
 
-    constexpr uint32_t total = 25;
+    constexpr int total = 25;
 
     for (int i = 0; i < total; ++i)
     {
@@ -473,15 +473,15 @@ void WaveSystem::CalcSideDiveSpawns()
     constexpr float rowSpacingY      = 120.0f;
     constexpr float verticalSpacing  = 50.0f;
 
-    constexpr uint32_t total = 25;
-    constexpr uint32_t perRow = total / 2;
+    constexpr int total = 25;
+    constexpr int perRow = total / 2;
 
     for (int i = 0; i < total; ++i)
     {
         Vector2 spawn{};
 
-        const uint32_t row = i / perRow;
-        const uint32_t indexInRow = i % perRow;
+        const int row = i / perRow;
+        const int indexInRow = i % perRow;
 
         const bool fromLeft = (indexInRow % 2 == 0);
 

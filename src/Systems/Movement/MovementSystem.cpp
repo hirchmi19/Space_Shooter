@@ -3,13 +3,10 @@
 //
 
 #include "MovementSystem.h"
-
-#include <iostream>
-#include <ostream>
-
 #include "../../Constants/MovementConstants.h"
 #include "../../Game/GameWorld.h"
 #include "../../Constants/RenderConstants.h"
+#include "Constants/GameConstants.h"
 
 MovementSystem::MovementSystem() : IGameSystem(GameSystemID::MOVEMENT_SYSTEM, "MOVEMENT_SYSTEM"){}
 
@@ -32,7 +29,7 @@ void MovementSystem::MovePlayer(GameWorld& world) {
     Player& player = world.GetPlayer();
     const auto& playerSpeed = player.GetSpeed();
     const Vector2& playerPosition = player.GetPosition();
-    const uint32_t playerPosXRight = playerPosition.x + player.GetSize().x * RenderConstants::PLAYER_SCALING;
+    const int playerPosXRight = playerPosition.x + player.GetSize().x * RenderConstants::PLAYER_SCALING;
 
     if (playerPosXRight > GameConstants::SCREEN_WIDTH && playerSpeed > 0)return;
     if (playerPosition.x <= 0 && playerSpeed < 0) return;

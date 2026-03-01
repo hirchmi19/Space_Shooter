@@ -3,9 +3,13 @@
 //
 
 #pragma once
+#include <array>
+#include <sys/types.h>
+
 #include "../IGameSystem.h"
-#include "../../Entities/EntityType.h"
+#include "Entities/Enemies/EnemyType.h"
 #include "Locators/IScoreLocator.h"
+#include "Utilities/utils.h"
 
 class ScoreSystem: public IScoreLocator, public IGameSystem {
 
@@ -13,14 +17,16 @@ class ScoreSystem: public IScoreLocator, public IGameSystem {
     ScoreSystem();
     ~ScoreSystem() override = default;
 
-    uint32_t GetHighScore() const {return highScore;};
-    void AddHighScore(uint32_t score) override;
-    uint32_t GetEnemyScore(const EnemyType& id) override;
+    uint GetHighScore() const {return highScore;};
+    void AddHighScore(uint score) override;
+    uint GetEnemyScore(const EnemyType& id) override;
     void ResetScore() override {highScore = 0;};
 
 
     private:
-    uint32_t highScore = 0;
+    uint highScore = 0;
+    std::array<uint, ToIndex(EnemyType::COUNT)> enemyScores{};
+
 
 };
 

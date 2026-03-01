@@ -4,7 +4,7 @@
 
 #pragma once
 
-enum class EntityType : uint32_t {
+enum class EntityType {
 
     NONE,
     PLAYER,

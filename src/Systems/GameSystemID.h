@@ -3,9 +3,9 @@
 //
 
 #pragma once
-#include <cstdint>
+#include <sys/types.h>
 
-enum class GameSystemID : uint32_t {
+enum class GameSystemID {
 
     NONE,
     ASSET_SYSTEM,

@@ -5,7 +5,7 @@
 #pragma once
 
 
-enum class SpawnType : uint32_t {
+enum class SpawnType  {
 
     PROJECTILE,
     ENEMY,

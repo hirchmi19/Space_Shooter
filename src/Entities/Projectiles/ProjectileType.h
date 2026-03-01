@@ -3,9 +3,8 @@
 //
 
 #pragma once
-#include <cstdint>
 
-enum class ProjectileType : uint32_t {
+enum class ProjectileType  {
 
   PLAYER,
   ENEMY
