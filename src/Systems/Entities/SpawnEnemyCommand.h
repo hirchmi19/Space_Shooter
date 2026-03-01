@@ -13,5 +13,8 @@ struct SpawnEnemyCommand {
 
     EnemyType eType;
     Vector2 spawnPos;
+    Vector2 formationPos;
+    int diveGroup;
+    int slotIndex;
 
 };

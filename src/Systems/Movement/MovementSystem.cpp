@@ -10,11 +10,11 @@
 
 MovementSystem::MovementSystem() : IGameSystem(GameSystemID::MOVEMENT_SYSTEM, "MOVEMENT_SYSTEM"){}
 
-void MovementSystem::Run(GameWorld& world) {
+void MovementSystem::Run() {
 
-    MovePlayer(world);
-    MoveEnemies(world);
-    MoveProjectiles(world);
+    MovePlayer();
+    MoveEnemies();
+    MoveProjectiles();
 }
 
 //--------------------------------------------------------------------------
@@ -22,32 +22,32 @@ void MovementSystem::Run(GameWorld& world) {
 
 /**
  * Moves the player
- * \param world
  */
-void MovementSystem::MovePlayer(GameWorld& world) {
+void MovementSystem::MovePlayer() {
 
-    Player& player = world.GetPlayer();
-    const auto& playerSpeed = player.GetSpeed();
-    const Vector2& playerPosition = player.GetPosition();
-    const int playerPosXRight = playerPosition.x + player.GetSize().x * RenderConstants::PLAYER_SCALING;
+    Player* player = SystemLocator::entityLocator->GetPlayer();
+    const auto& playerSpeed = player->GetSpeed();
+    Vector2 playerPosition = player->GetPosition();
+    const float playerPosXRight = playerPosition.x + player->GetSize().x * RenderConstants::PLAYER_SCALING;
 
     if (playerPosXRight > GameConstants::SCREEN_WIDTH && playerSpeed > 0)return;
     if (playerPosition.x <= 0 && playerSpeed < 0) return;
 
-    MovePlayer(player);
+    playerPosition.x += static_cast<float>(player->GetSpeed()) * MovementConstants::PLAYER_WORLD_SPEED;
+    player->SetPosition(playerPosition);
 }
 
 /**
  * Moves all projectiles
  * \param world
  */
-void MovementSystem::MoveProjectiles(GameWorld& world) {
+void MovementSystem::MoveProjectiles() {
 
-   auto& projectiles = world.GetProjectiles();
+   auto& projectiles = SystemLocator::entityLocator->GetProjectiles();
 
     for (auto& projectile : projectiles) {
 
-        const int posYUp = projectile.movement.position.y + projectile.render.size.y;
+        const float posYUp = projectile.movement.position.y + projectile.render.size.y;
 
         if (projectile.movement.position.y <= 0 || posYUp >= GameConstants::SCREEN_HEIGHT)
             projectile.combat.Kill();
@@ -60,9 +60,9 @@ void MovementSystem::MoveProjectiles(GameWorld& world) {
  * Moves all enemies
  * \param world
  */
-void MovementSystem::MoveEnemies(GameWorld &world) {
+void MovementSystem::MoveEnemies() {
 
-    auto& enemies = world.GetEnemies();
+    auto& enemies = SystemLocator::entityLocator->GetEnemies();
 
     for (auto& enemy : enemies) {
 
@@ -86,25 +86,20 @@ void MovementSystem::MoveEnemies(GameWorld &world) {
         enemy.wave.t += enemy.wave.speed * GetFrameTime();
 
         auto& bezierPoints = enemy.wave.controlPoints;
-        const Vector2 newPos = GetSplinePointBezierCubic(bezierPoints[0], bezierPoints[1], bezierPoints[2], bezierPoints[3], enemy.wave.t);
+        const Vector2 newPos = GetSplinePointBezierCubic(bezierPoints[0],
+            bezierPoints[1],
+            bezierPoints[2],
+            bezierPoints[3],
+            enemy.wave.t);
+
         MoveEnemy(enemy, newPos);
     }
-
-
-
-
 }
 
-void MovementSystem::MovePlayer(Player& player) {
-
-    Vector2 playerPosition = player.GetPosition();
-    playerPosition.x += player.GetSpeed() * MovementConstants::PLAYER_WORLD_SPEED;
-    player.SetPosition(playerPosition);
-}
 
 void MovementSystem::MoveProjectile(Projectile& projectile) {
 
-    projectile.movement.position.y += projectile.movement.speed * MovementConstants::PROJECTILE_WORLD_SPEED;
+    projectile.movement.position.y += static_cast<float>(projectile.movement.speed) * MovementConstants::PROJECTILE_WORLD_SPEED;
     projectile.combat.hitbox.x = projectile.movement.position.x;
     projectile.combat.hitbox.y = projectile.movement.position.y;
 

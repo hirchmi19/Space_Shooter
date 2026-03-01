@@ -4,12 +4,8 @@
 
 #pragma once
 #include <string>
-
-#include "raylib.h"
 #include "../IGameSystem.h"
-#include "../../Entities/Components/TimerComponent.h"
-
-enum class GameState : uint32_t;
+#include "../../Game/GameState.h"
 
 class RenderSystem : public IGameSystem {
 
@@ -17,18 +13,19 @@ class RenderSystem : public IGameSystem {
     RenderSystem();
     ~RenderSystem() override = default;
 
-    void Run(GameWorld& world) override;
+    void Run() override;
+    void Run(const GameState& state) const;
 
     private:
 
-    void RenderPlayer(const GameWorld& world) const;
-    void RenderEnemies(GameWorld& world) const;
-    void RenderProjectiles(GameWorld& world) const;
-    void RenderHighScore(const GameWorld& world) const;
+    void RenderPlayer() const;
+    void RenderEnemies() const;
+    void RenderProjectiles() const;
+    void RenderHighScore() const;
 
-    void RenderGameOver(const GameWorld& world) const;
-    void RenderWaveTransition(const GameWorld& world, const std::string& caption) const;
-    void RenderGameState(GameWorld& world, GameState state) const;
+    void RenderGameOver(const GameState& state) const;
+    void RenderWaveTransition(const std::string& caption) const;
+    void RenderGameState(const GameState& state) const;
 
 };
 

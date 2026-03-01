@@ -35,7 +35,7 @@ void GameWorld::RunGameplaySystems() {
     const auto& moveSys = gameSystems[ToIndex(GameSystemID::MOVEMENT_SYSTEM)];
     const auto& collSys = gameSystems[ToIndex(GameSystemID::COLLISION_SYSTEM)];
 
-    if (bgSys) bgSys->Run(*this);   // background is always moving
+    if (bgSys) bgSys->Run();   // background is always moving
 
     transitionTimer.Tick(1 / GameConstants::UPS);
 
@@ -62,14 +62,16 @@ void GameWorld::RunGameplaySystems() {
             if (entSys)
                 GetGameSystemStatic<EntitySystem>(GameSystemID::ENTITY_SYSTEM).HandleInputs(); // 1. read inputs (begin of frame)
 
-            if (waveSys) waveSys->Run(*this); // 2. let the gameplay systems do their thing
-            if (moveSys) moveSys->Run(*this);
-            if (collSys) collSys->Run(*this);
+            if (waveSys) waveSys->Run(); // 2. let the gameplay systems do their thing
+            if (moveSys) moveSys->Run();
+            if (collSys) collSys->Run();
 
             if (entSys && !GetGameSystemStatic<EntitySystem>(GameSystemID::ENTITY_SYSTEM).PlayerAlive())
                 currentGameState = GameState::GAME_OVER; // 3. check if game is over
 
-           if (entSys) entSys->Run(*this); // 4. entities spawn and destruction
+            if (entSys) entSys->Run(); // 4. remove dead entities
+
+            if (GetGameSystemStatic<WaveSystem>(GameSystemID::WAVE_SYSTEM).waveFinished) currentGameState = GameState::END_WAVE; // check if wave is over
 
             break;
 
@@ -105,17 +107,17 @@ void GameWorld::RunGameplaySystems() {
  */
 void GameWorld::RunRenderSystem() {
 
-    const auto renderSys = gameSystems[ToIndex(GameSystemID::RENDERER_SYSTEM)];
-
-    GetGameSystemStatic<BackgroundSystem>(GameSystemID::BACKGROUND_SYSTEM).Render();
-    if (renderSys) renderSys->Run(*this);
+    if (gameSystems[ToIndex(GameSystemID::BACKGROUND_SYSTEM)])
+        GetGameSystemStatic<BackgroundSystem>(GameSystemID::BACKGROUND_SYSTEM).Render(); // render bg
+    if (gameSystems[ToIndex(GameSystemID::RENDERER_SYSTEM)])
+        GetGameSystemStatic<RenderSystem>(GameSystemID::RENDERER_SYSTEM).Run(currentGameState); // render current game state
 
 }
 
 //--------------------------------------------------------------------------
 
 /**
- * Inits all game systems
+ * Constructs all game systems
  */
 void GameWorld::CreateSystems() {
 
@@ -130,8 +132,11 @@ void GameWorld::CreateSystems() {
     AddSystem(std::make_shared<BackgroundSystem>());
     AddSystem(std::make_shared<RenderSystem>());
     AddSystem(std::make_shared<MovementSystem>());
-    AddSystem(std::make_shared<WaveSystem>());
     AddSystem(std::make_shared<CollisionSystem>());
+
+    const auto waveSys = std::make_shared<WaveSystem>();
+    SystemLocator::waveLocator = waveSys;
+    AddSystem(waveSys);
 
     const auto scoreSystem = std::make_shared<ScoreSystem>();
     SystemLocator::scoreLocator = scoreSystem;
@@ -152,7 +157,9 @@ void GameWorld::AddSystem(std::shared_ptr<IGameSystem> system) {
     std::cout << "ADDED SYSTEM:  " << name << std::endl;
 }
 
-
+/**
+ * Inits all game systems
+ */
 void GameWorld::InitGameSystems() const {
 
     for (const auto& gameSystem : gameSystems) {
@@ -168,9 +175,12 @@ void GameWorld::InitGameSystems() const {
     }
 }
 
+/**
+ * Resets the playing state machine
+ */
 void GameWorld::Restart() {
 
-    const auto player = GetGameSystemStatic<EntitySystem>(GameSystemID::ENTITY_SYSTEM).getPlayer();
+    const auto player = GetGameSystemStatic<EntitySystem>(GameSystemID::ENTITY_SYSTEM).GetPlayer();
 
     GetGameSystemStatic<WaveSystem>(GameSystemID::WAVE_SYSTEM).ResetWaveCounter();
     GetGameSystemStatic<ScoreSystem>(GameSystemID::SCORE_SYSTEM).ResetScore();

@@ -19,7 +19,7 @@ class BackgroundSystem : public IGameSystem{
     BackgroundSystem();
     ~BackgroundSystem() override = default;
 
-    void Run(GameWorld& world) override;
+    void Run() override;
     void Render();
 
     private:

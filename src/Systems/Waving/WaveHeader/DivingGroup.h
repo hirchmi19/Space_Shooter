@@ -4,11 +4,11 @@
 
 #pragma once
 
-enum class DiveType : uint32_t;
+enum class DiveType;
 
 struct DivingGroup {
 
-    uint32_t groupID;
+    int groupID;
     DiveType dive;
 
 };

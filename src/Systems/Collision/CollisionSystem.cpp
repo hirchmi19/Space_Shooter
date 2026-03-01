@@ -3,6 +3,10 @@
 //
 
 #include "CollisionSystem.h"
+
+#include <iostream>
+#include <ostream>
+
 #include "../../Game/GameWorld.h"
 #include "Entities/Components/WaveState.h"
 #include "../../Entities/Projectiles/Projectile.h"
@@ -10,7 +14,7 @@
 
 CollisionSystem::CollisionSystem() : IGameSystem(GameSystemID::COLLISION_SYSTEM, "COLLISION_SYSTEM"){}
 
-void CollisionSystem::Run(GameWorld &world) {
+void CollisionSystem::Run() {
 
     CheckEnemiesProjectiles();
     CheckPlayerProjectiles();
@@ -28,8 +32,9 @@ void CollisionSystem::CheckEnemiesProjectiles() {
 
         for (auto& projectile : projectiles) {
 
-            if (CheckCollisionRecs(enemy.combat.hitbox, projectile.combat.hitbox)) {
+            if (CheckCollisionRecs(enemy.combat.hitbox, projectile.combat.hitbox) && projectile.isPlayerProjectile) {
 
+                std::cout << "collision detected" << std::endl;
                 enemy.combat.Kill();
                 projectile.combat.Kill();
             }

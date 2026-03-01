@@ -2,7 +2,8 @@
 // Created by Michael Hirsch on 22.02.26.
 //
 
-#include <cstdint>
+#pragma once
+
 enum class GameState {
 
     NONE,

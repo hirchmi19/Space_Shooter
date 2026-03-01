@@ -3,9 +3,8 @@
 //
 
 #pragma once
-#include <cstdint>
 
-enum class WaveType : uint32_t {
+enum class WaveType  {
 
     NONE,
     TOP_SIDE_TOP,

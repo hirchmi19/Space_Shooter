@@ -13,7 +13,7 @@ class CollisionSystem : public IGameSystem {
     CollisionSystem();
     ~CollisionSystem() override = default;
 
-    void Run(GameWorld &world) override;
+    void Run() override;
 
     private:
     void CheckPlayerProjectiles();

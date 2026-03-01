@@ -3,8 +3,6 @@
 //
 
 #pragma once
-#include <cstdint>
-
 
 enum class EnemyType;
 
@@ -14,6 +12,7 @@ struct IScoreLocator {
     virtual int GetEnemyScore(const EnemyType& id) = 0;
     virtual void AddHighScore(int score) = 0;
     virtual void ResetScore() = 0;
+    virtual int GetHighScore() const = 0;
 
 };
 

@@ -19,7 +19,8 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(raylib)
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
-add_executable(Space_Shooter ${SOURCES})
+add_executable(Space_Shooter ${SOURCES}
+        src/Locators/IWaveLocator.h)
 
 target_compile_definitions(Space_Shooter PRIVATE
         ASSETS_PATH="${CMAKE_SOURCE_DIR}/assets/"

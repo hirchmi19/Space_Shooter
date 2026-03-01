@@ -3,20 +3,24 @@
 //
 
 #include "ScoreSystem.h"
-#include <sys/types.h>
 #include "Constants/ScoringConstants.h"
 #include "Entities/Enemies/EnemyType.h"
 
 ScoreSystem::ScoreSystem() : IGameSystem(GameSystemID::SCORE_SYSTEM, "SCORE_SYSTEM"){}
 
 
-void ScoreSystem::AddHighScore(const uint score) {
+void ScoreSystem::Run() {
 
-    const uint newScore = highScore + score;
+
+}
+
+void ScoreSystem::AddHighScore(const int score) {
+
+    const int newScore = highScore + score;
     highScore = newScore >= ScoringConstants::MAX_SCORE ? ScoringConstants::MAX_SCORE : newScore;
 }
 
- uint ScoreSystem::GetEnemyScore(const EnemyType& id) {
+ int ScoreSystem::GetEnemyScore(const EnemyType& id) {
 
     switch (id) {
 

@@ -5,7 +5,7 @@
 #pragma once
 #include <cstdint>
 
-enum class DiveType : uint32_t {
+enum class DiveType {
 
     NONE,
     FROM_TOP,

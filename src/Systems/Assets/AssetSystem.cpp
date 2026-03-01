@@ -146,8 +146,9 @@ void AssetSystem::Init() {
     DefineSprite(SpriteID::ENEMY_PROJECTILE, TextureID::ENEMY_CANVAS, {12, 42, 1, 4});
 
     //--------------------------------------------------------------------------
+}
 
-
+void AssetSystem::Run() {
 
 }
 

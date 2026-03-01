@@ -11,21 +11,22 @@
 #include "../IGameSystem.h"
 #include "../../Utilities/utils.h"
 #include "../../Entities/Components/TimerComponent.h"
+#include "Locators/IWaveLocator.h"
 
 
-class WaveSystem : public IGameSystem{
+class WaveSystem : public IWaveLocator , public IGameSystem{
 
 
     public:
     WaveSystem();
     ~WaveSystem() override = default;
 
-    static int WaveCounter;
-
-    void Run(GameWorld &world) override;
+    void Run() override;
     void Start();
     void ResetWaveCounter() {waveCounter = 1 ;}
-    int GetWaveCounter() const {return waveCounter;};
+    int GetWaveCounter() const override {return waveCounter;};
+
+    bool waveFinished = false;
 
     private:
 
@@ -68,18 +69,18 @@ class WaveSystem : public IGameSystem{
 
     std::vector<size_t> GetGroupMemberIndices(int id) const;
 
-    void SpawnDive(GameWorld& world, DiveType type);
+    void SpawnDive(DiveType type);
 
-    void AssignDiveCurves(GameWorld& world, DiveType type);
-    void AssignAttackCurves(GameWorld& world, DiveType type);
+    void AssignDiveCurves(DiveType type);
+    void AssignAttackCurves(DiveType type);
     void AssignCurve(Enemy& enemy,const Vector2& start, const Vector2& end, DiveType type);
 
-    void BuildFormation(GameWorld& world);
-    void HandleSoloAttacks(GameWorld& world);
-    void HandleSwarmAttacks(GameWorld& world);
-    void HandleFormationAttacks(GameWorld& world);
+    void BuildFormation();
+    void HandleSoloAttacks();
+    void HandleSwarmAttacks();
+    void HandleFormationAttacks();
 
-    bool IsCurrentDiveFinished(GameWorld& world) const;
+    bool IsCurrentDiveFinished() const;
 
     void CalcFormationPositions();
     void CalcTopDiveSpawns();

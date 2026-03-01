@@ -15,15 +15,13 @@ class MovementSystem : public IGameSystem{
     MovementSystem();
     ~MovementSystem() override = default;
 
-    void Run(GameWorld& world) override;
+    void Run() override;
 
     private:
-    void MovePlayer(GameWorld& world);
-    void MoveProjectiles(GameWorld& world);
-    void MoveEnemies(GameWorld& world);
+    void MovePlayer();
+    void MoveProjectiles();
+    void MoveEnemies();
 
-
-    void MovePlayer(Player& player);
     void MoveProjectile(Projectile& projectile);
     void MoveEnemy(Enemy& enemy, const Vector2& newPos);
 };

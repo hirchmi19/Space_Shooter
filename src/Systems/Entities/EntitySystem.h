@@ -12,9 +12,6 @@
 #include "Entities/Entities.h"
 
 
-enum class EnemyType : uint32_t;
-
-
 class EntitySystem : public IEntityLocator, public IGameSystem {
 
     public:
@@ -22,17 +19,15 @@ class EntitySystem : public IEntityLocator, public IGameSystem {
     EntitySystem();
     ~EntitySystem() override = default;
 
-    void Run(GameWorld &world) override;
+    void Run() override;
     void Init() override;
 
     void HandleInputs() const;
     bool PlayerAlive() const {return player->IsAlive();}
 
-    void RequestEnemySpawn(const EnemyType &eType, const Vector2 &pos) override;
-    void RequestProjectileSpawn(const ProjectileType& pType, const Vector2& pos, bool isPlayerProjectile) override;
-    void RequestEntityRemoval(const EntityType&, size_t value) override;
+    void SpawnProjectile(const ProjectileType &pType, const Vector2& pos, bool isPlayerProjectile) override;
+    void SpawnEnemy(const EnemyType &eType, const Vector2 &spawnPos) override;
     void ClearEntities();
-
 
     Player* GetPlayer() const override {return player.get();};
     std::vector<Enemy>& GetEnemies() override {return enemies;};
@@ -49,13 +44,6 @@ class EntitySystem : public IEntityLocator, public IGameSystem {
     std::vector<Projectile> projectiles;
     std::vector<size_t> projectilesToRemove{};
 
-    std::vector<SpawnEnemyCommand> eCmds{};
-    std::vector<SpawnProjectileCommand> pCmds{};
-
-    void SpawnEntities();;
-    void SpawnProjectile(const ProjectileType &pType, const Vector2& pos, bool isPlayerProjectile);
-    void SpawnEnemy(const EnemyType &eType, const Vector2& pos);
-
     void KillEntities();
     void KillEnemies();
     void KillProjectiles();
@@ -63,4 +51,6 @@ class EntitySystem : public IEntityLocator, public IGameSystem {
     void FindDeadEntities();
     void FindDeadProjectiles();
     void FindDeadEnemies();
+
+    void RequestEntityRemoval(const EntityType&, size_t value) override;
 };

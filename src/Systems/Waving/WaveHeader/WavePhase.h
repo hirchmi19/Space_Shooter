@@ -5,7 +5,7 @@
 #pragma once
 #include <cstdint>
 
-enum class WavePhase : uint32_t {
+enum class WavePhase {
 
 
     NONE,

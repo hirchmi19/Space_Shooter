@@ -4,13 +4,13 @@
 
 #pragma once
 
-enum class WaveType : uint32_t;
-enum class DiveType : uint32_t;
+enum class WaveType;
+enum class DiveType;
 
 struct WavePattern {
 
     WaveType type;
-    uint32_t numberOfDives;
+    int numberOfDives;
     std::vector<int> groupSizes;
     std::vector<DiveType> dives;
 

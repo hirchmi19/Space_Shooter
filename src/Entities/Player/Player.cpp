@@ -27,9 +27,11 @@ void Player::HandleInput() {
     if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) movement.speed = -1;
     if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) movement.speed = 1;
 
-    if (IsKeyPressed(KEY_SPACE) && CanShoot()) {
+    if (!CanShoot()) return;
 
-        SystemLocator::entityLocator->RequestProjectileSpawn(
+    if (IsKeyPressed(KEY_SPACE)) {
+
+        SystemLocator::entityLocator->SpawnProjectile(
             ProjectileType::PLAYER,
             movement.position, true);
         cooldownTimer.Start(.35f);

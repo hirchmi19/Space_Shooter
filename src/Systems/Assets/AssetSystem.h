@@ -19,7 +19,6 @@ class AssetSystem : public IAssetLocator, public IGameSystem {
     AssetSystem();
     ~AssetSystem() override;
 
-
     const Texture2D& GetTexture(TextureID id) const override;
     const Sprite& GetSprite(SpriteID id) const override;
     const Font& GetFont() const  override { return pixelFont; }
@@ -30,6 +29,8 @@ class AssetSystem : public IAssetLocator, public IGameSystem {
 
 
     private:
+
+    void Run() override;
     void Init() override;
     void LoadTex(TextureID id, const char* path);
     void DefineSprite (SpriteID id, TextureID textureID, Rectangle src);

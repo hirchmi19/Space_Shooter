@@ -8,12 +8,14 @@
 #include "IAssetLocator.h"
 #include "IEntityLocator.h"
 #include "IScoreLocator.h"
+#include "IWaveLocator.h"
 
 struct SystemLocator {
 
     static std::shared_ptr<IAssetLocator> assetLocator;
     static std::shared_ptr<IScoreLocator> scoreLocator;
     static std::shared_ptr<IEntityLocator> entityLocator;
+    static std::shared_ptr<IWaveLocator> waveLocator;
 };
 
 

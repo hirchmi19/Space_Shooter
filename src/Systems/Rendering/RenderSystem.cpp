@@ -2,10 +2,9 @@
 // Created by Michael Hirsch on 06.02.26.
 //
 
-#include "RenderSystem.h"
-
 #include <iostream>
 #include "raylib.h"
+#include "RenderSystem.h"
 #include "../../Game/GameWorld.h"
 #include "Constants/GameConstants.h"
 #include "Constants/ScoringConstants.h"
@@ -13,41 +12,45 @@
 RenderSystem::RenderSystem() : IGameSystem(GameSystemID::RENDERER_SYSTEM, "RENDER_SYSTEM") {}
 
 
-void RenderSystem::Run(GameWorld& world) {
+void RenderSystem::Run() {
 
-    RenderGameState(world, world.GetGameState());
+}
+
+void RenderSystem::Run(const GameState& state) const {
+
+    RenderGameState(state);
 }
 
 //--------------------------------------------------------------------------
 
-void RenderSystem::RenderGameState(GameWorld &world, const GameState state) const {
+void RenderSystem::RenderGameState(const GameState& state) const {
 
     std::string text;
 
     switch (state) {
 
         case GameState::GAME_OVER:
-            RenderGameOver(world);
+            RenderGameOver(state);
             break;
 
         case GameState::IN_GAME:
-            RenderPlayer(world);
-            RenderEnemies(world);
-            RenderProjectiles(world);
-            RenderHighScore(world);
+            RenderPlayer();
+            RenderEnemies();
+            RenderProjectiles();
+            RenderHighScore();
             break;
 
         case GameState::BEGIN_WAVE:
 
-            text = "WAVE " + std::to_string(world.GetWaveCounter());
-            RenderWaveTransition(world,text);
+            text = "WAVE " + std::to_string(SystemLocator::waveLocator->GetWaveCounter());
+            RenderWaveTransition(text);
             break;
 
 
         case GameState::END_WAVE:
 
             text = "WAVE COMPLETED!";
-            RenderWaveTransition(world, text);
+            RenderWaveTransition(text);
             break;
     }
 }
@@ -56,9 +59,9 @@ void RenderSystem::RenderGameState(GameWorld &world, const GameState state) cons
  * Renders all enemies and shift their sprites
  * \param world
  */
-void RenderSystem::RenderEnemies(GameWorld& world) const {
+void RenderSystem::RenderEnemies() const {
 
-    const auto& enemies = world.GetEnemies();
+    const auto& enemies = SystemLocator::entityLocator->GetEnemies();
     const double time = GetTime();
     const size_t spriteToDraw = static_cast<size_t>(time * 4) % 2; // flip between sprites to simulate animation
 
@@ -66,7 +69,7 @@ void RenderSystem::RenderEnemies(GameWorld& world) const {
 
         if (enemy.wave.state == WaveState::OUT_FORMATION) continue;
 
-        const auto& texture = world.GetTexture(TextureID::ENEMY_CANVAS);
+        const auto& texture = SystemLocator::assetLocator->GetTexture(TextureID::ENEMY_CANVAS);
         const auto& sprite = *(enemy.render.sprites[spriteToDraw]);
 
         const Rectangle dest = {
@@ -76,7 +79,7 @@ void RenderSystem::RenderEnemies(GameWorld& world) const {
             enemy.render.size.y * RenderConstants::ENEMY_SCALING};
 
         DrawTexturePro(texture, sprite.src, dest, { 0, 0 }, 0.0f, WHITE);
-        //DrawRectangleLinesEx(enemy.combat.hitbox, 1.0f, PINK);
+        //DrawRectangleLinesEx(enemy.combat.hitbox, 1.0f, PINK); // draw hitbox
     }
 }
 
@@ -85,36 +88,38 @@ void RenderSystem::RenderEnemies(GameWorld& world) const {
  * Renders the player
  * \param world
  */
-void RenderSystem::RenderPlayer(const GameWorld& world) const {
+void RenderSystem::RenderPlayer() const {
 
-    const auto& playerTexture = world.GetTexture(TextureID::PLAYER_SHIP_CANVAS);
-    auto playerSprite = world.GetSprite(SpriteID::PLAYER_SHIP_MIDDLE);
-    const auto& playerSpeed = world.GetPlayer().GetSpeed();
+    const auto player = SystemLocator::entityLocator->GetPlayer();
+    const auto& playerTexture = SystemLocator::assetLocator->GetTexture(TextureID::PLAYER_SHIP_CANVAS);
+    auto playerSprite = SystemLocator::assetLocator->GetSprite(SpriteID::PLAYER_SHIP_MIDDLE);
+
     const Rectangle dest = {
-        world.GetPlayer().GetPosition().x,
-        world.GetPlayer().GetPosition().y,
-        world.GetPlayer().GetSize().x * RenderConstants::PLAYER_SCALING,
-        world.GetPlayer().GetSize().y * RenderConstants::PLAYER_SCALING
+        player->GetPosition().x,
+        player->GetPosition().y,
+        player->GetSize().x * RenderConstants::PLAYER_SCALING,
+        player->GetSize().y * RenderConstants::PLAYER_SCALING
     };
 
-    if (playerSpeed > 0) playerSprite = world.GetSprite(SpriteID::PLAYER_SHIP_RIGHT);
-    if (playerSpeed < 0) playerSprite = world.GetSprite(SpriteID::PLAYER_SHIP_LEFT);
+    const auto pSpeed = player->GetSpeed();
+    if (pSpeed > 0) playerSprite = SystemLocator::assetLocator->GetSprite(SpriteID::PLAYER_SHIP_RIGHT);
+    if (pSpeed < 0) playerSprite = SystemLocator::assetLocator->GetSprite(SpriteID::PLAYER_SHIP_LEFT);
 
     DrawTexturePro(playerTexture, playerSprite.src, dest, Vector2{0, 0}, 0.0f, WHITE);
-    //DrawRectangleLinesEx(world.GetPlayer().GetHitBox(), 1.0f, PINK);
+    //DrawRectangleLinesEx(world.GetPlayer().GetHitBox(), 1.0f, PINK); // draw hitbox
 }
 
 /**
  * Renders all projectiles
  * \param world
  */
-void RenderSystem::RenderProjectiles(GameWorld& world) const  {
+void RenderSystem::RenderProjectiles() const  {
 
-    const auto& projectiles = world.GetProjectiles();
+    const auto& projectiles = SystemLocator::entityLocator->GetProjectiles();
 
     for (const auto& projectile : projectiles ) {
 
-        const auto& texture = world.GetTexture(TextureID::ENEMY_CANVAS);
+        const auto& texture = SystemLocator::assetLocator->GetTexture(TextureID::ENEMY_CANVAS);
         const auto& sprite = *(projectile.render.sprites[0]);
 
         const Rectangle dest = {
@@ -124,41 +129,44 @@ void RenderSystem::RenderProjectiles(GameWorld& world) const  {
             projectile.render.size.y * RenderConstants::PROJECTILE_SCALING};
 
         DrawTexturePro(texture, sprite.src, dest, { 0, 0 }, 0.0f, WHITE);
-       // DrawRectangleLinesEx(projectile.combat.hitbox, 1.0f, PINK);
+       // DrawRectangleLinesEx(projectile.combat.hitbox, 1.0f, PINK); // draw hitbox
     }
 }
 
-void RenderSystem::RenderGameOver(const GameWorld &world) const {
+void RenderSystem::RenderGameOver(const GameState& state) const {
 
-    if (world.GetGameState() != GameState::GAME_OVER) return;
+    //if (state != GameState::GAME_OVER) return;
 
+    const auto font = SystemLocator::assetLocator->GetFont();
     constexpr std::string caption = "GAME OVER";
     const std::string subCaption = "PRESS `ENTER` TO RESTART";
 
-    const Vector2 captionWidth = MeasureTextEx(world.GetFont(), caption.c_str(), RenderConstants::GAME_OVER_CAPTION_SIZE, RenderConstants::SPACING);
-    const Vector2 subCaptionWidth = MeasureTextEx(world.GetFont(), subCaption.c_str(), RenderConstants::GAME_OVER_SUBCAPTION_SIZE, RenderConstants::SPACING);
+    const Vector2 captionWidth = MeasureTextEx(font, caption.c_str(), RenderConstants::GAME_OVER_CAPTION_SIZE, RenderConstants::SPACING);
+    const Vector2 subCaptionWidth = MeasureTextEx(font, subCaption.c_str(), RenderConstants::GAME_OVER_SUBCAPTION_SIZE, RenderConstants::SPACING);
 
     const Vector2 captionPos = {GameConstants::SCREEN_ORIGIN.x - captionWidth.x / 2, GameConstants::SCREEN_HEIGHT * .2f};
     const Vector2 subCaptionPos = {GameConstants::SCREEN_ORIGIN.x - subCaptionWidth.x / 2, captionPos.y + 225};
 
-    DrawTextEx(world.GetFont(), caption.c_str(), captionPos, RenderConstants::GAME_OVER_CAPTION_SIZE, RenderConstants::SPACING, RED);
-    DrawTextEx(world.GetFont(), subCaption.c_str(), subCaptionPos, RenderConstants::GAME_OVER_SUBCAPTION_SIZE, RenderConstants::SPACING, WHITE);
+    DrawTextEx(font, caption.c_str(), captionPos, RenderConstants::GAME_OVER_CAPTION_SIZE, RenderConstants::SPACING, RED);
+    DrawTextEx(font, subCaption.c_str(), subCaptionPos, RenderConstants::GAME_OVER_SUBCAPTION_SIZE, RenderConstants::SPACING, WHITE);
 }
 
-void RenderSystem::RenderWaveTransition(const GameWorld &world, const std::string& caption) const {
+void RenderSystem::RenderWaveTransition(const std::string& caption) const {
 
-    const Vector2 captionWidth = MeasureTextEx(world.GetFont(), caption.c_str(), RenderConstants::WAVE_TRANSITION_CAPTION_SIZE, RenderConstants::SPACING);
+    const auto font = SystemLocator::assetLocator->GetFont();
+    const Vector2 captionWidth = MeasureTextEx(font, caption.c_str(), RenderConstants::WAVE_TRANSITION_CAPTION_SIZE, RenderConstants::SPACING);
     constexpr uint32_t xOffset = 30;
 
     const Vector2 captionPos = {(GameConstants::SCREEN_ORIGIN.x - captionWidth.x / 2) + xOffset, GameConstants::SCREEN_HEIGHT * .22f};
-    DrawTextEx(world.GetFont(), caption.c_str(), captionPos, RenderConstants::WAVE_TRANSITION_CAPTION_SIZE, RenderConstants::SPACING, WHITE);
+    DrawTextEx(font, caption.c_str(), captionPos, RenderConstants::WAVE_TRANSITION_CAPTION_SIZE, RenderConstants::SPACING, WHITE);
 }
 
 
-void RenderSystem::RenderHighScore(const GameWorld &world) const {
+void RenderSystem::RenderHighScore() const {
 
+    const auto font = SystemLocator::assetLocator->GetFont();
     constexpr std::string caption = "HIGH SCORE";
-    std::string highScore = std::to_string(world.GetHighScore());
+    std::string highScore = std::to_string(SystemLocator::scoreLocator->GetHighScore());
 
     if (highScore.length() < ScoringConstants::HIGHSCORE_DIGITS) { // add leading zeros, if needed
 
@@ -167,14 +175,14 @@ void RenderSystem::RenderHighScore(const GameWorld &world) const {
 
     }
 
-    const Vector2 captionWidth = MeasureTextEx(world.GetFont(), caption.c_str(), RenderConstants::HIGHSCORE_CAPTION_SIZE, RenderConstants::SPACING);
-    const Vector2 highScoreWidth = MeasureTextEx(world.GetFont(), highScore.c_str(), RenderConstants::HIGHSCORE_CAPTION_SIZE, RenderConstants::SPACING);
+    const Vector2 captionWidth = MeasureTextEx(font, caption.c_str(), RenderConstants::HIGHSCORE_CAPTION_SIZE, RenderConstants::SPACING);
+    const Vector2 highScoreWidth = MeasureTextEx(font, highScore.c_str(), RenderConstants::HIGHSCORE_CAPTION_SIZE, RenderConstants::SPACING);
     constexpr int xOffset = 30;
 
     const Vector2 captionPos = {GameConstants::SCREEN_ORIGIN.x - captionWidth.x / 2 + xOffset, GameConstants::SCREEN_HEIGHT * .02f};
     const Vector2 highScorePos = {GameConstants::SCREEN_ORIGIN.x - highScoreWidth.x / 2 + xOffset, GameConstants::SCREEN_HEIGHT * .055f};
 
-    DrawTextEx(world.GetFont(), caption.c_str(), captionPos, RenderConstants::HIGHSCORE_CAPTION_SIZE, RenderConstants::SPACING, WHITE);
-    DrawTextEx(world.GetFont(), highScore.c_str(), highScorePos, RenderConstants::HIGHSCORE_CAPTION_SIZE, RenderConstants::SPACING, WHITE);
+    DrawTextEx(font, caption.c_str(), captionPos, RenderConstants::HIGHSCORE_CAPTION_SIZE, RenderConstants::SPACING, WHITE);
+    DrawTextEx(font, highScore.c_str(), highScorePos, RenderConstants::HIGHSCORE_CAPTION_SIZE, RenderConstants::SPACING, WHITE);
 
 }

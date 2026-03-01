@@ -14,10 +14,10 @@
 
 EntitySystem::EntitySystem() : IGameSystem(GameSystemID::ENTITY_SYSTEM, "ENTITY_SYSTEM"){}
 
-void EntitySystem::Run(GameWorld &world) {
+void EntitySystem::Run() {
 
-    if (!eCmds.empty()) SpawnEntities();
-    if (!projectilesToRemove.empty() || !enemiesToRemove.empty()) KillEntities();
+    FindDeadEntities();
+    KillEntities();
 }
 
 void EntitySystem::Init() {
@@ -36,43 +36,10 @@ void EntitySystem::HandleInputs() const {
     player->HandleInput();
 }
 
-void EntitySystem::RequestEnemySpawn(const EnemyType &eType, const Vector2 &pos) {
-
-    eCmds.emplace_back(eType, pos);
-}
-
-void EntitySystem::RequestProjectileSpawn(const ProjectileType &pType, const Vector2 &pos, bool isPlayerProjectile) {
-
-    pCmds.emplace_back(pType, pos, isPlayerProjectile);
-}
-
-void EntitySystem::RequestEntityRemoval(const EntityType &eType, const size_t value) {
-
-   // if (eType != EntityType::ENEMY || eType != EntityType::PROJECTILE) return;
-
-    auto& removalQ = eType == EntityType::ENEMY ? enemiesToRemove : projectilesToRemove;
-    const auto index = std::ranges::lower_bound(removalQ, value);
-    removalQ.insert(index, value);
-
-}
-
 
 //--------------------------------------------------------------------------
 
-void EntitySystem::SpawnEntities() {
-
-    for (const auto& cmd : eCmds) {
-
-        SpawnEnemy(cmd.eType, cmd.spawnPos);
-    }
-
-    for (const auto& cmd : pCmds) {
-
-        SpawnProjectile(cmd.pType, cmd.spawnPos, cmd.isPlayerProjectile);
-    }
-}
-
-void EntitySystem::SpawnEnemy(const EnemyType &eType, const Vector2 &pos) {
+void EntitySystem::SpawnEnemy(const EnemyType &eType, const Vector2 &spawnPos) {
 
     const auto& sprites =
         SystemLocator::assetLocator->GetEnemySprites(eType);
@@ -81,12 +48,12 @@ void EntitySystem::SpawnEnemy(const EnemyType &eType, const Vector2 &pos) {
 
     enemies.emplace_back(RenderComponent{sprites, size},
         CombatComponent{1,
-            Rectangle{pos.x, pos.y,
+            Rectangle{spawnPos.x, spawnPos.y,
             size.x * RenderConstants::ENEMY_SCALING,
             size.y * RenderConstants::ENEMY_SCALING},
 
-            SystemLocator::scoreLocator->GetEnemyScore(eType)});
-
+            SystemLocator::scoreLocator->GetEnemyScore(eType)}
+            );
 }
 
 void EntitySystem::SpawnProjectile(const ProjectileType &pType, const Vector2 &pos, bool isPlayerProjectile) {
@@ -109,14 +76,11 @@ void EntitySystem::SpawnProjectile(const ProjectileType &pType, const Vector2 &p
 
 void EntitySystem::KillEntities() {
 
-    FindDeadEntities();
     KillEnemies();
     KillProjectiles();
 }
 
 void EntitySystem::KillEnemies() {
-
-
 
     for (const auto& enemy : std::ranges::reverse_view(enemiesToRemove)) {
 
@@ -148,7 +112,7 @@ void EntitySystem::FindDeadEnemies() {
 
         Enemy& enemy = enemies[i];
         if (enemy.combat.IsAlive()) continue;
-        enemiesToRemove.push_back(i);
+        RequestEntityRemoval(EntityType::ENEMY, i);
         SystemLocator::scoreLocator->AddHighScore(enemy.combat.score);
     }
 }
@@ -159,8 +123,16 @@ void EntitySystem::FindDeadProjectiles() {
 
         Projectile& projectile = projectiles[i];
         if (projectile.combat.IsAlive()) continue;
-        projectilesToRemove.push_back(i);
+        RequestEntityRemoval(EntityType::PROJECTILE, i);
     }
+}
+
+void EntitySystem::RequestEntityRemoval(const EntityType &eType, const size_t value) {
+
+    auto& removalQ = eType == EntityType::ENEMY ? enemiesToRemove : projectilesToRemove;
+    const auto index = std::ranges::lower_bound(removalQ, value);
+    removalQ.insert(index, value);
+
 }
 
 void EntitySystem::ClearEntities() {

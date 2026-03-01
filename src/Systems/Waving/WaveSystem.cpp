@@ -9,13 +9,12 @@
 
 #include "../../Constants/GameConstants.h"
 #include "../../Constants/WaveConstants.h"
-#include "../../Entities/EntityType.h"
 #include "../../Game/GameWorld.h"
 
 
 WaveSystem::WaveSystem() : IGameSystem(GameSystemID::WAVE_SYSTEM, "WAVE_SYSTEM") {}
 
-void WaveSystem::Run(GameWorld& world)
+void WaveSystem::Run()
 {
 
    // if (phaseTimer.IsRunning()) return;
@@ -33,26 +32,25 @@ void WaveSystem::Run(GameWorld& world)
 
         case WavePhase::FORMATION_OFF:
 
-            BuildFormation(world);
+            BuildFormation();
             break;
 
         case WavePhase::FORMATION_ON:
 
-            HandleSoloAttacks(world);
-            HandleFormationAttacks(world);
+            HandleSoloAttacks();
+            HandleFormationAttacks();
             break;
 
         case WavePhase::READY_FOR_SWARM:
 
-            HandleSwarmAttacks(world);
+            HandleSwarmAttacks();
             break;
     }
 
-    if (world.GetEnemies().empty() && waveInitialized) {
+    if (SystemLocator::entityLocator->GetEnemies().empty() && waveInitialized) {
 
         waveCounter++;
-        world.EndWave();
-
+        waveFinished = true;
     }
 
 }
@@ -96,6 +94,7 @@ void WaveSystem::StartWave() {
     diveSpawned = false;
     diveCompleted = false;
     enemiesSpawned = false;
+    waveFinished = false;
     shootsFired = 0;
     currentPattern = PickWavePattern();
 
@@ -108,7 +107,7 @@ void WaveSystem::StartWave() {
  * Handles diving when all enemies are outside the screen
  * \param world
  */
-void WaveSystem::BuildFormation(GameWorld& world)
+void WaveSystem::BuildFormation()
 {
     if (diveTimer.IsRunning() && diveSpawned) return;
 
@@ -126,15 +125,15 @@ void WaveSystem::BuildFormation(GameWorld& world)
     {
         const DiveType type = currentPattern.dives[diveCount];
 
-        if (!enemiesSpawned)  SpawnDive(world, type);
-        AssignDiveCurves(world, type);
+        if (!enemiesSpawned)  SpawnDive(type);
+        AssignDiveCurves(type);
 
         diveSpawned = true;
         diveCompleted = false;
         return;
     }
 
-    if (IsCurrentDiveFinished(world) && diveSpawned)
+    if (IsCurrentDiveFinished() && diveSpawned)
     {
         diveSpawned = false;
         diveCompleted = true;
@@ -147,11 +146,11 @@ void WaveSystem::BuildFormation(GameWorld& world)
  * Random number of enemies swarm out and attack player directly
  * \param world
  */
-void WaveSystem::HandleSoloAttacks(GameWorld& world) {
+void WaveSystem::HandleSoloAttacks() {
 
     if (diveTimer.IsRunning() || phaseTimer.IsRunning()) return;
 
-    auto& enemies = world.GetEnemies();
+    auto& enemies = SystemLocator::entityLocator->GetEnemies();
 
     if (enemies.empty()) return; // just in case :)
 
@@ -178,7 +177,9 @@ void WaveSystem::HandleSoloAttacks(GameWorld& world) {
         enemyIndex = GetRandomValue(0, static_cast<int>(enemies.size() - 1));
     }while (enemies[enemyIndex].wave.state != WaveState::IN_FORMATION);
 
-    AssignBezierSolo(enemies[enemyIndex], enemies[enemyIndex].wave.formationPosition, world.GetPlayer().GetPosition());
+    AssignBezierSolo(enemies[enemyIndex],
+        enemies[enemyIndex].wave.formationPosition,
+        SystemLocator::entityLocator->GetPlayer()->GetPosition());
 
     enemies[enemyIndex].wave.state = WaveState::ATTACK;
     diveCount++;
@@ -189,9 +190,9 @@ void WaveSystem::HandleSoloAttacks(GameWorld& world) {
  * Remaining enemies swarm out and attack player directly
  * \param world
  */
-void WaveSystem::HandleSwarmAttacks(GameWorld &world) {
+void WaveSystem::HandleSwarmAttacks() {
 
-    if (diveTimer.IsRunning() && diveSpawned || world.GetEnemies().empty()) return;
+    if (diveTimer.IsRunning() && diveSpawned || SystemLocator::entityLocator->GetEnemies().empty()) return;
 
     if (diveCount  < 0) {
 
@@ -205,14 +206,14 @@ void WaveSystem::HandleSwarmAttacks(GameWorld &world) {
 
         const DiveType type = currentPattern.dives[diveCount];
 
-        AssignAttackCurves(world, type);
+        AssignAttackCurves(type);
 
         diveSpawned = true;
         diveCompleted = false;
         return;
     }
 
-    if (IsCurrentDiveFinished(world) && diveSpawned)
+    if (IsCurrentDiveFinished() && diveSpawned)
     {
         diveSpawned = false;
         diveCompleted = true;
@@ -226,22 +227,27 @@ void WaveSystem::HandleSwarmAttacks(GameWorld &world) {
  * Random number of enemies inside the formation shoot
  * \param world
  */
-void WaveSystem::HandleFormationAttacks(GameWorld &world) {
+void WaveSystem::HandleFormationAttacks() {
 
-    if (world.GetEnemies().empty()) return;
+    const auto& enemies = SystemLocator::entityLocator->GetEnemies();
 
-    const int maxShots = static_cast<int>(world.GetEnemies().size() / 2);
+    if (enemies.size() <= 2) return;
+
+    const int maxShots = static_cast<int>(SystemLocator::entityLocator->GetEnemies().size() / 2);
 
     if (shootsFired >= maxShots || attackTimer.IsRunning()) return;
 
-    const auto& enemies = world.GetEnemies();
     int enemyIndex = 0;
 
     do {
         enemyIndex = GetRandomValue(0, static_cast<int>(enemies.size() - 1));
     }while (enemies[enemyIndex].wave.state != WaveState::IN_FORMATION);
 
-    world.SpawnEnemyProjectile(enemies[enemyIndex].wave.formationPosition);
+    SystemLocator::entityLocator->SpawnProjectile(
+        ProjectileType::ENEMY,
+        enemies[enemyIndex].wave.worldPosition,
+        false);
+
     attackTimer.Start(0.5);
     shootsFired++;
 }
@@ -255,12 +261,12 @@ void WaveSystem::BuildFormationSlots() {
         FormationSlot slot;
         slot.position = formationPositions[i];
 
-        if (i < 4)
-            slot.id = EnemyType::BLACK_ENEMY;
+        if (i < 4) // 4 black enemies, and 20 red and yellow enemies (= 44)
+            slot.type = EnemyType::BLACK_E;
         else if (i < 20)
-            slot.id = EnemyType::RED_ENEMY;
+            slot.type = EnemyType::RED_E;
         else
-            slot.id = EnemyType::YELLOW_ENEMY;
+            slot.type = EnemyType::YELLOW_E;
 
         formationSlots.push_back(slot);
     }
@@ -291,7 +297,7 @@ void WaveSystem::BuildDivingGroups(const WavePattern& pattern)
  * \param world
  * \param type
  */
-void WaveSystem::SpawnDive(GameWorld &world, const DiveType type) {
+void WaveSystem::SpawnDive(const DiveType type) {
 
     const auto indices = GetGroupMemberIndices(diveCount);
     const auto& spawns = (type == DiveType::FROM_TOP) ? topDiveSpawns : sideDiveSpawns;
@@ -301,9 +307,9 @@ void WaveSystem::SpawnDive(GameWorld &world, const DiveType type) {
         const auto& slot = formationSlots[indices[i]];
         const Vector2 spawn = spawns[i];
 
-        world.SpawnEnemy(slot.id, spawn);
+        SystemLocator::entityLocator->SpawnEnemy(slot.type, spawn);
 
-        Enemy& enemy = world.GetEnemies().back();
+        Enemy& enemy = SystemLocator::entityLocator->GetEnemies().back();
         enemy.wave.formationPosition = slot.position;
         enemy.wave.diveGroup = diveCount;
         enemy.wave.spawnPosition = spawn;
@@ -316,27 +322,26 @@ void WaveSystem::SpawnDive(GameWorld &world, const DiveType type) {
  * \param world
  * \param type
  */
-void WaveSystem::AssignDiveCurves(GameWorld& world, const DiveType type)
+void WaveSystem::AssignDiveCurves(const DiveType type)
 {
-    auto& enemies = world.GetEnemies();
+     auto& enemies = SystemLocator::entityLocator->GetEnemies();
 
     for (auto& enemy : enemies)
     {
         if (enemy.wave.diveGroup != diveCount)
             continue;
 
-
         AssignCurve(enemy, enemy.wave.spawnPosition, enemy.wave.formationPosition, type);
     }
 }
 
-void WaveSystem::AssignAttackCurves(GameWorld &world, const DiveType type) {
+void WaveSystem::AssignAttackCurves(const DiveType type) {
 
-    auto& enemies = world.GetEnemies();
+    auto& enemies = SystemLocator::entityLocator->GetEnemies();
 
     for (auto& enemy : enemies) {
 
-        const Vector2& end = {enemy.wave.formationPosition.x, world.GetPlayer().GetPosition().y + 100.f};
+        const Vector2& end = {enemy.wave.formationPosition.x, SystemLocator::entityLocator->GetPlayer()->GetPosition().y + 100.f};
 
         if (enemy.wave.diveGroup != diveCount)continue;
         if (enemy.wave.state != WaveState::IN_FORMATION) continue;
@@ -370,9 +375,9 @@ void WaveSystem::AssignCurve(Enemy &enemy, const Vector2& start, const Vector2 &
  * \param world
  * \return
  */
-bool WaveSystem::IsCurrentDiveFinished(GameWorld& world) const
+bool WaveSystem::IsCurrentDiveFinished() const
 {
-    const auto& enemies = world.GetEnemies();
+    const auto& enemies = SystemLocator::entityLocator->GetEnemies();
 
     for (const auto& enemy : enemies)
     {
