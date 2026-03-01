@@ -8,8 +8,7 @@
 #include <ostream>
 
 #include "raylib.h"
-#include "../../Entities/EntityType.h"
-#include "Entities/Enemies/EnemyType.h"
+#include "Entities/EnemyType.h"
 
 AssetSystem::AssetSystem() : IGameSystem(GameSystemID::ASSET_SYSTEM, "ASSET_SYSTEM") {}
 
@@ -62,13 +61,13 @@ std::vector<const Sprite*> AssetSystem::GetPlayerSprites() const {
 
 /**
  * Returns a projectile Sprite
- * \param eType
+ * \param pType
  * \return
  */
-std::vector<const Sprite*> AssetSystem::GetProjectileSprite(const EntityType &eType) const {
+std::vector<const Sprite*> AssetSystem::GetProjectileSprite(const ProjectileType& pType) const {
 
-    if (eType == EntityType::ENEMY_PROJECTILE) return {&GetSprite(SpriteID::ENEMY_PROJECTILE)};
-    if (eType == EntityType::PLAYER_PROJECTILE) return {&GetSprite(SpriteID::PLAYER_PROJECTILE)};
+    if (pType == ProjectileType::ENEMY) return {&GetSprite(SpriteID::ENEMY_PROJECTILE)};
+    if (pType == ProjectileType::PLAYER) return {&GetSprite(SpriteID::PLAYER_PROJECTILE)};
 
     return {};
 }
@@ -78,11 +77,11 @@ std::vector<const Sprite*> AssetSystem::GetProjectileSprite(const EntityType &eT
  * \param eType
  * \return
  */
-std::vector<const Sprite *> AssetSystem::GetEnemySprites(const EntityType &eType) const {
+std::vector<const Sprite *> AssetSystem::GetEnemySprites(const EnemyType& eType) const {
 
-    if (eType == EntityType::YELLOW_E) return {&GetSprite(SpriteID::YELLOW_ENEMY_0), &GetSprite(SpriteID::YELLOW_ENEMY_1)};
-    if (eType == EntityType::RED_E) return {&GetSprite(SpriteID::RED_ENEMY_0), &GetSprite(SpriteID::RED_ENEMY_1)};
-    if (eType == EntityType::BLACK_E) return {&GetSprite(SpriteID::BLACK_ENEMY_0), &GetSprite(SpriteID::BLACK_ENEMY_1)};
+    if (eType == EnemyType::YELLOW_E)return {&GetSprite(SpriteID::YELLOW_ENEMY_0), &GetSprite(SpriteID::YELLOW_ENEMY_1)};
+    if (eType == EnemyType::RED_E)return {&GetSprite(SpriteID::RED_ENEMY_0), &GetSprite(SpriteID::RED_ENEMY_1)};
+    if (eType == EnemyType::BLACK_E)return {&GetSprite(SpriteID::BLACK_ENEMY_0), &GetSprite(SpriteID::BLACK_ENEMY_1)};
 
     return {};
 

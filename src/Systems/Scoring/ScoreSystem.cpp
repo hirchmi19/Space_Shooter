@@ -15,17 +15,17 @@ void ScoreSystem::AddHighScore(const uint32_t score) {
     highScore = newScore >= ScoringConstants::MAX_SCORE ? ScoringConstants::MAX_SCORE : newScore;
 }
 
- uint32_t ScoreSystem::GetEnemyScore(const EntityType& id) {
+ uint32_t ScoreSystem::GetEnemyScore(const EnemyType& id) {
 
     switch (id) {
 
-        case EntityType::YELLOW_E:
+        case EnemyType::YELLOW_E:
             return ScoringConstants::YELLOW_ENEMY_SCORE;
 
-        case EntityType::RED_E:
+        case EnemyType::RED_E:
             return ScoringConstants::RED_ENEMY_SCORE;
 
-        case EntityType::BLACK_E:
+        case EnemyType::BLACK_E:
             return ScoringConstants::BLACK_ENEMY_SCORE;
 
         default:

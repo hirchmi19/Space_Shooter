@@ -9,10 +9,9 @@
 #include "AssetHeader/Assets.h"
 #include "../IGameSystem.h"
 #include "../../Utilities/utils.h"
-#include "SystemService/IAssetLocator.h"
+#include "Locators/IAssetLocator.h"
+#include "Entities/ProjectileType.h"
 
-enum class EnemyType : uint32_t;
-enum class EntityType : uint32_t;
 
 class AssetSystem : public IAssetLocator, public IGameSystem {
 
@@ -25,8 +24,8 @@ class AssetSystem : public IAssetLocator, public IGameSystem {
     const Sprite& GetSprite(SpriteID id) const override;
     const Font& GetFont() const  override { return pixelFont; }
     std::vector<const Sprite*> GetPlayerSprites() const override;
-    std::vector<const Sprite*> GetEnemySprites(const EntityType &eType) const override;
-    std::vector<const Sprite*> GetProjectileSprite(const EntityType &eType) const override;
+    std::vector<const Sprite*> GetEnemySprites(const EnemyType& eType) const override;
+    std::vector<const Sprite*> GetProjectileSprite(const ProjectileType& pType) const override;
 
 
 

@@ -5,19 +5,18 @@
 #pragma once
 #include <memory>
 
-
-
-#include "SpawnType.h"
-#include "Entities/Entities.h"
 #include "Systems/IGameSystem.h"
-#include "SystemService/IEntityLocator.h"
-#include "SpawnCommand.h"
+#include "Locators/IEntityLocator.h"
+#include "SpawnEnemyCommand.h"
+#include "SpawnProjectileCommand.h"
+#include "Entities/ProjectileType.h"
 
 
-enum class EntityType : uint32_t;
+enum class SpriteID : uint32_t;
+enum class EnemyType : uint32_t;
 
 
-class EntitySystem : public IEntityLocator , public IGameSystem {
+class EntitySystem : public IEntityLocator, public IGameSystem {
 
     public:
 
@@ -29,17 +28,19 @@ class EntitySystem : public IEntityLocator , public IGameSystem {
 
     void HandleInputs() const;
     bool PlayerAlive() const {return player->IsAlive();}
+
     void RevivePlayer() const { player->Revive();}
+    void KillPlayer() const { player->Kill();}
 
-
-    void RequestEntitySpawn(const EntityType &eType, const SpawnType& sType, const Vector2 &pos) override;
+    void RequestEnemySpawn(const EnemyType &eType, const Vector2 &pos) override;
+    void RequestProjectileSpawn(const ProjectileType& pType, const Vector2& pos, bool isPlayerProjectile) override;
+    void RequestEntityRemoval(const EntityType&, size_t value) override;
     void ClearEntities();
 
 
-    Player* getPlayer() const override {return player.get();};
+    Player* GetPlayer() const override {return player.get();};
     std::vector<Enemy>& GetEnemies() override {return enemies;};
     std::vector<Projectile>& GetProjectiles() override {return projectiles;};
-
 
 
     private:
@@ -52,11 +53,12 @@ class EntitySystem : public IEntityLocator , public IGameSystem {
     std::vector<Projectile> projectiles;
     std::vector<size_t> projectilesToRemove{};
 
-    std::vector<SpawnCommand> spawnCmds{};
+    std::vector<SpawnEnemyCommand> eCmds{};
+    std::vector<SpawnProjectileCommand> pCmds{};
 
     void SpawnEntities();;
-    void SpawnProjectile(const EntityType& eType, const Vector2& pos);
-    void SpawnEnemy(const EntityType &eType, const Vector2& pos);
+    void SpawnProjectile(const ProjectileType &pType, const Vector2& pos, bool isPlayerProjectile);
+    void SpawnEnemy(const EnemyType &eType, const Vector2& pos);
 
     void KillEntities();
     void KillEnemies();

@@ -5,13 +5,13 @@
 #pragma once
 #include "raylib.h"
 #include "SpawnType.h"
+#include "Entities/EnemyType.h"
 #include "Entities/EntityType.h"
 
 
-struct SpawnCommand {
+struct SpawnEnemyCommand {
 
-    EntityType eType;
-    SpawnType sType;
+    EnemyType eType;
     Vector2 spawnPos;
 
 };

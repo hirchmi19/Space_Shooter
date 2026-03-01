@@ -11,19 +11,14 @@ struct CombatComponent {
     float damage = 1;
 
     explicit CombatComponent(const float hp = 0, const Rectangle hitbox = {}, const uint32_t score = 0)
-        : hitbox(hitbox), health(hp), score(score) {}
+        : hitbox(hitbox), score(score), hp(hp) {}
 
-    bool IsAlive() const { return health > 0; }
-    void Kill() { health = 0; }
+    bool IsAlive() const { return hp > 0; }
+    void Kill() { hp = 0; }
+    void Revive() { hp = 1; }
 
-    void TakeDamage(const float dmg) {
-
-        if (dmg >= health) {health = 0;}
-        else {health -= dmg;}
-    }
-
-    void Revive() { health = 1; }
 
     private:
-    float health = 0;
+
+    float hp = 0;
 };

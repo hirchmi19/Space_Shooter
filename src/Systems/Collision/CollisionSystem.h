@@ -16,9 +16,9 @@ class CollisionSystem : public IGameSystem {
     void Run(GameWorld &world) override;
 
     private:
-    void CheckPlayerProjectiles(GameWorld& world);
-    void CheckEnemiesProjectiles(GameWorld& world);
-    void CheckPlayerEnemies(GameWorld& world);
+    void CheckPlayerProjectiles();
+    void CheckEnemiesProjectiles();
+    void CheckPlayerEnemies();
 
 };
 

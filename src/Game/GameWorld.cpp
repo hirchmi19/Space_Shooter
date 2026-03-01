@@ -15,6 +15,7 @@
 #include "../Systems/Scoring/ScoreSystem.h"
 #include "../Systems/Waving/WaveSystem.h"
 #include "Systems/Entities/EntitySystem.h"
+#include "Systems/Rendering/BackgroundSystem.h"
 
 GameWorld::GameWorld() {
 

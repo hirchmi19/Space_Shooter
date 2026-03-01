@@ -256,11 +256,11 @@ void WaveSystem::BuildFormationSlots() {
         slot.position = formationPositions[i];
 
         if (i < 4)
-            slot.id = EntityType::BLACK_ENEMY;
+            slot.id = EnemyType::BLACK_ENEMY;
         else if (i < 20)
-            slot.id = EntityType::RED_ENEMY;
+            slot.id = EnemyType::RED_ENEMY;
         else
-            slot.id = EntityType::YELLOW_ENEMY;
+            slot.id = EnemyType::YELLOW_ENEMY;
 
         formationSlots.push_back(slot);
     }

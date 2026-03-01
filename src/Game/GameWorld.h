@@ -14,7 +14,7 @@
 #include "../Systems/GameSystemID.h"
 #include "../Systems/Scoring/ScoreSystem.h"
 #include "../Systems/Waving/WaveSystem.h"
-#include "SystemService/SystemLocator.h"
+#include "Locators/SystemLocator.h"
 
 class IGameSystem;
 enum class SpriteID : uint32_t;

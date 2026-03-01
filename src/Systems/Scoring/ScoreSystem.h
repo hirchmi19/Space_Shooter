@@ -5,7 +5,7 @@
 #pragma once
 #include "../IGameSystem.h"
 #include "../../Entities/EntityType.h"
-#include "SystemService/IScoreLocator.h"
+#include "Locators/IScoreLocator.h"
 
 class ScoreSystem: public IScoreLocator, public IGameSystem {
 
@@ -15,7 +15,7 @@ class ScoreSystem: public IScoreLocator, public IGameSystem {
 
     uint32_t GetHighScore() const {return highScore;};
     void AddHighScore(uint32_t score) override;
-    uint32_t GetEnemyScore(const EntityType& id) override;
+    uint32_t GetEnemyScore(const EnemyType& id) override;
     void ResetScore() override {highScore = 0;};
 
 

@@ -7,17 +7,16 @@
 #include <random>
 #include <ranges>
 
-#include "SpawnCommand.h"
 #include "Constants/GameWorldConstants.h"
 #include "Constants/WaveConstants.h"
 #include "Systems/Assets/AssetSystem.h"
-#include "SystemService/SystemLocator.h"
+#include "Locators/SystemLocator.h"
 
 EntitySystem::EntitySystem() : IGameSystem(GameSystemID::ENTITY_SYSTEM, "ENTITY_SYSTEM"){}
 
 void EntitySystem::Run(GameWorld &world) {
 
-    if (!spawnCmds.empty()) SpawnEntities();
+    if (!eCmds.empty()) SpawnEntities();
     if (!projectilesToRemove.empty() || !enemiesToRemove.empty()) KillEntities();
 }
 
@@ -37,9 +36,24 @@ void EntitySystem::HandleInputs() const {
     player->HandleInput();
 }
 
-void EntitySystem::RequestEntitySpawn(const EntityType &eType, const SpawnType &sType, const Vector2 &pos) {
+void EntitySystem::RequestEnemySpawn(const EnemyType &eType, const Vector2 &pos) {
 
-    spawnCmds.emplace_back(eType, sType, pos);
+    eCmds.emplace_back(eType, pos);
+}
+
+void EntitySystem::RequestProjectileSpawn(const ProjectileType &pType, const Vector2 &pos, bool isPlayerProjectile) {
+
+    pCmds.emplace_back(pType, pos, isPlayerProjectile);
+}
+
+void EntitySystem::RequestEntityRemoval(const EntityType &eType, const size_t value) {
+
+   // if (eType != EntityType::ENEMY || eType != EntityType::PROJECTILE) return;
+
+    auto& removalQ = eType == EntityType::ENEMY ? enemiesToRemove : projectilesToRemove;
+    const auto index = std::ranges::lower_bound(removalQ, value);
+    removalQ.insert(index, value);
+
 }
 
 
@@ -47,15 +61,19 @@ void EntitySystem::RequestEntitySpawn(const EntityType &eType, const SpawnType &
 
 void EntitySystem::SpawnEntities() {
 
-    for (const auto& cmd : spawnCmds) {
+    for (const auto& cmd : eCmds) {
 
-        if (cmd.sType == SpawnType::ENEMY) SpawnEnemy(cmd.eType, cmd.spawnPos);
-        if (cmd.sType == SpawnType::PROJECTILE) SpawnProjectile(cmd.eType, cmd.spawnPos);
+        SpawnEnemy(cmd.eType, cmd.spawnPos);
+    }
 
+    for (const auto& cmd : pCmds) {
+
+        SpawnProjectile(cmd.pType, cmd.spawnPos, cmd.isPlayerProjectile);
     }
 }
 
-void EntitySystem::SpawnEnemy(const EntityType &eType, const Vector2 &pos) {
+void EntitySystem::SpawnEnemy(const EnemyType &eType, const Vector2 &pos) {
+
     const auto& sprites =
         SystemLocator::assetLocator->GetEnemySprites(eType);
 
@@ -71,11 +89,10 @@ void EntitySystem::SpawnEnemy(const EntityType &eType, const Vector2 &pos) {
 
 }
 
-void EntitySystem::SpawnProjectile(const EntityType& eType, const Vector2 &pos) {
+void EntitySystem::SpawnProjectile(const ProjectileType &pType, const Vector2 &pos, bool isPlayerProjectile) {
 
-    const auto& projectileSprite = SystemLocator::assetLocator->GetProjectileSprite(eType);
-    const int speed = eType == EntityType::PLAYER_PROJECTILE ? -1 : 1;
-    bool isPlayerProjectile = eType == EntityType::PLAYER_PROJECTILE;
+    const auto& projectileSprite = SystemLocator::assetLocator->GetProjectileSprite(pType);
+    const int speed = isPlayerProjectile ? -1 : 1;
 
     const Vector2 projectileSize {projectileSprite[0]->src.width,projectileSprite[0]->src.height};
     const float playerWidth = player->GetSize().x * RenderConstants::ENEMY_SCALING;
