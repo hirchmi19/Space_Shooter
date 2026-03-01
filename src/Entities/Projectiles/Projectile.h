@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include "Components/Movement1D.h"
-#include "Components/CombatComponent.h"
-#include "Components/RenderComponent.h"
+#include "../Components/Movement1D.h"
+#include "../Components/CombatComponent.h"
+#include "../Components/RenderComponent.h"
 #include "Entities/EntityType.h"
 
 struct Projectile {

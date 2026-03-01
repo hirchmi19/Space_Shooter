@@ -9,10 +9,9 @@
 #include "Locators/IEntityLocator.h"
 #include "SpawnEnemyCommand.h"
 #include "SpawnProjectileCommand.h"
-#include "Entities/ProjectileType.h"
+#include "Entities/Entities.h"
 
 
-enum class SpriteID : uint32_t;
 enum class EnemyType : uint32_t;
 
 
@@ -28,9 +27,6 @@ class EntitySystem : public IEntityLocator, public IGameSystem {
 
     void HandleInputs() const;
     bool PlayerAlive() const {return player->IsAlive();}
-
-    void RevivePlayer() const { player->Revive();}
-    void KillPlayer() const { player->Kill();}
 
     void RequestEnemySpawn(const EnemyType &eType, const Vector2 &pos) override;
     void RequestProjectileSpawn(const ProjectileType& pType, const Vector2& pos, bool isPlayerProjectile) override;

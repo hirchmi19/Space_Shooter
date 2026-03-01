@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "../Entities/EntityType.h"
-#include "Entities/ProjectileType.h"
+#include "../Entities/Projectiles/ProjectileType.h"
 #include "Systems/Assets/AssetHeader/Sprite.h"
 #include "Systems/Assets/AssetHeader/SpriteID.h"
 

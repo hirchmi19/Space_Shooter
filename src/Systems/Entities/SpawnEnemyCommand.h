@@ -5,7 +5,7 @@
 #pragma once
 #include "raylib.h"
 #include "SpawnType.h"
-#include "Entities/EnemyType.h"
+#include "../../Entities/Enemies/EnemyType.h"
 #include "Entities/EntityType.h"
 
 

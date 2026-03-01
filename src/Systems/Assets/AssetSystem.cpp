@@ -8,7 +8,7 @@
 #include <ostream>
 
 #include "raylib.h"
-#include "Entities/EnemyType.h"
+#include "../../Entities/Enemies/EnemyType.h"
 
 AssetSystem::AssetSystem() : IGameSystem(GameSystemID::ASSET_SYSTEM, "ASSET_SYSTEM") {}
 

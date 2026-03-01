@@ -3,12 +3,9 @@
 //
 
 #pragma once
+
 #include "raylib.h"
-#include "Entities/Enemy.h"
-#include "Entities/EnemyType.h"
-#include "Entities/Projectile.h"
-#include "Entities/ProjectileType.h"
-#include "Entities/Player/Player.h"
+#include "Entities/Entities.h"
 
 struct IEntityLocator {
 

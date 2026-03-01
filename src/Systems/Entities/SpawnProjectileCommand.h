@@ -4,7 +4,7 @@
 
 #pragma once
 #include "raylib.h"
-#include "Entities/ProjectileType.h"
+#include "../../Entities/Projectiles/ProjectileType.h"
 
 struct SpawnProjectileCommand {
 

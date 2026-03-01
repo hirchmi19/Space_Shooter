@@ -5,6 +5,7 @@
 #include "ScoreSystem.h"
 
 #include "Constants/ScoringConstants.h"
+#include "Entities/Enemies/EnemyType.h"
 
 ScoreSystem::ScoreSystem() : IGameSystem(GameSystemID::SCORE_SYSTEM, "SCORE_SYSTEM"){}
 

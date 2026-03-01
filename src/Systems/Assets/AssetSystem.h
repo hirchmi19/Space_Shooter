@@ -10,7 +10,7 @@
 #include "../IGameSystem.h"
 #include "../../Utilities/utils.h"
 #include "Locators/IAssetLocator.h"
-#include "Entities/ProjectileType.h"
+#include "../../Entities/Projectiles/ProjectileType.h"
 
 
 class AssetSystem : public IAssetLocator, public IGameSystem {

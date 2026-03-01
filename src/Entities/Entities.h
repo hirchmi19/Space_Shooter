@@ -4,6 +4,8 @@
 
 #pragma once
 
-#include "Projectile.h"
+#include "Projectiles/Projectile.h"
+#include "Projectiles/ProjectileType.h"
 #include "Entities/Player/Player.h"
-#include "Enemy.h"
+#include "Enemies/Enemy.h"
+#include "Entities/Enemies/EnemyType.h"

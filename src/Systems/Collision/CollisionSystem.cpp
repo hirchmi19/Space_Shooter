@@ -5,8 +5,8 @@
 #include "CollisionSystem.h"
 #include "../../Game/GameWorld.h"
 #include "Entities/Components/WaveState.h"
-#include "Entities/Projectile.h"
-#include "Entities/Enemy.h"
+#include "../../Entities/Projectiles/Projectile.h"
+#include "../../Entities/Enemies/Enemy.h"
 
 CollisionSystem::CollisionSystem() : IGameSystem(GameSystemID::COLLISION_SYSTEM, "COLLISION_SYSTEM"){}
 
