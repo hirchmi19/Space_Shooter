@@ -16,6 +16,7 @@
 #include "../Systems/Waving/WaveSystem.h"
 #include "Systems/Entities/EntitySystem.h"
 #include "Systems/Rendering/BackgroundSystem.h"
+#include "Systems/Timer/TimerSystem.h"
 
 GameWorld::GameWorld() {
 
@@ -34,6 +35,7 @@ void GameWorld::RunGameplaySystems() {
     const auto& waveSys = gameSystems[ToIndex(GameSystemID::WAVE_SYSTEM)];
     const auto& moveSys = gameSystems[ToIndex(GameSystemID::MOVEMENT_SYSTEM)];
     const auto& collSys = gameSystems[ToIndex(GameSystemID::COLLISION_SYSTEM)];
+    const auto& timerSys = gameSystems[ToIndex(GameSystemID::TIMER_SYSTEM)];
 
     if (bgSys) bgSys->Run();   // background is always moving
 
@@ -62,16 +64,20 @@ void GameWorld::RunGameplaySystems() {
             if (entSys)
                 GetGameSystemStatic<EntitySystem>(GameSystemID::ENTITY_SYSTEM).HandleInputs(); // 1. read inputs (begin of frame)
 
-            if (waveSys) waveSys->Run(); // 2. let the gameplay systems do their thing
+            if (timerSys) timerSys->Run(); // 2. updates timers
+
+            if (waveSys) waveSys->Run(); // 3. let the gameplay systems do their thing
             if (moveSys) moveSys->Run();
             if (collSys) collSys->Run();
 
             if (entSys && !GetGameSystemStatic<EntitySystem>(GameSystemID::ENTITY_SYSTEM).PlayerAlive())
-                currentGameState = GameState::GAME_OVER; // 3. check if game is over
+                currentGameState = GameState::GAME_OVER; // 4. check if game is over
 
-            if (entSys) entSys->Run(); // 4. remove dead entities
+            if (entSys) entSys->Run(); // 5. remove dead entities
 
-            if (GetGameSystemStatic<WaveSystem>(GameSystemID::WAVE_SYSTEM).waveFinished) currentGameState = GameState::END_WAVE; // check if wave is over
+            if (GetGameSystemStatic<WaveSystem>(GameSystemID::WAVE_SYSTEM).waveFinished) currentGameState = GameState::END_WAVE; // 6. check if wave is over
+
+            GetGameSystemStatic<TimerSystem>(GameSystemID::TIMER_SYSTEM).KillTimers(); // 7. remove disposable timers
 
             break;
 
@@ -121,9 +127,9 @@ void GameWorld::RunRenderSystem() {
  */
 void GameWorld::CreateSystems() {
 
-    const auto assetSystem = std::make_shared<AssetSystem>();
-    SystemLocator::assetLocator = assetSystem;
-    AddSystem(assetSystem);
+    const auto assetSys = std::make_shared<AssetSystem>();
+    SystemLocator::assetLocator = assetSys;
+    AddSystem(assetSys);
 
     const auto entSys = std::make_shared<EntitySystem>();
     SystemLocator::entityLocator = entSys;
@@ -138,9 +144,13 @@ void GameWorld::CreateSystems() {
     SystemLocator::waveLocator = waveSys;
     AddSystem(waveSys);
 
-    const auto scoreSystem = std::make_shared<ScoreSystem>();
-    SystemLocator::scoreLocator = scoreSystem;
-    AddSystem(scoreSystem);
+    const auto scoreSys = std::make_shared<ScoreSystem>();
+    SystemLocator::scoreLocator = scoreSys;
+    AddSystem(scoreSys);
+
+    const auto timerSys = std::make_shared<TimerSystem>();
+    SystemLocator::timerLocator = timerSys;
+    AddSystem(timerSys);
 }
 
 /**

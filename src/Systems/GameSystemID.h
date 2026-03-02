@@ -16,5 +16,6 @@ enum class GameSystemID {
     WAVE_SYSTEM,
     COLLISION_SYSTEM,
     SCORE_SYSTEM,
+    TIMER_SYSTEM,
     COUNT
 };

@@ -20,7 +20,11 @@ FetchContent_MakeAvailable(raylib)
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
 add_executable(Space_Shooter ${SOURCES}
-        src/Locators/IWaveLocator.h)
+        src/Locators/IWaveLocator.h
+        src/Systems/Timer/TimerSystem.cpp
+        src/Systems/Timer/TimerSystem.h
+        src/Systems/Timer/Timer.h
+        src/Locators/ITimerLocator.h)
 
 target_compile_definitions(Space_Shooter PRIVATE
         ASSETS_PATH="${CMAKE_SOURCE_DIR}/assets/"

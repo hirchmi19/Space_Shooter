@@ -7,6 +7,7 @@
 #include "raylib.h"
 #include "Entities/Entities.h"
 #include "Systems/Entities/SpawnEnemyCommand.h"
+#include "Entities/Player/Player.h"
 
 struct IEntityLocator {
 

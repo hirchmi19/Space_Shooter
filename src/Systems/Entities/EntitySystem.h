@@ -39,10 +39,10 @@ class EntitySystem : public IEntityLocator, public IGameSystem {
     std::unique_ptr<Player> player;
 
     std::vector<Enemy> enemies{};
-    std::vector<size_t> enemiesToRemove{};
+    std::vector<size_t> deadEnemies{};
 
     std::vector<Projectile> projectiles;
-    std::vector<size_t> projectilesToRemove{};
+    std::vector<size_t> deadProjectiles{};
 
     void KillEntities();
     void KillEnemies();

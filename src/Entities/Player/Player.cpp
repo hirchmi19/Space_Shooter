@@ -4,9 +4,7 @@
 
 #include "raylib.h"
 #include "Player.h"
-
 #include "../../Game/GameWorld.h"
-#include "Constants/GameConstants.h"
 
 void Player::SetPosition(const Vector2& pos) {
 
@@ -22,19 +20,19 @@ void Player::SetPosition(const Vector2& pos) {
 void Player::HandleInput() {
 
     movement.speed = 0;
-    cooldownTimer.Tick(1 / GameConstants::UPS);
 
     if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) movement.speed = -1;
     if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) movement.speed = 1;
 
-    if (!CanShoot()) return;
+    if (SystemLocator::timerLocator->IsRunning(cooldownTimer)) return;
 
     if (IsKeyPressed(KEY_SPACE)) {
 
         SystemLocator::entityLocator->SpawnProjectile(
             ProjectileType::PLAYER,
             movement.position, true);
-        cooldownTimer.Start(.35f);
+        SystemLocator::timerLocator->Start(0.35f, cooldownTimer);
+
     }
 
 }

@@ -12,7 +12,7 @@
 #include "Systems/Assets/AssetSystem.h"
 #include "Locators/SystemLocator.h"
 
-EntitySystem::EntitySystem() : IGameSystem(GameSystemID::ENTITY_SYSTEM, "ENTITY_SYSTEM"){}
+EntitySystem::EntitySystem() : IGameSystem(GameSystemID::ENTITY_SYSTEM, "ENTITY_SYSTEM") {}
 
 void EntitySystem::Run() {
 
@@ -24,11 +24,14 @@ void EntitySystem::Init() {
 
     enemies.reserve(WaveConstants::NUMBER_OF_ENEMIES);
     projectiles.reserve(25);
+    const auto& timer = SystemLocator::timerLocator->CreateTimer(.0f, false); // create cooldown timer for player
 
     player = std::make_unique<Player>(
         GameWorldConstants::playerSpawn,
         GameWorldConstants::playerSize,
-        SystemLocator::assetLocator->GetPlayerSprites());
+        SystemLocator::assetLocator->GetPlayerSprites(), timer);
+
+    player->canShoot = !SystemLocator::timerLocator->IsRunning(player->cooldownTimer);
 }
 
 void EntitySystem::HandleInputs() const {
@@ -82,22 +85,22 @@ void EntitySystem::KillEntities() {
 
 void EntitySystem::KillEnemies() {
 
-    for (const auto& enemy : std::ranges::reverse_view(enemiesToRemove)) {
+    for (const auto& enemy : std::ranges::reverse_view(deadEnemies)) {
 
         enemies.erase(enemies.begin() + static_cast<long>(enemy));
     }
 
-    enemiesToRemove.clear();
+    deadEnemies.clear();
 }
 
 void EntitySystem::KillProjectiles() {
 
-    for (const auto& projectile : std::ranges::reverse_view(projectilesToRemove)) {
+    for (const auto& projectile : std::ranges::reverse_view(deadProjectiles)) {
 
         projectiles.erase(projectiles.begin() + static_cast<long>(projectile));
     }
 
-    projectilesToRemove.clear();
+    deadProjectiles.clear();
 }
 
 void EntitySystem::FindDeadEntities() {
@@ -129,7 +132,7 @@ void EntitySystem::FindDeadProjectiles() {
 
 void EntitySystem::RequestEntityRemoval(const EntityType &eType, const size_t value) {
 
-    auto& removalQ = eType == EntityType::ENEMY ? enemiesToRemove : projectilesToRemove;
+    auto& removalQ = eType == EntityType::ENEMY ? deadEnemies : deadProjectiles;
     const auto index = std::ranges::lower_bound(removalQ, value);
     removalQ.insert(index, value);
 
@@ -139,8 +142,8 @@ void EntitySystem::ClearEntities() {
 
     enemies.clear();
     projectiles.clear();
-    projectilesToRemove.clear();
-    enemiesToRemove.clear();
+    deadProjectiles.clear();
+    deadEnemies.clear();
 }
 
 

@@ -47,6 +47,7 @@ void Game::Run() const {
 
         ClearBackground(BLACK);
 
+        DrawFPS(30, 30);
         world->RunRenderSystem();
 
         EndDrawing();
