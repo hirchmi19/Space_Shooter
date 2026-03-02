@@ -44,7 +44,9 @@ void TimerSystem::Start(const float &duration, const size_t &index) {
 const size_t TimerSystem::CreateTimer(const float &duration, bool disposable) {
 
     timers.emplace_back(duration, 0, duration, disposable);
+    timers.back().isRunning = true;
     return timers.size() - 1;
+
 
 }
 

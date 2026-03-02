@@ -7,6 +7,7 @@
 #include "systems/rendering/RenderSystem.h"
 #include "constants/GameConstants.h"
 #include "constants/ScoringConstants.h"
+#include "constants/WaveConstants.h"
 #include "locators/SystemLocator.h"
 #include "systems/assets/Sprite.h"
 #include "systems/assets/SpriteID.h"
@@ -40,7 +41,7 @@ void RenderSystem::RenderGameState(const GameState& state) const {
             RenderPlayer();
             RenderEnemies();
             RenderProjectiles();
-            RenderHighScore();
+            RenderUi();
             break;
 
         case GameState::BEGIN_WAVE:
@@ -147,7 +148,7 @@ void RenderSystem::RenderGameOver(const GameState& state) const {
     const Vector2 captionWidth = MeasureTextEx(font, caption.c_str(), RenderConstants::GAME_OVER_CAPTION_SIZE, RenderConstants::SPACING);
     const Vector2 subCaptionWidth = MeasureTextEx(font, subCaption.c_str(), RenderConstants::GAME_OVER_SUBCAPTION_SIZE, RenderConstants::SPACING);
 
-    const Vector2 captionPos = {GameConstants::SCREEN_ORIGIN.x - captionWidth.x / 2, GameConstants::SCREEN_HEIGHT * .2f};
+    const Vector2 captionPos = {GameConstants::SCREEN_ORIGIN.x - captionWidth.x / 2, GameConstants::SCREEN_HEIGHT * 0.2f};
     const Vector2 subCaptionPos = {GameConstants::SCREEN_ORIGIN.x - subCaptionWidth.x / 2, captionPos.y + 225};
 
     DrawTextEx(font, caption.c_str(), captionPos, RenderConstants::GAME_OVER_CAPTION_SIZE, RenderConstants::SPACING, RED);
@@ -160,10 +161,17 @@ void RenderSystem::RenderWaveTransition(const std::string& caption) const {
     const Vector2 captionWidth = MeasureTextEx(font, caption.c_str(), RenderConstants::WAVE_TRANSITION_CAPTION_SIZE, RenderConstants::SPACING);
     constexpr uint32_t xOffset = 30;
 
-    const Vector2 captionPos = {(GameConstants::SCREEN_ORIGIN.x - captionWidth.x / 2) + xOffset, GameConstants::SCREEN_HEIGHT * .22f};
+    const Vector2 captionPos = {GameConstants::SCREEN_ORIGIN.x - captionWidth.x / 2 + xOffset, GameConstants::SCREEN_HEIGHT * 0.22f};
     DrawTextEx(font, caption.c_str(), captionPos, RenderConstants::WAVE_TRANSITION_CAPTION_SIZE, RenderConstants::SPACING, WHITE);
 }
 
+
+void RenderSystem::RenderUi() const {
+
+    RenderHighScore();
+    RenderMult();
+    RenderScores();
+}
 
 void RenderSystem::RenderHighScore() const {
 
@@ -182,10 +190,39 @@ void RenderSystem::RenderHighScore() const {
     const Vector2 highScoreWidth = MeasureTextEx(font, highScore.c_str(), RenderConstants::HIGHSCORE_CAPTION_SIZE, RenderConstants::SPACING);
     constexpr int xOffset = 30;
 
-    const Vector2 captionPos = {GameConstants::SCREEN_ORIGIN.x - captionWidth.x / 2 + xOffset, GameConstants::SCREEN_HEIGHT * .02f};
-    const Vector2 highScorePos = {GameConstants::SCREEN_ORIGIN.x - highScoreWidth.x / 2 + xOffset, GameConstants::SCREEN_HEIGHT * .055f};
+    const Vector2 captionPos = {GameConstants::SCREEN_ORIGIN.x - captionWidth.x / 2 + xOffset, GameConstants::SCREEN_HEIGHT * 0.02f};
+    const Vector2 highScorePos = {GameConstants::SCREEN_ORIGIN.x - highScoreWidth.x / 2 + xOffset, GameConstants::SCREEN_HEIGHT * 0.055f};
 
     DrawTextEx(font, caption.c_str(), captionPos, RenderConstants::HIGHSCORE_CAPTION_SIZE, RenderConstants::SPACING, WHITE);
     DrawTextEx(font, highScore.c_str(), highScorePos, RenderConstants::HIGHSCORE_CAPTION_SIZE, RenderConstants::SPACING, WHITE);
 
 }
+
+void RenderSystem::RenderMult() const {
+
+    const auto font = SystemLocator::assetLocator->GetFont();
+    const auto& mult = SystemLocator::scoreLocator->GetMult();
+    std::string caption = "x" + std::format("{:.2f}", mult);
+    const Vector2 pos = {GameConstants::SCREEN_WIDTH - 200, GameConstants::SCREEN_HEIGHT - 100};
+
+    DrawTextEx(font, caption.c_str(), pos, 25, RenderConstants::SPACING, WHITE);
+
+}
+
+void RenderSystem::RenderScores() const {
+
+    const auto& scores = SystemLocator::scoreLocator->GetScoreUI();
+    if (scores.empty()) return;
+
+    const auto& font = SystemLocator::assetLocator->GetFont();
+
+    for (auto& score : scores) {
+
+        if (!SystemLocator::timerLocator->IsRunning(score.displayTimer)) continue;
+
+        const Vector2 scoresPos = {score.pos.x + 12, score.pos.y - 12};
+        std::string caption = std::to_string(score.score);
+        DrawTextEx(font, caption.c_str(), scoresPos, score.fSize, RenderConstants::SPACING, WHITE);
+    }
+}
+

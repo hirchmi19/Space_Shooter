@@ -8,6 +8,7 @@
 namespace ScoringConstants {
 
     inline constexpr int MAX_SCORE = 99999999;
+    inline constexpr float MAX_MULT = 100.0f;
     constexpr int HIGHSCORE_DIGITS = 8;
 
     inline constexpr int YELLOW_ENEMY_SCORE = 300;

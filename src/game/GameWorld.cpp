@@ -21,15 +21,17 @@ GameWorld::GameWorld() {
  */
 void GameWorld::RunGameplaySystems() {
 
-    const auto& bgSys = gameSystems[ToIndex(GameSystemID::BACKGROUND_SYSTEM)];
-    const auto& entSys = gameSystems[ToIndex(GameSystemID::ENTITY_SYSTEM)];
-    const auto& waveSys = gameSystems[ToIndex(GameSystemID::WAVE_SYSTEM)];
-    const auto& moveSys = gameSystems[ToIndex(GameSystemID::MOVEMENT_SYSTEM)];
-    const auto& collSys = gameSystems[ToIndex(GameSystemID::COLLISION_SYSTEM)];
-    const auto& timerSys = gameSystems[ToIndex(GameSystemID::TIMER_SYSTEM)];
+    auto& bgSys    = GetGameSystemStatic<BackgroundSystem>(GameSystemID::BACKGROUND_SYSTEM);
+    auto& entSys   = GetGameSystemStatic<EntitySystem>    (GameSystemID::ENTITY_SYSTEM);
+    auto& waveSys  = GetGameSystemStatic<WaveSystem>      (GameSystemID::WAVE_SYSTEM);
+    auto& moveSys  = GetGameSystemStatic<MovementSystem>  (GameSystemID::MOVEMENT_SYSTEM);
+    auto& collSys  = GetGameSystemStatic<CollisionSystem> (GameSystemID::COLLISION_SYSTEM);
+    auto& timerSys = GetGameSystemStatic<TimerSystem>     (GameSystemID::TIMER_SYSTEM);
+    auto& scoreSys = GetGameSystemStatic<ScoreSystem>     (GameSystemID::SCORE_SYSTEM);
 
-    if (bgSys) bgSys->Run();   // background is always moving
-    if (timerSys) timerSys->Run(); // updates timers
+
+     bgSys.Run();   // background is always moving
+     timerSys.Run(); // updates timers
 
     switch (currentGameState) {
 
@@ -45,33 +47,39 @@ void GameWorld::RunGameplaySystems() {
 
                 currentGameState = GameState::IN_GAME;
                 timerStarted = false;
-                if (waveSys) GetGameSystemStatic<WaveSystem>(GameSystemID::WAVE_SYSTEM).Start();
+                waveSys.Start();
             }
             break;
 
         case GameState::IN_GAME:
 
-            if (entSys)
-                GetGameSystemStatic<EntitySystem>(GameSystemID::ENTITY_SYSTEM).HandleInputs(); // 1. read inputs (begin of frame)
+            entSys.HandleInputs(); // 1. read inputs (begin of frame)
 
-            if (waveSys) waveSys->Run(); // 2. let the gameplay systems do their thing
-            if (moveSys) moveSys->Run();
-            if (collSys) collSys->Run();
+            waveSys.Run(); // 2. let the gameplay systems do their thing
+            moveSys.Run();
+            collSys.Run();
+            scoreSys.Run();
 
-            if (entSys && !GetGameSystemStatic<EntitySystem>(GameSystemID::ENTITY_SYSTEM).PlayerAlive())
+            if (!entSys.PlayerAlive()) {
+
+                entSys.ClearEntities();
                 currentGameState = GameState::GAME_OVER; // 3. check if game is over
+            }
 
-            if (entSys) entSys->Run(); // 4. remove dead entities
+            entSys.Run(); // 4. remove dead entities
 
-            if (GetGameSystemStatic<WaveSystem>(GameSystemID::WAVE_SYSTEM).waveFinished) currentGameState = GameState::END_WAVE; // 5. check if wave is over
+            if (waveSys.waveFinished) {
 
-            GetGameSystemStatic<TimerSystem>(GameSystemID::TIMER_SYSTEM).KillTimers(); // 6. remove disposable timers
+                scoreSys.ResetMult();
+                entSys.ClearEntities();
+                currentGameState = GameState::END_WAVE; // 5. check if wave is over
+            }
+
+            timerSys.KillTimers(); // 6. remove disposable timers
 
             break;
 
         case GameState::END_WAVE:
-
-            GetGameSystemStatic<EntitySystem>(GameSystemID::ENTITY_SYSTEM).ClearEntities();
 
             if (!timerStarted) {
 
@@ -89,7 +97,6 @@ void GameWorld::RunGameplaySystems() {
 
         case GameState::GAME_OVER:
 
-            GetGameSystemStatic<EntitySystem>(GameSystemID::ENTITY_SYSTEM).ClearEntities();
             if (IsKeyPressed(KEY_ENTER)) Restart();
             break;
     }
@@ -181,7 +188,6 @@ void GameWorld::InitGameSystems() {
 void GameWorld::Restart() {
 
     const auto player = GetGameSystemStatic<EntitySystem>(GameSystemID::ENTITY_SYSTEM).GetPlayer();
-
     GetGameSystemStatic<WaveSystem>(GameSystemID::WAVE_SYSTEM).ResetWaveCounter();
     GetGameSystemStatic<ScoreSystem>(GameSystemID::SCORE_SYSTEM).ResetScore();
     player->Revive();

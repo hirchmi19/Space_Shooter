@@ -20,6 +20,7 @@ class TimerSystem : public ITimerLocator, public IGameSystem{
     void Start(const float &duration, const size_t& index) override;
     const size_t CreateTimer(const float &duration, bool disposable) override;
     bool IsRunning(const size_t& index) override;
+    float GetTimeLeft(const size_t& index) override {return timers[index].timeLeft; }
     void KillTimers() override;
 
     private:

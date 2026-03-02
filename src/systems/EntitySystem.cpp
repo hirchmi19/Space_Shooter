@@ -115,7 +115,7 @@ void EntitySystem::FindDeadEnemies() {
         Enemy& enemy = enemies[i];
         if (enemy.combat.IsAlive()) continue;
         RequestEntityRemoval(EntityType::ENEMY, i);
-        SystemLocator::scoreLocator->AddHighScore(enemy.combat.score);
+        SystemLocator::scoreLocator->AddHighScore(enemy.combat.score, enemy.wave.worldPosition);
     }
 }
 

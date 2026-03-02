@@ -33,7 +33,6 @@ void CollisionSystem::CheckEnemiesProjectiles() {
 
             if (CheckCollisionRecs(enemy.combat.hitbox, projectile.combat.hitbox) && projectile.isPlayerProjectile) {
 
-                std::cout << "collision detected" << std::endl;
                 enemy.combat.Kill();
                 projectile.combat.Kill();
             }
