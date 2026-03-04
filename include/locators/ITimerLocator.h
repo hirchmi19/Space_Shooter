@@ -14,5 +14,6 @@ struct ITimerLocator {
   virtual bool IsRunning(const size_t& index) = 0;
   virtual float GetTimeLeft (const size_t& index) = 0;
   virtual void KillTimers() = 0;
+  virtual void ClearTimers() = 0;
 
 };

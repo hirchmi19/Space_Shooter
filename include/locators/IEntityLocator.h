@@ -20,6 +20,5 @@ struct IEntityLocator {
     virtual Player* GetPlayer() const = 0;
     virtual std::vector<Enemy>& GetEnemies() = 0;
     virtual std::vector<Projectile>& GetProjectiles() = 0;
-
 };
 
