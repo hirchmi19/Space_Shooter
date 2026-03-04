@@ -122,7 +122,7 @@ void RenderSystem::RenderPlayer() const {
         player->GetSize().y * RenderConstants::PLAYER_SCALING
     };
 
-    const auto pSpeed = player->GetSpeed();
+    const auto pSpeed = player->GetDir();
     if (pSpeed > 0) playerSprite = SystemLocator::assetLocator->GetSprite(SpriteID::PLAYER_SHIP_RIGHT);
     if (pSpeed < 0) playerSprite = SystemLocator::assetLocator->GetSprite(SpriteID::PLAYER_SHIP_LEFT);
 

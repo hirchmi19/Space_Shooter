@@ -15,18 +15,24 @@ void Player::SetPosition(const Vector2& pos) {
 
 
 /**
- * Reads the player inputs
+ * Reads the player inputs and sets player speed
  */
-void Player::HandleInput() {
+void Player::Run() {
 
-    movement.speed = 0;
+    movement.direction = 0;
+    movement.speed = MovementConstants::BASE_SPEED;
+    if (inFlowState) movement.speed = MovementConstants::FLOW_SPEED;
+    if (SystemLocator::timerLocator->IsRunning(dashTimer)) movement.speed = MovementConstants::DASH_SPEED;
 
-    if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) movement.speed = -1;
-    if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) movement.speed = 1;
+    if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) movement.direction = -1;
+    if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) movement.direction = 1;
 
-    if (SystemLocator::timerLocator->IsRunning(cooldownTimer)) return;
+    if (!SystemLocator::timerLocator->IsRunning(dashTimer) && IsKeyPressed(KEY_LEFT_SHIFT) && inFlowState && flowLvl >= 2) {
 
-    if (IsKeyPressed(KEY_SPACE)) {
+        SystemLocator::timerLocator->Start(0.3f, dashTimer);
+    }
+
+    if (!SystemLocator::timerLocator->IsRunning(cooldownTimer) && IsKeyPressed(KEY_SPACE)) {
 
         SystemLocator::entityLocator->SpawnProjectile(
             ProjectileType::PLAYER,

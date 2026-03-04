@@ -16,7 +16,7 @@ void ScoreSystem::Run() {
 
   flowStateActive = SystemLocator::entityLocator->GetPlayer()->IsInFlowState();
 
-  if (mult >= 5.0f && !flowStateActive) {
+  if (mult >= 2.0f && !flowStateActive) {
     SystemLocator::entityLocator->GetPlayer()->EnterFlowState();
     flowStateActive = true;
     CreateMessage("ENTERED FLOW STATE!");

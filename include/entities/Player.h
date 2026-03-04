@@ -11,6 +11,7 @@
 #include "../components/Movement1D.h"
 #include "../components/RenderComponent.h"
 #include "../constants/RenderConstants.h"
+#include "constants/MovementConstants.h"
 
 
 class Player {
@@ -19,21 +20,25 @@ class Player {
 
     Player() = default;
 
-    Player(const Vector2& position, const Vector2& size, const std::vector<const Sprite*>& sprites, const size_t& timer)
-     : movement{ position, 0 },
+    Player(const Vector2& position,
+        const Vector2& size,
+        const std::vector<const Sprite*>& sprites,
+        const size_t& timer, const size_t& dashTimer) :
+    movement{ position, 0 , MovementConstants::BASE_SPEED},\
     render{ sprites, size },
-    combat{1,
-         Rectangle {position.x, position.y,
+    combat{1,Rectangle
+        {position.x, position.y,
              size.x * RenderConstants::PLAYER_SCALING,
              size.y * RenderConstants::PLAYER_SCALING} }
-    , cooldownTimer(timer) {}
+    , cooldownTimer(timer), dashTimer(dashTimer) {}
 
     ~Player() = default;
 
     void SetPosition(const Vector2& pos);
     const Vector2& GetPosition() const { return movement.position; }
     const Vector2& GetSize() const  { return render.size; }
-    int GetSpeed() const { return movement.speed; }
+    int GetDir() const { return movement.direction; }
+    float GetSpeed() const { return movement.speed; }
     const Rectangle& GetHitBox() const { return combat.hitbox; }
 
     void Revive() {combat.Revive();}
@@ -43,13 +48,18 @@ class Player {
     void LeaveFlowState() { inFlowState = false; }
     bool IsInFlowState() const { return inFlowState; }
 
-    void HandleInput();
+    void Run();
+    void Dash();
 
     private:
 
     Movement1D movement;
     RenderComponent render;
     CombatComponent combat;
+
     size_t cooldownTimer{};
+    size_t dashTimer{};
+
     bool inFlowState = false;
+    int flowLvl = 1;
 };

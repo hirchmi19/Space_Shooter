@@ -4,13 +4,16 @@
 
 #include "systems/movement/MovementSystem.h"
 #include "locators/SystemLocator.h"
-#include "constants/MovementConstants.h"
 #include "constants/RenderConstants.h"
 #include "constants/GameConstants.h"
 
-MovementSystem::MovementSystem() : IGameSystem(GameSystemID::MOVEMENT_SYSTEM, "MOVEMENT_SYSTEM"){}
+MovementSystem::MovementSystem() : IGameSystem(GameSystemID::MOVEMENT_SYSTEM, "MOVEMENT_SYSTEM") {
+
+}
 
 void MovementSystem::Run() {
+
+
 
     MovePlayer();
     MoveEnemies();
@@ -26,21 +29,19 @@ void MovementSystem::Run() {
 void MovementSystem::MovePlayer() {
 
     Player* player = SystemLocator::entityLocator->GetPlayer();
-    const auto& playerSpeed = player->GetSpeed();
+    const auto& playerSpeed = player->GetDir();
     Vector2 playerPosition = player->GetPosition();
     const float playerPosXRight = playerPosition.x + player->GetSize().x * RenderConstants::PLAYER_SCALING;
 
-    if (playerPosXRight > GameConstants::SCREEN_WIDTH && playerSpeed > 0)return;
+    if (playerPosXRight > GameConstants::SCREEN_WIDTH && playerSpeed > 0)return; // check if player is out of bounds
     if (playerPosition.x <= 0 && playerSpeed < 0) return;
 
-    const float playerWorldSpeed = player->IsInFlowState() ? 8 : 6;
-    playerPosition.x += static_cast<float>(player->GetSpeed()) * playerWorldSpeed;
+    playerPosition.x += static_cast<float>(player->GetDir()) * player->GetSpeed();
     player->SetPosition(playerPosition);
 }
 
 /**
  * Moves all projectiles
- * \param world
  */
 void MovementSystem::MoveProjectiles() {
 
@@ -50,7 +51,7 @@ void MovementSystem::MoveProjectiles() {
 
         const float posYUp = projectile.movement.position.y + projectile.render.size.y;
 
-        if (projectile.movement.position.y <= 0 || posYUp >= GameConstants::SCREEN_HEIGHT)
+        if (projectile.movement.position.y <= 0 || posYUp >= GameConstants::SCREEN_HEIGHT) // delete projectiles when they leave the screen
             projectile.combat.Kill();
 
         MoveProjectile(projectile);
@@ -59,7 +60,6 @@ void MovementSystem::MoveProjectiles() {
 
 /**
  * Moves all enemies
- * \param world
  */
 void MovementSystem::MoveEnemies() {
 
@@ -67,24 +67,24 @@ void MovementSystem::MoveEnemies() {
 
     for (auto& enemy : enemies) {
 
-        if (enemy.wave.state != WaveState::ENTER_FORMATION &&
+        if (enemy.wave.state != WaveState::ENTER_FORMATION && // ignore enemies which are not moving
             enemy.wave.state != WaveState::ATTACK) continue;
 
-        if (enemy.wave.t >= 1.0f && enemy.wave.state == WaveState::ENTER_FORMATION) {
+        if (enemy.wave.t >= 1.0f && enemy.wave.state == WaveState::ENTER_FORMATION) { // enemies entering the formation
 
             MoveEnemy(enemy, enemy.wave.formationPosition);
             enemy.wave.state = WaveState::IN_FORMATION;
             continue;
         }
 
-        if (enemy.wave.t >= 1.0f && enemy.wave.state == WaveState::ATTACK) {
+        if (enemy.wave.t >= 1.0f && enemy.wave.state == WaveState::ATTACK) { // enemies leaving the formation (attacking)
 
             MoveEnemy(enemy, enemy.wave.worldPosition);
             enemy.wave.state = WaveState::OUT_FORMATION;
             continue;
         }
 
-        enemy.wave.t += enemy.wave.speed * GetFrameTime();
+        enemy.wave.t += enemy.wave.speed * GetFrameTime(); // move enemies
 
         auto& bezierPoints = enemy.wave.controlPoints;
         const Vector2 newPos = GetSplinePointBezierCubic(bezierPoints[0],
@@ -100,7 +100,7 @@ void MovementSystem::MoveEnemies() {
 
 void MovementSystem::MoveProjectile(Projectile& projectile) {
 
-    projectile.movement.position.y += static_cast<float>(projectile.movement.speed) * MovementConstants::PROJECTILE_WORLD_SPEED;
+    projectile.movement.position.y += static_cast<float>(projectile.movement.direction) * projectile.movement.speed;
     projectile.combat.hitbox.x = projectile.movement.position.x;
     projectile.combat.hitbox.y = projectile.movement.position.y;
 

@@ -8,6 +8,7 @@
 #include <ranges>
 
 #include "constants/GameWorldConstants.h"
+#include "constants/MovementConstants.h"
 #include "constants/WaveConstants.h"
 #include "systems/assets/AssetSystem.h"
 #include "locators/SystemLocator.h"
@@ -25,18 +26,19 @@ void EntitySystem::Init() {
     enemies.reserve(WaveConstants::NUMBER_OF_ENEMIES);
     projectiles.reserve(25);
 
-    const auto& timer = SystemLocator::timerLocator->CreateTimer(.0f, false); // create cooldown timer for player
+    const auto& shootTimer  = SystemLocator::timerLocator->CreateTimer(.0f, false); // create cooldown timer for player
+    const auto& dashTimer = SystemLocator::timerLocator->CreateTimer(0.0f, false);
 
     player = std::make_unique<Player>(
        GameWorldConstants::playerSpawn,
        GameWorldConstants::playerSize,
-       SystemLocator::assetLocator->GetPlayerSprites(), timer);
+       SystemLocator::assetLocator->GetPlayerSprites(), shootTimer, dashTimer);\
 
 }
 
 void EntitySystem::HandleInputs() const {
 
-    player->HandleInput();
+    player->Run();
 }
 
 
@@ -62,14 +64,14 @@ void EntitySystem::SpawnEnemy(const EnemyType &eType, const Vector2 &spawnPos) {
 void EntitySystem::SpawnProjectile(const ProjectileType &pType, const Vector2 &pos, bool isPlayerProjectile) {
 
     const auto& projectileSprite = SystemLocator::assetLocator->GetProjectileSprite(pType);
-    const int speed = isPlayerProjectile ? -1 : 1;
+    const int dir = isPlayerProjectile ? -1 : 1;
 
     const Vector2 projectileSize {projectileSprite[0]->src.width,projectileSprite[0]->src.height};
     const float playerWidth = player->GetSize().x * RenderConstants::ENEMY_SCALING;
     const Vector2 spawnPosition {pos.x + (playerWidth * 0.5f) - (projectileSize.x * 0.5f),pos.y};
 
     projectiles.emplace_back(
-        Movement1D{spawnPosition, speed},
+        Movement1D{spawnPosition, dir, MovementConstants::PROJECTILE_SPEED},
         RenderComponent{projectileSprite, projectileSize},
         CombatComponent{1,Rectangle{spawnPosition.x,spawnPosition.y,
                 projectileSize.x * RenderConstants::PROJECTILE_SCALING,
