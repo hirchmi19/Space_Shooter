@@ -15,6 +15,7 @@ class IGameSystem {
 
     virtual void Run() = 0;
     virtual void Init(){};
+    virtual void InitTimers(){};
 
     GameSystemID GetSystemID() const { return id; }
     const char* GetSystemName() const { return systemName; }

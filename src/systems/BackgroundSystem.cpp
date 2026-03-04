@@ -2,58 +2,57 @@
 // Created by Michael Hirsch on 08.02.26.
 //
 
-#include <iostream>
-#include <ostream>
+#include "systems/rendering/BackgroundSystem.h"
 #include "constants/GameConstants.h"
 #include "game/GameWorld.h"
-#include "systems/rendering/BackgroundSystem.h"
+#include "locators/SystemLocator.h"
 
-
-BackgroundSystem::BackgroundSystem() : IGameSystem(GameSystemID::BACKGROUND_SYSTEM, "BACKGROUND_SYSTEM"){}
+BackgroundSystem::BackgroundSystem()
+    : IGameSystem(GameSystemID::BACKGROUND_SYSTEM, "BACKGROUND_SYSTEM") {}
 
 void BackgroundSystem::Run() {
 
+  for (size_t i = 0; i < stars.size(); ++i) {
 
-    for (size_t i = 0; i < stars.size(); ++i) {
+    speed =
+        SystemLocator::entityLocator->GetPlayer()->IsInFlowState() ? 15.f : 1.f;
+    stars[i].position.y += speed;
 
-        stars[i].position.y += static_cast<float>(std::min(25,SystemLocator::waveLocator->GetWaveCounter()));
-
-        if (stars[i].position.y >= GameConstants::SCREEN_HEIGHT) RespawnStar(i);
-    }
+    if (stars[i].position.y >= GameConstants::SCREEN_HEIGHT)
+      RespawnStar(i);
+  }
 }
 
 /**
  * Renders all stars
  */
-void BackgroundSystem::Render()  {
+void BackgroundSystem::Render() {
 
+  for (const auto &star : stars) {
 
-    for (const auto & star : stars) {
-
-        DrawPixel(static_cast<int>(star.position.x), static_cast<int>(star.position.y),
-            Color {star.colorValue, star.colorValue, star.colorValue, 255});
-    }
+    DrawPixel(static_cast<int>(star.position.x),
+              static_cast<int>(star.position.y),
+              Color{star.colorValue, star.colorValue, star.colorValue, 255});
+  }
 }
 
-
 //--------------------------------------------------------------------------
-
 
 /**
  * Spawns all initial stars in the background
  */
 void BackgroundSystem::Init() {
 
+  for (auto &star : stars) {
 
-    for (auto & star : stars) {
-
-        Star s{};
-        s.position.x = static_cast<float>(GetRandomValue(0, GameConstants::SCREEN_WIDTH));
-        s.position.y = static_cast<float>(GetRandomValue(0, GameConstants::SCREEN_HEIGHT));
-        s.colorValue = static_cast<unsigned char>(GetRandomValue(120, 255));
-        star = s;
-    }
-
+    Star s{};
+    s.position.x =
+        static_cast<float>(GetRandomValue(0, GameConstants::SCREEN_WIDTH));
+    s.position.y =
+        static_cast<float>(GetRandomValue(0, GameConstants::SCREEN_HEIGHT));
+    s.colorValue = static_cast<unsigned char>(GetRandomValue(120, 255));
+    star = s;
+  }
 }
 
 /**
@@ -62,6 +61,7 @@ void BackgroundSystem::Init() {
  */
 void BackgroundSystem::RespawnStar(const size_t index) {
 
-    stars[index].position.x = static_cast<float>(GetRandomValue(0, GetScreenWidth()));
-    stars[index].position.y = 0.0f;
+  stars[index].position.x =
+      static_cast<float>(GetRandomValue(0, GetScreenWidth()));
+  stars[index].position.y = 0.0f;
 }

@@ -76,6 +76,11 @@ void WaveSystem::Init() {
     BuildFormationSlots();
     DefinePatterns();
 
+    InitTimers();
+}
+
+void WaveSystem::InitTimers() {
+
     diveTimer = SystemLocator::timerLocator->CreateTimer(0.0f, false);
     attackTimer = SystemLocator::timerLocator->CreateTimer(0.0f, false);
     phaseTimer = SystemLocator::timerLocator->CreateTimer(0.0f, false);

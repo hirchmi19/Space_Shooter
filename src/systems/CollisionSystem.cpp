@@ -3,10 +3,6 @@
 //
 
 
-
-#include <iostream>
-#include <ostream>
-
 #include "components/WaveState.h"
 #include "systems/collision/CollisionSystem.h"
 #include "locators/SystemLocator.h"

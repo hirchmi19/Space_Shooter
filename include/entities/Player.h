@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "../components/CombatComponent.h"
-#include "../Components/Movement1D.h"
+#include "../components/Movement1D.h"
 #include "../components/RenderComponent.h"
 #include "../constants/RenderConstants.h"
 
@@ -39,6 +39,9 @@ class Player {
     void Revive() {combat.Revive();}
     void Kill() {combat.Kill();}
     bool IsAlive() const { return combat.IsAlive(); }
+    void EnterFlowState() { inFlowState = true; }
+    void LeaveFlowState() { inFlowState = false; }
+    bool IsInFlowState() const { return inFlowState; }
 
     void HandleInput();
 
@@ -48,4 +51,5 @@ class Player {
     RenderComponent render;
     CombatComponent combat;
     size_t cooldownTimer{};
+    bool inFlowState = false;
 };

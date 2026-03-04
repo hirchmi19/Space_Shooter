@@ -21,6 +21,9 @@ class WaveSystem : public IWaveLocator , public IGameSystem{
     ~WaveSystem() override = default;
 
     void Run() override;
+    void Init() override;
+    void InitTimers() override;
+
     void Start();
     void ResetWaveCounter() {waveCounter = 1 ;}
     int GetWaveCounter() const override {return waveCounter;};
@@ -53,7 +56,7 @@ class WaveSystem : public IWaveLocator , public IGameSystem{
 
     std::array<WavePattern, ToIndex(WaveType::COUNT)> patterns{};
 
-    void Init() override;
+
     void StartWave();
 
     void DefinePatterns();

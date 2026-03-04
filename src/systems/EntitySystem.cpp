@@ -24,12 +24,13 @@ void EntitySystem::Init() {
 
     enemies.reserve(WaveConstants::NUMBER_OF_ENEMIES);
     projectiles.reserve(25);
+
     const auto& timer = SystemLocator::timerLocator->CreateTimer(.0f, false); // create cooldown timer for player
 
     player = std::make_unique<Player>(
-        GameWorldConstants::playerSpawn,
-        GameWorldConstants::playerSize,
-        SystemLocator::assetLocator->GetPlayerSprites(), timer);
+       GameWorldConstants::playerSpawn,
+       GameWorldConstants::playerSize,
+       SystemLocator::assetLocator->GetPlayerSprites(), timer);
 
 }
 

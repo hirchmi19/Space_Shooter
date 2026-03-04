@@ -20,14 +20,31 @@ void RenderSystem::Run() {
 
 }
 
-void RenderSystem::Run(const GameState& state) const {
+void RenderSystem::Run(const GameState& state) {
 
     RenderGameState(state);
 }
 
+void RenderSystem::Init() {
+
+    msgs.reserve(WaveConstants::NUMBER_OF_ENEMIES);
+
+}
+
+void RenderSystem::AddMessage(const MessageUi &msg) {
+
+    msgs.push_back(msg);
+
+}
+
+void RenderSystem::AddScore(const MessageUi &score) {
+
+    scores.push_back(score);
+}
+
 //--------------------------------------------------------------------------
 
-void RenderSystem::RenderGameState(const GameState& state) const {
+void RenderSystem::RenderGameState(const GameState& state) {
 
     std::string text;
 
@@ -166,11 +183,12 @@ void RenderSystem::RenderWaveTransition(const std::string& caption) const {
 }
 
 
-void RenderSystem::RenderUi() const {
+void RenderSystem::RenderUi() {
 
     RenderHighScore();
     RenderMult();
     RenderScores();
+    RenderMessages();
 }
 
 void RenderSystem::RenderHighScore() const {
@@ -209,9 +227,8 @@ void RenderSystem::RenderMult() const {
 
 }
 
-void RenderSystem::RenderScores() const {
+void RenderSystem::RenderScores() {
 
-    const auto& scores = SystemLocator::scoreLocator->GetScoreUI();
     if (scores.empty()) return;
 
     const auto& font = SystemLocator::assetLocator->GetFont();
@@ -221,8 +238,32 @@ void RenderSystem::RenderScores() const {
         if (!SystemLocator::timerLocator->IsRunning(score.displayTimer)) continue;
 
         const Vector2 scoresPos = {score.pos.x + 12, score.pos.y - 12};
-        std::string caption = std::to_string(score.score);
-        DrawTextEx(font, caption.c_str(), scoresPos, score.fSize, RenderConstants::SPACING, WHITE);
+        DrawTextEx(font, score.text.c_str(), scoresPos, score.fSize, RenderConstants::SPACING, WHITE);
+
     }
+}
+
+void RenderSystem::RenderMessages() {
+
+    if (msgs.empty()) return;
+
+    const auto& font = SystemLocator::assetLocator->GetFont();
+    auto& currentMsg = msgs.front();
+
+    const Vector2 msgWidth = MeasureTextEx(font, currentMsg.text.c_str(), RenderConstants::HIGHSCORE_CAPTION_SIZE, RenderConstants::SPACING);
+    const float msgPosX = GameConstants::SCREEN_ORIGIN.x - msgWidth.x / 2 + 40;
+    constexpr float msgPosY = GameWorldConstants::playerSpawnY - 100;
+
+    if (!currentMsg.active) {
+
+            SystemLocator::timerLocator->Start(0.6f, currentMsg.displayTimer);
+            currentMsg.active = true;
+    }
+    if (SystemLocator::timerLocator->IsRunning(currentMsg.displayTimer) && currentMsg.active) {
+
+        DrawTextEx(font, currentMsg.text.c_str(), {msgPosX, msgPosY}, 15, RenderConstants::SPACING, WHITE);
+
+    } else msgs.erase(msgs.begin());
+
 }
 

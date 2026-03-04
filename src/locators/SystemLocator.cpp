@@ -10,3 +10,4 @@ std::shared_ptr<IScoreLocator> SystemLocator::scoreLocator = nullptr;
 std::shared_ptr<IEntityLocator> SystemLocator::entityLocator = nullptr;
 std::shared_ptr<IWaveLocator> SystemLocator::waveLocator = nullptr;
 std::shared_ptr<ITimerLocator> SystemLocator::timerLocator = nullptr;
+std::shared_ptr<IRenderLocator> SystemLocator::renderLocator = nullptr;

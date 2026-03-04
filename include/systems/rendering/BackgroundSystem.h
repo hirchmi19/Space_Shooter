@@ -26,6 +26,7 @@ class BackgroundSystem : public IGameSystem{
     void RespawnStar(size_t index);
     void Init() override;
     std::array<Star, MAX_NUMBER_OF_STARS> stars{};
+    float speed;
 
 };
 

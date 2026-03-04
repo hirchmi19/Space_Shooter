@@ -33,7 +33,8 @@ void MovementSystem::MovePlayer() {
     if (playerPosXRight > GameConstants::SCREEN_WIDTH && playerSpeed > 0)return;
     if (playerPosition.x <= 0 && playerSpeed < 0) return;
 
-    playerPosition.x += static_cast<float>(player->GetSpeed()) * MovementConstants::PLAYER_WORLD_SPEED;
+    const float playerWorldSpeed = player->IsInFlowState() ? 8 : 6;
+    playerPosition.x += static_cast<float>(player->GetSpeed()) * playerWorldSpeed;
     player->SetPosition(playerPosition);
 }
 

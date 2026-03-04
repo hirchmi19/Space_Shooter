@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "Projectiles/Projectile.h"
+#include "projectiles/Projectile.h"
 #include "../../include/entities/projectiles/ProjectileType.h"
 #include "../../include/entities/Player.h"
 #include "../../include/entities/enemies/Enemy.h"

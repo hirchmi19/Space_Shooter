@@ -7,7 +7,6 @@
 #include "game/GameWorld.h"
 #include "game/GameState.h"
 #include "constants/GameWorldConstants.h"
-#include "systems/systems.h"
 
 GameWorld::GameWorld() {
 
@@ -75,11 +74,13 @@ void GameWorld::RunGameplaySystems() {
                 currentGameState = GameState::END_WAVE; // 5. check if wave is over
             }
 
-            timerSys.KillTimers(); // 6. remove disposable timers
-
             break;
 
         case GameState::END_WAVE:
+
+            SystemLocator::renderLocator->ClearUi();
+            SystemLocator::timerLocator->KillTimers();
+            SystemLocator::entityLocator->GetPlayer()->LeaveFlowState();
 
             if (!timerStarted) {
 
@@ -131,9 +132,12 @@ void GameWorld::CreateSystems() {
     AddSystem(entSys);
 
     AddSystem(std::make_shared<BackgroundSystem>());
-    AddSystem(std::make_shared<RenderSystem>());
     AddSystem(std::make_shared<MovementSystem>());
     AddSystem(std::make_shared<CollisionSystem>());
+
+    const auto renderSys = std::make_shared<RenderSystem>();
+    SystemLocator::renderLocator = renderSys;
+    AddSystem(renderSys);
 
     const auto waveSys = std::make_shared<WaveSystem>();
     SystemLocator::waveLocator = waveSys;
@@ -188,8 +192,14 @@ void GameWorld::InitGameSystems() {
 void GameWorld::Restart() {
 
     const auto player = GetGameSystemStatic<EntitySystem>(GameSystemID::ENTITY_SYSTEM).GetPlayer();
+
     GetGameSystemStatic<WaveSystem>(GameSystemID::WAVE_SYSTEM).ResetWaveCounter();
     GetGameSystemStatic<ScoreSystem>(GameSystemID::SCORE_SYSTEM).ResetScore();
+
+    SystemLocator::renderLocator->ClearUi();
+    SystemLocator::timerLocator->KillTimers();
+    SystemLocator::entityLocator->GetPlayer()->LeaveFlowState();
+
     player->Revive();
     player->SetPosition(GameWorldConstants::playerSpawn);
 

@@ -22,6 +22,7 @@ class TimerSystem : public ITimerLocator, public IGameSystem{
     bool IsRunning(const size_t& index) override;
     float GetTimeLeft(const size_t& index) override {return timers[index].timeLeft; }
     void KillTimers() override;
+    void ClearTimers() { timers.clear(); }
 
     private:
 
