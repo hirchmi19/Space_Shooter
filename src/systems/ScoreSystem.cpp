@@ -4,7 +4,6 @@
 
 #include "systems/scoring/ScoreSystem.h"
 #include "constants/ScoringConstants.h"
-#include "constants/WaveConstants.h"
 #include "entities/enemies/EnemyType.h"
 #include "locators/SystemLocator.h"
 #include "systems/rendering/MessageUi.h"
@@ -28,6 +27,9 @@ void ScoreSystem::Run() {
     mult = std::max(newMult, 1.0f); // mult cannot fall under default value
 
     SystemLocator::timerLocator->Start(3.0f, multTimer); // mult decreases after decrease as well
+
+    if (!flowStateActive) return;
+
     SystemLocator::entityLocator->GetPlayer()->LeaveFlowState();
     CreateMessage("LEAVED FLOW STATE!");
     ResetMult(); // reset mult back do default, if leaving the flow state
@@ -39,11 +41,12 @@ void ScoreSystem::AddHighScore(const int &score, const Vector2 &pos) {
 
   flowBonus = flowStateActive ? 2 : 1; // double the points while in flow state
 
-  const float scoreAdd = std::floor(static_cast<float>(score) * mult * flowBonus);
+  const float scoreAdd = std::floor(static_cast<float>(score) * mult * flowBonus); // round down points
   int newScore = static_cast<int>(scoreAdd + static_cast<float>(highScore));
-  newScore = std::min(newScore, ScoringConstants::MAX_SCORE);
+  newScore = std::min(newScore, ScoringConstants::MAX_SCORE); // cap score
   highScore = newScore;
-  CreateScore(std::to_string(static_cast<int>(scoreAdd)), pos);
+
+  CreateScoreUi(std::to_string(static_cast<int>(scoreAdd)), pos);
   SystemLocator::timerLocator->Start(2.0f, multTimer); // mult decreases after 2 seconds
   timerStarted = true;
 
@@ -67,7 +70,7 @@ int ScoreSystem::GetEnemyScore(const EnemyType &id) {
   }
 }
 
-void ScoreSystem::CreateScore(const std::string &score, const Vector2 &pos) {
+void ScoreSystem::CreateScoreUi(const std::string &score, const Vector2 &pos) {
 
   const size_t timer = SystemLocator::timerLocator->CreateTimer(0.7f, true);
   SystemLocator::renderLocator->AddScore({score, timer, pos});

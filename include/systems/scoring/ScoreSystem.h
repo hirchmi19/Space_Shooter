@@ -50,6 +50,6 @@ private:
   bool timerStarted = false;
   bool flowStateActive = false;
 
-  void CreateScore(const std::string &score, const Vector2 &pos);
+  void CreateScoreUi(const std::string &score, const Vector2 &pos);
   void CreateMessage(const std::string &msg);
 };

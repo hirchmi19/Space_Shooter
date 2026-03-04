@@ -34,10 +34,11 @@ void Player::Run() {
 
     if (!SystemLocator::timerLocator->IsRunning(cooldownTimer) && IsKeyPressed(KEY_SPACE)) {
 
+        const float shootCooldown = (inFlowState && flowLvl == 3 ) ? 0.1f : 0.35f;
         SystemLocator::entityLocator->SpawnProjectile(
             ProjectileType::PLAYER,
             movement.position, true);
-        SystemLocator::timerLocator->Start(0.35f, cooldownTimer);
+        SystemLocator::timerLocator->Start(shootCooldown, cooldownTimer);
     }
 
 }
