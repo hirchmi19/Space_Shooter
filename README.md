@@ -29,8 +29,8 @@ The project uses Raylib version 5.5, which is installed by its CMake config.
 
 # Build & Run:
 
-`mkdir buil`<br>
-`cd buil`<br>
+`mkdir build`<br>
+`cd build`<br>
 `cmake -B build` <br>
 `cmake --build build`
 
