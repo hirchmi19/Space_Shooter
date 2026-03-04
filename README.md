@@ -36,7 +36,7 @@ The project uses Raylib version 5.5, which is installed by its CMake config.
 
 ### Run the exe (example):
 
-`./cmake-build-debug/Space_Shooter`
+`./build/Space_Shooter`
 
 # Credits
 
