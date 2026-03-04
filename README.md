@@ -24,20 +24,15 @@ The project uses Raylib version 5.5, which is installed by its CMake config.
 
 # Clone the Project:
 
-
-`git clone --recurse-submodules https://github.com/hirchmi19/Space_Shooter.git` <br>
+`git clone https://github.com/hirchmi19/Space_Shooter.git` <br>
 `cd Space_Shooter`
-
- **The `--recurse-submodules` flag is required to automatically clone raylib.**
-
-**if you forget:** `git submodule update --init --recursive`
-
-**If raylib updates or you switch branches:** `git submodule update --recursive --remote`
 
 # Build & Run:
 
-`cmake -B cmake-build-debug` <br>
-`cmake --build cmake-build-debug`
+`mkdir buil`<br>
+`cd buil`<br>
+`cmake -B build` <br>
+`cmake --build build`
 
 ### Run the exe (example):
 
