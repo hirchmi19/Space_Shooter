@@ -21,6 +21,7 @@ class MovementSystem : public IGameSystem{
 
     void MovePlayer();
     void MoveProjectiles();
+    void MovePowerUps();
     void MoveEnemies();
 
     void MoveProjectile(Projectile& projectile);

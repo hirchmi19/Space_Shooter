@@ -13,11 +13,10 @@ MovementSystem::MovementSystem() : IGameSystem(GameSystemID::MOVEMENT_SYSTEM, "M
 
 void MovementSystem::Run() {
 
-
-
     MovePlayer();
     MoveEnemies();
     MoveProjectiles();
+    MovePowerUps();
 }
 
 //--------------------------------------------------------------------------
@@ -29,6 +28,7 @@ void MovementSystem::Run() {
 void MovementSystem::MovePlayer() {
 
     Player* player = SystemLocator::entityLocator->GetPlayer();
+    auto& shield = SystemLocator::entityLocator->GetShield();
     const auto& playerSpeed = player->GetDir();
     Vector2 playerPosition = player->GetPosition();
     const float playerPosXRight = playerPosition.x + player->GetSize().x * RenderConstants::PLAYER_SCALING;
@@ -38,6 +38,11 @@ void MovementSystem::MovePlayer() {
 
     playerPosition.x += static_cast<float>(player->GetDir()) * player->GetSpeed();
     player->SetPosition(playerPosition);
+
+    shield.position.x = playerPosition.x + (player->GetSize().x * RenderConstants::PLAYER_SCALING) / 2 -
+        (shield.render.size.x * RenderConstants::SHIELD_SCALING) / 2;
+    shield.hitbox.x = shield.position.x;
+
 }
 
 /**
@@ -56,6 +61,21 @@ void MovementSystem::MoveProjectiles() {
 
         MoveProjectile(projectile);
     }
+}
+
+void MovementSystem::MovePowerUps() {
+
+    auto& powerUps = SystemLocator::entityLocator->GetPowerUps();
+
+    for (auto& powerUp : powerUps) {
+
+        if (powerUp.movement.position.y >= GameConstants::SCREEN_HEIGHT) powerUp.alive = false;
+
+        powerUp.movement.position.y += static_cast<float>(powerUp.movement.direction) * powerUp.movement.speed;
+        powerUp.hitbox.x = powerUp.movement.position.x;
+        powerUp.hitbox.y = powerUp.movement.position.y;
+    }
+
 }
 
 /**

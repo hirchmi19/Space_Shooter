@@ -4,12 +4,16 @@
 
 #pragma once
 #include <memory>
+#include <vector>
 
 #include "../../game/IGameSystem.h"
 #include "../../locators/IEntityLocator.h"
 #include "../include/entities//Entities.h"
+#include "entities/PowerUp.h"
+#include "entities/Shield.h"
 
 
+enum class PowerUpType;
 enum class EnemyType;
 
 class EntitySystem : public IEntityLocator, public IGameSystem {
@@ -27,11 +31,14 @@ class EntitySystem : public IEntityLocator, public IGameSystem {
 
     void SpawnProjectile(const ProjectileType &pType, const Vector2& pos, bool isPlayerProjectile) override;
     void SpawnEnemy(const EnemyType &eType, const Vector2 &spawnPos) override;
+    void SpawnPowerUp(PowerUpType type, const Vector2& spawnPos) override;
     void ClearEntities();
 
     Player* GetPlayer() const override {return player.get();};
+    Shield& GetShield() {return shield;};
     std::vector<Enemy>& GetEnemies() override {return enemies;};
     std::vector<Projectile>& GetProjectiles() override {return projectiles;};
+    std::vector<PowerUp>& GetPowerUps() override {return powerUps;};
 
 
     private:
@@ -44,13 +51,21 @@ class EntitySystem : public IEntityLocator, public IGameSystem {
     std::vector<Projectile> projectiles;
     std::vector<size_t> deadProjectiles{};
 
+    std::vector<PowerUp> powerUps;
+    std::vector<size_t> deadPowerUps{};
+
+    Shield shield;
+
     void KillEntities();
     void KillEnemies();
     void KillProjectiles();
+    void KillPowerUps();
 
     void FindDeadEntities();
     void FindDeadProjectiles();
     void FindDeadEnemies();
+    void FindDeadPowerUps();
 
     void RequestEntityRemoval(const EntityType&, size_t value) override;
+    std::vector<size_t>& GetRemovalQ(const EntityType& type);
 };

@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "raylib.h"
 
 struct CombatComponent {
 
@@ -13,6 +14,13 @@ struct CombatComponent {
     explicit CombatComponent(const float hp = 0, const Rectangle hitbox = {}, const int score = 0)
         : hitbox(hitbox), score(score), hp(hp) {}
 
+    
+    void TakeDamage(const int& dmg){
+
+        if (dmg >= hp) hp = 0;
+        else hp -= dmg;
+    }
+    
     bool IsAlive() const { return hp > 0; }
     void Kill() { hp = 0; }
     void Revive() { hp = 1; }

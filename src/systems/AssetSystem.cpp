@@ -7,7 +7,11 @@
 #include <ostream>
 #include "raylib.h"
 #include "entities/enemies/EnemyType.h"
+#include "systems/assets/SpriteID.h"
+#include "systems/assets/TextureID.h"
 #include "systems/assets/AssetSystem.h"
+
+#include "entities/PowerUpType.h"
 
 AssetSystem::AssetSystem() : IGameSystem(GameSystemID::ASSET_SYSTEM, "ASSET_SYSTEM") {}
 
@@ -78,12 +82,28 @@ std::vector<const Sprite*> AssetSystem::GetProjectileSprite(const ProjectileType
  */
 std::vector<const Sprite *> AssetSystem::GetEnemySprites(const EnemyType& eType) const {
 
-    if (eType == EnemyType::YELLOW_E)return {&GetSprite(SpriteID::YELLOW_ENEMY_0), &GetSprite(SpriteID::YELLOW_ENEMY_1)};
-    if (eType == EnemyType::RED_E)return {&GetSprite(SpriteID::RED_ENEMY_0), &GetSprite(SpriteID::RED_ENEMY_1)};
-    if (eType == EnemyType::BLACK_E)return {&GetSprite(SpriteID::BLACK_ENEMY_0), &GetSprite(SpriteID::BLACK_ENEMY_1)};
+    if (eType == EnemyType::YELLOW_E)return {&GetSprite(SpriteID::YELLOW_ENEMY_0),
+        &GetSprite(SpriteID::YELLOW_ENEMY_1)};
+    if (eType == EnemyType::RED_E)return {&GetSprite(SpriteID::RED_ENEMY_0),
+        &GetSprite(SpriteID::RED_ENEMY_1)};
+    if (eType == EnemyType::BLACK_E)return {&GetSprite(SpriteID::BLACK_ENEMY_0),
+        &GetSprite(SpriteID::BLACK_ENEMY_1)};
 
     return {};
 
+}
+
+std::vector<const Sprite*> AssetSystem::GetPowerUpSprite(const PowerUpType &type) const {
+
+    if (type == PowerUpType::LEVEL_UP) return {&GetSprite(SpriteID::ARROW_UP)};
+    if (type == PowerUpType::SHIELD) return {&GetSprite(SpriteID::SHIELD_ICON)};
+
+    return {};
+}
+
+std::vector<const Sprite *> AssetSystem::GetShieldSprite() const {
+
+    return {&GetSprite(SpriteID::SHIELD_EFFECT)};
 }
 
 //--------------------------------------------------------------------------
@@ -145,6 +165,16 @@ void AssetSystem::Init() {
     DefineSprite(SpriteID::ENEMY_PROJECTILE, TextureID::ENEMY_CANVAS, {12, 42, 1, 4});
 
     //--------------------------------------------------------------------------
+
+    //Power-ups
+    DefineSprite(SpriteID::ARROW_UP, TextureID::EFFECT_CANVAS,{16, 8, 8, 8});
+    DefineSprite(SpriteID::SHIELD_ICON, TextureID::EFFECT_CANVAS,{24, 0, 8, 8});
+    DefineSprite(SpriteID::SHIELD_EFFECT, TextureID::EFFECT_CANVAS,{88, 32, 16, 16});
+
+    //--------------------------------------------------------------------------
+
+
+
 }
 
 void AssetSystem::Run() {

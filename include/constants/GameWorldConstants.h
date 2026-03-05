@@ -15,5 +15,6 @@ namespace GameWorldConstants {
 
     constexpr Vector2 playerSpawn = {playerSpawnX, playerSpawnY};
     constexpr Vector2 playerSize = {8, 7}; // player texture value
+    constexpr Vector2 shieldSize = {16, 16};
 
 }

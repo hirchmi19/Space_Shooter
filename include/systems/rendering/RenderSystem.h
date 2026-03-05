@@ -34,6 +34,8 @@ class RenderSystem : public IRenderLocator, public IGameSystem {
     void RenderPlayer() const;
     void RenderEnemies() const;
     void RenderProjectiles() const;
+    void RenderPowerUps() const;
+    void RenderShield() const;
 
     void RenderUi();
     void RenderHighScore() const;

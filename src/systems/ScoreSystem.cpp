@@ -7,15 +7,15 @@
 #include "entities/enemies/EnemyType.h"
 #include "locators/SystemLocator.h"
 #include "systems/rendering/MessageUi.h"
+#include "utils/utils.h"
 
 ScoreSystem::ScoreSystem() : IGameSystem(GameSystemID::SCORE_SYSTEM, "SCORE_SYSTEM") {}
 
 
 void ScoreSystem::Run() {
 
-  flowStateActive = SystemLocator::entityLocator->GetPlayer()->IsInFlowState();
-
   if (mult >= 2.0f && !flowStateActive) {
+    
     SystemLocator::entityLocator->GetPlayer()->EnterFlowState();
     flowStateActive = true;
     CreateMessage("ENTERED FLOW STATE!");
@@ -24,7 +24,7 @@ void ScoreSystem::Run() {
   if (!SystemLocator::timerLocator->IsRunning(multTimer) && timerStarted) {
 
     const float newMult = mult * 0.33f; // decrease mult
-    mult = std::max(newMult, 1.0f); // mult cannot fall under default value
+    mult = std::max(newMult, multDefault); // mult cannot fall under default value
 
     SystemLocator::timerLocator->Start(3.0f, multTimer); // mult decreases after decrease as well
 
@@ -32,7 +32,7 @@ void ScoreSystem::Run() {
 
     SystemLocator::entityLocator->GetPlayer()->LeaveFlowState();
     CreateMessage("LEAVED FLOW STATE!");
-    ResetMult(); // reset mult back do default, if leaving the flow state
+    ResetMult(); // reset mult back do default, after leaving the flow state
     flowStateActive = false;
   }
 }
@@ -82,4 +82,52 @@ void ScoreSystem::CreateMessage(const std::string &msg) {
   const size_t timer = SystemLocator::timerLocator->CreateTimer(0.0f, true);\
   SystemLocator::renderLocator->AddMessage({msg, timer});
 
+}
+
+void ScoreSystem::RollPowerUpDrop(){
+
+
+
+
+}
+
+void ScoreSystem::ApplyPowerUp(const PowerUpType &powType) {
+
+  Player* player = SystemLocator::entityLocator->GetPlayer();
+
+  if (powType == PowerUpType::LEVEL_UP) ExecuteLvlUp(RollLvlUp());
+  else if (powType == PowerUpType::SHIELD && !player->IsShieldActive()) player->ActivateShield();
+
+  //TODO: add projectiles
+
+}
+
+size_t ScoreSystem::RollLvlUp() {
+
+  return static_cast<size_t>(GetRandomValue(0, ToIndex(LvlUpType::COUNT) - 1));
+}
+
+void ScoreSystem::ExecuteLvlUp(const size_t &lvlIndex) {
+
+  auto lvl = ToEnum<LvlUpType>(lvlIndex);
+
+  switch (lvl) {
+
+    case LvlUpType::FLOW_STATE:
+
+      if (flowLvl <= 3) flowLvl++;
+      else flowLvl = 3;
+      break;
+
+    case LvlUpType::SHIELD:
+
+      auto& shield = SystemLocator::entityLocator->GetShield();
+      if (shield.lvl >= 3) return;
+
+        shield.lvl++;
+        shield.hp++;
+      break;
+
+    //TODO: add projectiles
+  }
 }

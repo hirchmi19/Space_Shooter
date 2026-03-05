@@ -45,8 +45,11 @@ class Player {
     void Kill() {combat.Kill();}
     bool IsAlive() const { return combat.IsAlive(); }
     void EnterFlowState() { inFlowState = true; }
+    void ActivateShield() { shieldActive = true; }
+    void DeactivateShield() { shieldActive = false; }
     void LeaveFlowState() { inFlowState = false; }
     bool IsInFlowState() const { return inFlowState; }
+    bool IsShieldActive() const { return shieldActive; }
 
     void Run();
     void Dash();
@@ -61,5 +64,6 @@ class Player {
     size_t dashTimer{};
 
     bool inFlowState = false;
-    int flowLvl = 1;
+    bool shieldActive = true;
+
 };

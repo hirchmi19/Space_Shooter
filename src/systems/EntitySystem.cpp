@@ -28,11 +28,31 @@ void EntitySystem::Init() {
 
     const auto& shootTimer  = SystemLocator::timerLocator->CreateTimer(.0f, false); // create cooldown timer for player
     const auto& dashTimer = SystemLocator::timerLocator->CreateTimer(0.0f, false);
+    const auto& playerSprites   = SystemLocator::assetLocator->GetPlayerSprites();
 
     player = std::make_unique<Player>(
        GameWorldConstants::playerSpawn,
        GameWorldConstants::playerSize,
-       SystemLocator::assetLocator->GetPlayerSprites(), shootTimer, dashTimer);\
+       playerSprites, shootTimer, dashTimer);
+
+
+    constexpr Vector2 shieldSpawnPos{
+        GameWorldConstants::playerSpawnX +
+            (GameWorldConstants::playerSize.x * RenderConstants::PLAYER_SCALING) / 2 -
+                (GameWorldConstants::shieldSize.x * RenderConstants::SHIELD_SCALING) / 2,
+        GameWorldConstants::playerSpawnY +
+            (GameWorldConstants::playerSize.y * RenderConstants::PLAYER_SCALING) / 2 -
+                (GameWorldConstants::shieldSize.y * RenderConstants::SHIELD_SCALING) / 2
+    };
+
+    shield = {shieldSpawnPos,
+        {SystemLocator::assetLocator->GetShieldSprite(), GameWorldConstants::shieldSize},
+        {
+            shieldSpawnPos.x,
+            shieldSpawnPos.y,
+            GameWorldConstants::shieldSize.x * RenderConstants::SHIELD_SCALING,
+            GameWorldConstants::shieldSize.y * RenderConstants::SHIELD_SCALING }
+    };
 
 }
 
@@ -79,10 +99,25 @@ void EntitySystem::SpawnProjectile(const ProjectileType &pType, const Vector2 &p
 
 }
 
+void EntitySystem::SpawnPowerUp(const PowerUpType type, const Vector2 &spawnPos) {
+
+    const auto& sprite = SystemLocator::assetLocator->GetPowerUpSprite(type);
+    constexpr int dir = 1;
+    const Vector2 size = {sprite[0]->src.width,sprite[0]->src.height};
+
+    powerUps.emplace_back(Movement1D{spawnPos, dir, MovementConstants::POWER_UP_SPEED},
+        RenderComponent{sprite, size},
+        Rectangle{spawnPos.x, spawnPos.y,
+            RenderConstants::POWER_UP_SCALING * size.x,
+            RenderConstants::POWER_UP_SCALING * size.y
+        }, true);
+}
+
 void EntitySystem::KillEntities() {
 
     KillEnemies();
     KillProjectiles();
+    KillPowerUps();
 }
 
 void EntitySystem::KillEnemies() {
@@ -105,10 +140,21 @@ void EntitySystem::KillProjectiles() {
     deadProjectiles.clear();
 }
 
+void EntitySystem::KillPowerUps() {
+
+    for (const auto& powerUp : std::ranges::reverse_view(deadPowerUps)) {
+
+        powerUps.erase(powerUps.begin() + static_cast<long>(powerUp));
+    }
+
+    deadPowerUps.clear();
+}
+
 void EntitySystem::FindDeadEntities() {
 
     FindDeadEnemies();
     FindDeadProjectiles();
+    FindDeadPowerUps();
 }
 
 void EntitySystem::FindDeadEnemies() {
@@ -132,11 +178,29 @@ void EntitySystem::FindDeadProjectiles() {
     }
 }
 
+void EntitySystem::FindDeadPowerUps() {
+
+    for (size_t i = 0; i < powerUps.size(); ++i) {
+
+        PowerUp& pup = powerUps[i];
+        if (pup.alive) continue;
+        RequestEntityRemoval(EntityType::POWER_UP, i);
+    }
+}
+
 void EntitySystem::RequestEntityRemoval(const EntityType &eType, const size_t value) {
 
-    auto& removalQ = eType == EntityType::ENEMY ? deadEnemies : deadProjectiles;
+    auto& removalQ = GetRemovalQ(eType);
     const auto index = std::ranges::lower_bound(removalQ, value);
     removalQ.insert(index, value);
+
+}
+
+std::vector<size_t>& EntitySystem::GetRemovalQ(const EntityType &type) {
+
+    if (type == EntityType::PROJECTILE) return deadProjectiles;
+    if (type == EntityType::ENEMY) return deadEnemies;
+    if (type == EntityType::POWER_UP) return deadPowerUps;
 
 }
 
@@ -146,6 +210,8 @@ void EntitySystem::ClearEntities() {
     projectiles.clear();
     deadProjectiles.clear();
     deadEnemies.clear();
+    deadPowerUps.clear();
+    powerUps.clear();
 }
 
 

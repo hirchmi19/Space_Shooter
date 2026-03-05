@@ -55,9 +55,11 @@ void RenderSystem::RenderGameState(const GameState& state) {
             break;
 
         case GameState::IN_GAME:
+            RenderShield();
             RenderPlayer();
             RenderEnemies();
             RenderProjectiles();
+            RenderPowerUps();
             RenderUi();
             break;
 
@@ -83,6 +85,9 @@ void RenderSystem::RenderGameState(const GameState& state) {
 void RenderSystem::RenderEnemies() const {
 
     const auto& enemies = SystemLocator::entityLocator->GetEnemies();
+
+    if (enemies.empty()) return;
+
     const double time = GetTime();
     const size_t spriteToDraw = static_cast<size_t>(time * 4) % 2; // flip between sprites to simulate animation
 
@@ -127,7 +132,26 @@ void RenderSystem::RenderPlayer() const {
     if (pSpeed < 0) playerSprite = SystemLocator::assetLocator->GetSprite(SpriteID::PLAYER_SHIP_LEFT);
 
     DrawTexturePro(playerTexture, playerSprite.src, dest, Vector2{0, 0}, 0.0f, WHITE);
-    //DrawRectangleLinesEx(world.GetPlayer().GetHitBox(), 1.0f, PINK); // draw hitbox
+    //DrawRectangleLinesEx(player->GetHitBox(), 1.0f, PINK); // draw hitbox
+}
+
+void RenderSystem::RenderShield() const {
+
+    if (!SystemLocator::entityLocator->GetPlayer()->IsShieldActive()) return;
+
+    const auto& shield = SystemLocator::entityLocator->GetShield();
+    const auto& texture = SystemLocator::assetLocator->GetTexture(TextureID::EFFECT_CANVAS);
+    const auto sprite = shield.render.sprites[0];
+
+    const Rectangle dest = {
+        shield.position.x,
+        shield.position.y,
+        shield.render.size.x * RenderConstants::SHIELD_SCALING,
+        shield.render.size.y * RenderConstants::SHIELD_SCALING
+    };
+
+    DrawTexturePro(texture, sprite->src, dest, Vector2{0, 0}, 0.0f, WHITE);
+    DrawRectangleLinesEx(shield.hitbox, 1.0f, PINK); // draw hitbox
 }
 
 /**
@@ -137,6 +161,8 @@ void RenderSystem::RenderPlayer() const {
 void RenderSystem::RenderProjectiles() const  {
 
     const auto& projectiles = SystemLocator::entityLocator->GetProjectiles();
+
+    if (projectiles.empty()) return;
 
     for (const auto& projectile : projectiles ) {
 
@@ -154,9 +180,32 @@ void RenderSystem::RenderProjectiles() const  {
     }
 }
 
+void RenderSystem::RenderPowerUps() const {
+
+    const auto& powerUps = SystemLocator::entityLocator->GetPowerUps();
+
+    if (powerUps.empty()) return;
+
+    for (const auto& powerUp : powerUps ) {
+
+        const auto& texture = SystemLocator::assetLocator->GetTexture(TextureID::EFFECT_CANVAS);
+        const auto& sprite = *(powerUp.render.sprites[0]);
+
+        const Rectangle dest = {
+            powerUp.movement.position.x,
+            powerUp.movement.position.y,
+            powerUp.render.size.x * RenderConstants::POWER_UP_SCALING,
+            powerUp.render.size.y * RenderConstants::POWER_UP_SCALING};
+
+        DrawTexturePro(texture, sprite.src, dest, { 0, 0 }, 0.0f, WHITE);
+        DrawRectangleLinesEx(powerUp.hitbox, 1.0f, PINK); // draw hitbox
+
+    }
+}
+
 void RenderSystem::RenderGameOver(const GameState& state) const {
 
-    //if (state != GameState::GAME_OVER) return;
+    if (state != GameState::GAME_OVER) return;
 
     const auto font = SystemLocator::assetLocator->GetFont();
     constexpr std::string caption = "GAME OVER";

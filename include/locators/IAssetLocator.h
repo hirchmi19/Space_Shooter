@@ -12,6 +12,7 @@
 struct Sprite;
 enum class SpriteID;
 enum class TextureID;
+enum class PowerUpType;
 
 struct IAssetLocator {
 
@@ -19,6 +20,8 @@ struct IAssetLocator {
     virtual  std::vector<const Sprite*> GetPlayerSprites() const = 0;
     virtual  std::vector<const Sprite*> GetEnemySprites(const EnemyType &eType) const = 0;
     virtual  std::vector<const Sprite*> GetProjectileSprite(const ProjectileType& pType) const = 0;
+    virtual  std::vector<const Sprite*> GetPowerUpSprite(const PowerUpType& type) const = 0;
+    virtual std::vector<const Sprite*> GetShieldSprite() const = 0;
 
     virtual const Texture2D& GetTexture(TextureID id) const = 0;
     virtual const Sprite& GetSprite(SpriteID id) const = 0;

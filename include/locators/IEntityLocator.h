@@ -8,6 +8,9 @@
 #include "../entities/Entities.h"
 #include "entities/enemies/EnemyType.h"
 #include "../entities/Player.h"
+#include "entities/PowerUpType.h"
+#include "entities/PowerUp.h"
+#include "entities/Shield.h"
 
 
 struct IEntityLocator {
@@ -17,8 +20,11 @@ struct IEntityLocator {
     virtual void SpawnProjectile(const ProjectileType &pType, const Vector2& pos, bool isPlayerProjectile) = 0;
     virtual void SpawnEnemy(const EnemyType &eCmd, const Vector2 &spawnPos) = 0;
     virtual void RequestEntityRemoval(const EntityType&, size_t value) = 0;
+    virtual void SpawnPowerUp(PowerUpType type, const Vector2& spawnPos) = 0;
     virtual Player* GetPlayer() const = 0;
+    virtual Shield& GetShield() = 0;
     virtual std::vector<Enemy>& GetEnemies() = 0;
     virtual std::vector<Projectile>& GetProjectiles() = 0;
+    virtual std::vector<PowerUp>& GetPowerUps() = 0;
 };
 

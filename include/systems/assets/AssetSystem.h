@@ -13,6 +13,8 @@
 #include "../../entities/projectiles/ProjectileType.h"
 
 
+enum class PowerUpType;
+
 class AssetSystem : public IAssetLocator, public IGameSystem {
 
     public:
@@ -25,6 +27,8 @@ class AssetSystem : public IAssetLocator, public IGameSystem {
     std::vector<const Sprite*> GetPlayerSprites() const override;
     std::vector<const Sprite*> GetEnemySprites(const EnemyType& eType) const override;
     std::vector<const Sprite*> GetProjectileSprite(const ProjectileType& pType) const override;
+    std::vector<const Sprite*> GetPowerUpSprite(const PowerUpType& type) const override;
+    std::vector<const Sprite*> GetShieldSprite() const override;
 
 
 

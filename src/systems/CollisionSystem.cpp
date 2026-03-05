@@ -29,8 +29,9 @@ void CollisionSystem::CheckEnemiesProjectiles() {
 
             if (CheckCollisionRecs(enemy.combat.hitbox, projectile.combat.hitbox) && projectile.isPlayerProjectile) {
 
-                enemy.combat.Kill();
-                projectile.combat.Kill();
+                enemy.combat.TakeDamage(projectile.combat.damage);
+                SystemLocator::entityLocator->SpawnPowerUp(PowerUpType::LEVEL_UP, enemy.wave.worldPosition);
+                projectile.combat.TakeDamage(projectile.combat.damage);
             }
         }
     }
