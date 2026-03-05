@@ -19,6 +19,7 @@ class CollisionSystem : public IGameSystem {
     void CheckPlayerProjectiles();
     void CheckEnemiesProjectiles();
     void CheckPlayerEnemies();
+    void CheckPowerUps();
 
 };
 

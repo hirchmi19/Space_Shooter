@@ -17,6 +17,8 @@ EntitySystem::EntitySystem() : IGameSystem(GameSystemID::ENTITY_SYSTEM, "ENTITY_
 
 void EntitySystem::Run() {
 
+    if (shield.hp <= 0 ) player->DeactivateShield();
+
     FindDeadEntities();
     KillEntities();
 }
@@ -105,7 +107,7 @@ void EntitySystem::SpawnPowerUp(const PowerUpType type, const Vector2 &spawnPos)
     constexpr int dir = 1;
     const Vector2 size = {sprite[0]->src.width,sprite[0]->src.height};
 
-    powerUps.emplace_back(Movement1D{spawnPos, dir, MovementConstants::POWER_UP_SPEED},
+    powerUps.emplace_back(type, Movement1D{spawnPos, dir, MovementConstants::POWER_UP_SPEED},
         RenderComponent{sprite, size},
         Rectangle{spawnPos.x, spawnPos.y,
             RenderConstants::POWER_UP_SCALING * size.x,

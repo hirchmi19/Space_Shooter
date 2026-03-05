@@ -33,7 +33,7 @@ public:
 
   size_t RollLvlUp();
   void ExecuteLvlUp(const size_t &lvlIndex);
-  void ApplyPowerUp(const PowerUpType& powType);
+  void ApplyPowerUp(const PowerUpType& powType) override;
   void LevelUp();
 
   void ResetScore() override {

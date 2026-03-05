@@ -64,6 +64,6 @@ class Player {
     size_t dashTimer{};
 
     bool inFlowState = false;
-    bool shieldActive = true;
+    bool shieldActive = false;
 
 };

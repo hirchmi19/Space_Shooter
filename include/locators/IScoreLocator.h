@@ -20,4 +20,5 @@ struct IScoreLocator {
   virtual int GetHighScore() const = 0;
   virtual float GetMult() const = 0;
   virtual void RollPowerUpDrop() = 0;
+  virtual  void ApplyPowerUp(const PowerUpType& powType) = 0;
 };
