@@ -49,11 +49,12 @@ void EntitySystem::Init() {
 
     shield = {shieldSpawnPos,
         {SystemLocator::assetLocator->GetShieldSprite(), GameWorldConstants::shieldSize},
+        SystemLocator::timerLocator->CreateTimer(0.0f, false),
         {
             shieldSpawnPos.x,
             shieldSpawnPos.y,
             GameWorldConstants::shieldSize.x * RenderConstants::SHIELD_SCALING,
-            GameWorldConstants::shieldSize.y * RenderConstants::SHIELD_SCALING }
+            GameWorldConstants::shieldSize.y * RenderConstants::SHIELD_SCALING}
     };
 
 }
@@ -61,6 +62,12 @@ void EntitySystem::Init() {
 void EntitySystem::HandleInputs() const {
 
     player->Run();
+}
+
+void EntitySystem::LvlProjectiles() {
+
+    if (projctileHp >= 3) return;
+    projctileHp++;
 }
 
 
@@ -95,13 +102,15 @@ void EntitySystem::SpawnProjectile(const ProjectileType &pType, const Vector2 &p
     projectiles.emplace_back(
         Movement1D{spawnPosition, dir, MovementConstants::PROJECTILE_SPEED},
         RenderComponent{projectileSprite, projectileSize},
-        CombatComponent{1,Rectangle{spawnPosition.x,spawnPosition.y,
+        CombatComponent{projctileHp,Rectangle{spawnPosition.x,spawnPosition.y,
                 projectileSize.x * RenderConstants::PROJECTILE_SCALING,
                 projectileSize.y * RenderConstants::PROJECTILE_SCALING}}, isPlayerProjectile);
 
 }
 
 void EntitySystem::SpawnPowerUp(const PowerUpType type, const Vector2 &spawnPos) {
+
+    if (type == PowerUpType::NONE) return;
 
     const auto& sprite = SystemLocator::assetLocator->GetPowerUpSprite(type);
     constexpr int dir = 1;

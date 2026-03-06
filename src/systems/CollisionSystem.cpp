@@ -31,8 +31,9 @@ void CollisionSystem::CheckEnemiesProjectiles() {
             if (CheckCollisionRecs(enemy.combat.hitbox, projectile.combat.hitbox) && projectile.isPlayerProjectile) {
 
                 enemy.combat.TakeDamage(projectile.combat.damage);
-                SystemLocator::entityLocator->SpawnPowerUp(PowerUpType::SHIELD, enemy.wave.worldPosition);
                 projectile.combat.TakeDamage(projectile.combat.damage);
+                const auto& powerUp = SystemLocator::scoreLocator->RollPowerUpDrop();
+                SystemLocator::entityLocator->SpawnPowerUp(powerUp, enemy.wave.worldPosition);
             }
         }
     }
@@ -40,49 +41,74 @@ void CollisionSystem::CheckEnemiesProjectiles() {
 
 void CollisionSystem::CheckPlayerEnemies() {
 
-    const auto& enemies= SystemLocator::entityLocator->GetEnemies();
+    auto& enemies= SystemLocator::entityLocator->GetEnemies();
     Player *player = SystemLocator::entityLocator->GetPlayer();
     auto& shield =  SystemLocator::entityLocator->GetShield();
 
-    for (const auto& enemy : enemies) {
+    for (auto& enemy : enemies) {
 
         if (enemy.wave.state != WaveState::ATTACK) continue;
         if (CheckCollisionRecs(enemy.combat.hitbox, player->GetHitBox())) {
 
-            if (player->IsShieldActive()) shield.hp--;
-            else player->Kill();
+            if (!player->IsShieldActive()) {
+
+                player->Kill();
+                return;
+            }
+
+            if (!SystemLocator::timerLocator->IsRunning(shield.cooldown)) {
+
+                shield.hp--;
+                SystemLocator::timerLocator->Start(0.5f, shield.cooldown);
+            }
+
+            enemy.combat.Kill();
         }
     }
 }
 
 void CollisionSystem::CheckPlayerProjectiles() {
 
-    const auto& projectiles = SystemLocator::entityLocator->GetProjectiles();
+    auto& projectiles = SystemLocator::entityLocator->GetProjectiles();
     Player *player = SystemLocator::entityLocator->GetPlayer();
     auto& shield =  SystemLocator::entityLocator->GetShield();
 
-    for (const auto& projectile : projectiles) {
+    for (auto& projectile : projectiles) {
 
         if (projectile.movement.position.y < player->GetPosition().y) continue;
         if (CheckCollisionRecs(projectile.combat.hitbox, player->GetHitBox()) && !projectile.isPlayerProjectile) {
 
-            if (player->IsShieldActive()) shield.hp--;
-            else player->Kill();
+            if (!player->IsShieldActive()) {
+
+                player->Kill();
+                return;
+            }
+
+            if (!SystemLocator::timerLocator->IsRunning(shield.cooldown)) {
+
+                shield.hp--;
+                SystemLocator::timerLocator->Start(0.5f, shield.cooldown);
+            }
+
+            projectile.combat.Kill();
         }
     }
 }
 
 void CollisionSystem::CheckPowerUps() {
 
-    const auto& powerups = SystemLocator::entityLocator->GetPowerUps();
+    auto& powerups = SystemLocator::entityLocator->GetPowerUps();
+
+    if (powerups.empty()) return;
+
     Player* player = SystemLocator::entityLocator->GetPlayer();
 
-    for (const auto& powerup : powerups) {
+    for (auto& powerup : powerups) {
 
         if (CheckCollisionRecs(powerup.hitbox, player->GetHitBox())) {
 
             SystemLocator::scoreLocator->ApplyPowerUp(powerup.type);
+            powerup.alive = false;
         }
-
     }
 }

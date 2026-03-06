@@ -4,11 +4,14 @@
 
 #include <ranges>
 #include "systems/timer/TimerSystem.h"
+
+#include <cassert>
+
 #include "constants/GameConstants.h"
 
 TimerSystem::TimerSystem() : IGameSystem(GameSystemID::TIMER_SYSTEM, "TIMER_SYSTEM") {
 
-    timers.reserve(50);
+    timers.reserve(500);
 }
 void TimerSystem::Run() {
 
@@ -16,19 +19,19 @@ void TimerSystem::Run() {
 
         if (!timers[index].isRunning) continue;
 
-        timers[index].elapsedTime += 1 / GameConstants::UPS;
-        timers[index].timeLeft -= timers[index].elapsedTime;
+        const float delta = 1.0f / GameConstants::UPS;
+        timers[index].elapsedTime += delta;
+        timers[index].timeLeft -= delta;
 
         if (timers[index].elapsedTime >= timers[index].duration) {
 
             timers[index].isRunning = false;
             timers[index].elapsedTime = 0;
             timers[index].timeLeft = timers[index].duration;
-            if (!timers[index].disposable) return;
+            if (!timers[index].disposable) continue;
 
             const auto it = std::ranges::lower_bound(deadTimers, index);
-            deadTimers.insert(it, index); // insert timer, so dead timers is sorted
-
+            deadTimers.insert(it, index);
         }
     }
 }
@@ -43,11 +46,12 @@ void TimerSystem::Start(const float &duration, const size_t &index) {
 
 const size_t TimerSystem::CreateTimer(const float &duration, bool disposable) {
 
+    assert(timers.size() < timers.capacity() && "TIMER CAPACITY REACHED!");
+
     timers.emplace_back(duration, 0, duration, disposable);
-    timers.back().isRunning = true;
+    timers.back().isRunning = duration > 0;
+    if (!disposable) permanentTimerCount++;
     return timers.size() - 1;
-
-
 }
 
 bool TimerSystem::IsRunning(const size_t &index) {
@@ -57,11 +61,8 @@ bool TimerSystem::IsRunning(const size_t &index) {
 
 void TimerSystem::KillTimers() {
 
-    for (const auto& timer : std::ranges::reverse_view(deadTimers)) {
+    assert(timers.size() - permanentTimerCount <= 100 && "TOO MANY DISPOSABLE TIMERS!");
 
-       timers.erase(timers.begin() + static_cast<long>(timer));
-
-    }
-
+    timers.resize(permanentTimerCount);
     deadTimers.clear();
 }

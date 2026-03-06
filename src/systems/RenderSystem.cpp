@@ -151,7 +151,36 @@ void RenderSystem::RenderShield() const {
     };
 
     DrawTexturePro(texture, sprite->src, dest, Vector2{0, 0}, 0.0f, WHITE);
-    DrawRectangleLinesEx(shield.hitbox, 1.0f, PINK); // draw hitbox
+    RenderShieldUi();
+    //DrawRectangleLinesEx(shield.hitbox, 1.0f, PINK); // draw hitbox
+}
+
+void RenderSystem::RenderShieldUi() const{
+
+    const auto& shield = SystemLocator::entityLocator->GetShield();
+    const auto& texture = SystemLocator::assetLocator->GetTexture(TextureID::EFFECT_CANVAS);
+    const auto& sprite = &SystemLocator::assetLocator->GetSprite(SpriteID::SHIELD_UI);
+
+    constexpr Vector2 posStart{70, GameConstants::SCREEN_HEIGHT - 100};
+    const int width = sprite->src.x * RenderConstants::SHIELD_UI_SCALING;
+    constexpr int spacing = 48;
+
+    for (int i = 0; i < shield.hp; ++i) {
+
+        const Vector2 pos = {posStart.x + (width + spacing  * i), posStart.y};
+
+        const Rectangle dest = {
+
+            pos.x , pos.y,
+            sprite->src.width * RenderConstants::SHIELD_UI_SCALING,
+            sprite->src.height * RenderConstants::SHIELD_UI_SCALING
+
+        };
+
+        DrawTexturePro(texture,sprite->src, dest, Vector2{0, 0}, 0.0f, WHITE);
+
+    }
+
 }
 
 /**
@@ -198,7 +227,7 @@ void RenderSystem::RenderPowerUps() const {
             powerUp.render.size.y * RenderConstants::POWER_UP_SCALING};
 
         DrawTexturePro(texture, sprite.src, dest, { 0, 0 }, 0.0f, WHITE);
-        DrawRectangleLinesEx(powerUp.hitbox, 1.0f, PINK); // draw hitbox
+        //DrawRectangleLinesEx(powerUp.hitbox, 1.0f, PINK); // draw hitbox
 
     }
 }

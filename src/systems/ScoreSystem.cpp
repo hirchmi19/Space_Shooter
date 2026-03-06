@@ -51,7 +51,7 @@ void ScoreSystem::AddHighScore(const int &score, const Vector2 &pos) {
   timerStarted = true;
 
   const float newMult = 0.1f * flowBonus * std::floor(mult) + mult;
-  mult = std::min(newMult, ScoringConstants::MAX_MULT);
+  mult = std::min(newMult, maxMult);
 }
 
 int ScoreSystem::GetEnemyScore(const EnemyType &id) {
@@ -84,50 +84,92 @@ void ScoreSystem::CreateMessage(const std::string &msg) {
 
 }
 
-void ScoreSystem::RollPowerUpDrop(){
+PowerUpType ScoreSystem::RollPowerUpDrop(){
 
+    int p = GetRandomValue(1, 8);
+    if (p != 1) return PowerUpType::NONE; // 1/8 chance of dropping a power up
 
-
-
-}
-
-void ScoreSystem::ApplyPowerUp(const PowerUpType &powType) {
-
-  Player* player = SystemLocator::entityLocator->GetPlayer();
-
-  if (powType == PowerUpType::LEVEL_UP) ExecuteLvlUp(RollLvlUp());
-  else if (powType == PowerUpType::SHIELD && !player->IsShieldActive()) player->ActivateShield();
-
-  //TODO: add projectiles
+    int type = GetRandomValue(0, 1); // 1/3 chance the power up being a level up, a shield or an projectile
+    if (type == 0 && PowerUpAvalaible()) return PowerUpType::LEVEL_UP;
+    if (type == 1) return PowerUpType::SHIELD;
+    return ToEnum<PowerUpType>(GetRandomValue(4, ToIndex(PowerUpType::COUNT) - 1)); // pick an random projectile
 
 }
 
 size_t ScoreSystem::RollLvlUp() {
 
-  return static_cast<size_t>(GetRandomValue(0, ToIndex(LvlUpType::COUNT) - 1));
+  return static_cast<size_t>(GetRandomValue(0, ToIndex(PowerUpType::COUNT) - 1));
 }
 
-void ScoreSystem::ExecuteLvlUp(const size_t &lvlIndex) {
+void ScoreSystem::ApplyPowerUp(const PowerUpType &powType) {
 
-  auto lvl = ToEnum<LvlUpType>(lvlIndex);
+  Player* player = SystemLocator::entityLocator->GetPlayer();
+  auto& shield = SystemLocator::entityLocator->GetShield();
 
-  switch (lvl) {
+  if (powType == PowerUpType::LEVEL_UP) ExecuteLvlUp(RollLvlUp());
+  else if (powType == PowerUpType::SHIELD) {
 
-    case LvlUpType::FLOW_STATE:
+    player->ActivateShield();
+    shield.hp = shield.lvl;
+  }
 
-      if (flowLvl <= 3) flowLvl++;
-      else flowLvl = 3;
-      break;
+  // add projectiles
+}
 
-    case LvlUpType::SHIELD:
+void ScoreSystem::ExecuteLvlUp(const size_t &Index) {
 
-      auto& shield = SystemLocator::entityLocator->GetShield();
-      if (shield.lvl >= 3) return;
+  auto type = ToEnum<PowerUpType>(Index);
 
-        shield.lvl++;
-        shield.hp++;
-      break;
+  if (type == PowerUpType::FLOW_STATE) LvlFlowState();
+  else if (type == PowerUpType::SHIELD) LvlShield();
+  else if (type == PowerUpType::MULT) LvlDefaultMult();
+  else {
 
-    //TODO: add projectiles
+    SystemLocator::entityLocator->LvlProjectiles();
+    CreateMessage("PROJECTILES UP!");
+
   }
 }
+
+void ScoreSystem::LvlFlowState() {
+
+  if (flowLvl <= 3) {
+
+    flowLvl++;
+    maxMult * 2.5f;
+    CreateMessage("FLOW STATE UP!");
+
+  }
+}
+
+void ScoreSystem::LvlShield() {
+
+  auto& shield = SystemLocator::entityLocator->GetShield();
+  if (shield.lvl >= 3) return;
+
+  shield.lvl++;
+  shield.hp++;
+  CreateMessage("SHIELD UP!");
+}
+
+void ScoreSystem::LvlDefaultMult() {
+
+  if (multDefault >= ScoringConstants::MAX_DEFAULT_MULT) return;
+  multDefault++;
+  CreateMessage("MULT UP!");
+}
+
+bool ScoreSystem::PowerUpAvalaible() {
+
+  const auto& shield = SystemLocator::entityLocator->GetShield();
+
+  if (multDefault >= ScoringConstants::MAX_DEFAULT_MULT) return false;
+  if (shield.lvl >= 3) return false;
+  if (flowLvl >= 3) return false;
+
+  return true;
+
+}
+
+
+

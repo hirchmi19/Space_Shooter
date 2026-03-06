@@ -173,7 +173,9 @@ void AssetSystem::Init() {
 
     //--------------------------------------------------------------------------
 
+    //ui
 
+    DefineSprite(SpriteID::SHIELD_UI, TextureID::EFFECT_CANVAS,{2, 26, 5, 5});
 
 }
 
