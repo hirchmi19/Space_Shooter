@@ -22,6 +22,7 @@ struct IAssetLocator {
     virtual  std::vector<const Sprite*> GetProjectileSprite(const ProjectileType& pType) const = 0;
     virtual  std::vector<const Sprite*> GetPowerUpSprite(const PowerUpType& type) const = 0;
     virtual std::vector<const Sprite*> GetShieldSprite() const = 0;
+    virtual ProjectileType GetProjectileType(const PowerUpType& type) const = 0;
 
     virtual const Texture2D& GetTexture(TextureID id) const = 0;
     virtual const Sprite& GetSprite(SpriteID id) const = 0;

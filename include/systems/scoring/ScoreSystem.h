@@ -11,6 +11,7 @@
 
 #include "LvlUpType.h"
 #include "entities/PowerUpType.h"
+#include "entities/projectiles/ProjectileType.h"
 
 
 class ScoreSystem : public IScoreLocator, public IGameSystem {
@@ -73,4 +74,5 @@ private:
 
   bool AnyPowerUpsAvalaible();
   bool IsPowerUpAvalaible(const LvlUpType& type);
+
 };

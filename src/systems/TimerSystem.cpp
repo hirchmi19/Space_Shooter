@@ -49,7 +49,7 @@ const size_t TimerSystem::CreateTimer(const float &duration, bool disposable) {
     assert(timers.size() < timers.capacity() && "TIMER CAPACITY REACHED!");
 
     timers.emplace_back(duration, 0, duration, disposable);
-    timers.back().isRunning = duration > 0;
+    timers.back().isRunning = true;
     if (!disposable) permanentTimerCount++;
     return timers.size() - 1;
 }

@@ -69,8 +69,12 @@ std::vector<const Sprite*> AssetSystem::GetPlayerSprites() const {
  */
 std::vector<const Sprite*> AssetSystem::GetProjectileSprite(const ProjectileType& pType) const {
 
-    if (pType == ProjectileType::ENEMY) return {&GetSprite(SpriteID::ENEMY_PROJECTILE)};
-    if (pType == ProjectileType::PLAYER) return {&GetSprite(SpriteID::PLAYER_PROJECTILE)};
+    if (pType == ProjectileType::BASE_ENEMY) return {&GetSprite(SpriteID::ENEMY_PROJECTILE)}; // this is so bad...
+    if (pType == ProjectileType::ARROW) return {&GetSprite(SpriteID::ARROW)};
+    if (pType == ProjectileType::GLAIVE) return {&GetSprite(SpriteID::GLAIVE)};
+    if (pType == ProjectileType::ROCKET) return {&GetSprite(SpriteID::ROCKET)};
+
+    return {&GetSprite(SpriteID::PLAYER_PROJECTILE)};
 
     return {};
 }
@@ -98,12 +102,25 @@ std::vector<const Sprite*> AssetSystem::GetPowerUpSprite(const PowerUpType &type
     if (type == PowerUpType::LEVEL_UP) return {&GetSprite(SpriteID::ARROW_UP)};
     if (type == PowerUpType::SHIELD) return {&GetSprite(SpriteID::SHIELD_ICON)};
 
+    const auto& prType = GetProjectileType(type);
+    return {GetProjectileSprite(prType)};
+
     return {};
 }
 
 std::vector<const Sprite *> AssetSystem::GetShieldSprite() const {
 
     return {&GetSprite(SpriteID::SHIELD_EFFECT)};
+}
+
+ProjectileType AssetSystem::GetProjectileType(const PowerUpType &type) const {
+
+    if (type == PowerUpType::COUNT || type == PowerUpType::NONE) return ProjectileType::NONE;
+
+    if (type == PowerUpType::ARROW) return ProjectileType::ARROW; // i am crying...
+    if (type == PowerUpType::GLAIVE) return ProjectileType::GLAIVE;
+    if (type == PowerUpType::ROCKET) return ProjectileType::ROCKET;
+    if (type == PowerUpType::SPLIT) return ProjectileType::SPLIT;
 }
 
 //--------------------------------------------------------------------------
@@ -163,6 +180,9 @@ void AssetSystem::Init() {
     //Projectile sprites
     DefineSprite(SpriteID::PLAYER_PROJECTILE, TextureID::ENEMY_CANVAS, {20, 42, 1, 4});
     DefineSprite(SpriteID::ENEMY_PROJECTILE, TextureID::ENEMY_CANVAS, {12, 42, 1, 4});
+    DefineSprite(SpriteID::ROCKET, TextureID::PROJECTILE_CANVAS,{42, 25, 4, 5});
+    DefineSprite(SpriteID::ARROW, TextureID::PROJECTILE_CANVAS,{10, 9, 3, 6});
+    DefineSprite(SpriteID::GLAIVE, TextureID::PROJECTILE_CANVAS,{33, 9, 6, 4});
 
     //--------------------------------------------------------------------------
 
@@ -176,6 +196,12 @@ void AssetSystem::Init() {
     //ui
 
     DefineSprite(SpriteID::SHIELD_UI, TextureID::EFFECT_CANVAS,{2, 26, 5, 5});
+    DefineSprite(SpriteID::SPLIT_SHOT, TextureID::EFFECT_CANVAS,{24, 8, 8, 8});
+
+    //--------------------------------------------------------------------------
+
+    DefineSprite(SpriteID::EXPLOSION, TextureID::EFFECT_CANVAS,{80, 48, 8, 8});
+
 
 }
 

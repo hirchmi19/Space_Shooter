@@ -246,7 +246,7 @@ void WaveSystem::HandleFormationAttacks() {
     }while (enemies[enemyIndex].wave.state != WaveState::IN_FORMATION);
 
     SystemLocator::entityLocator->SpawnProjectile(
-        ProjectileType::ENEMY,
+        ProjectileType::BASE_ENEMY,
         enemies[enemyIndex].wave.worldPosition,
         false);
 

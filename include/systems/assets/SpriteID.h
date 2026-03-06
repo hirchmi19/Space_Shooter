@@ -22,5 +22,10 @@ enum class SpriteID {
     SHIELD_ICON,
     SHIELD_EFFECT,
     SHIELD_UI,
+    SPLIT_SHOT,
+    GLAIVE,
+    ROCKET,
+    ARROW,
+    EXPLOSION,
     COUNT
 };

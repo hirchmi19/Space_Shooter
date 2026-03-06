@@ -15,7 +15,7 @@ struct CombatComponent {
         : hitbox(hitbox), score(score), hp(hp) {}
 
     
-    void TakeDamage(const int& dmg){
+    void TakeDamage(const float& dmg){
 
         if (dmg >= hp) hp = 0;
         else hp -= dmg;

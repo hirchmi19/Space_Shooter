@@ -87,13 +87,14 @@ void ScoreSystem::CreateMessage(const std::string &msg) {
 
 PowerUpType ScoreSystem::RollPowerUpDrop(){
 
+    constexpr int startIndex = 5; // start in the power up type enum
     int p = GetRandomValue(1, 8);
     if (p != 1) return PowerUpType::NONE; // 1/8 chance of dropping a power up
 
-    int type = GetRandomValue(0, 1); // 1/3 chance the power up being a level up, a shield or an projectile
+    const int type = GetRandomValue(0, 2); // 1/3 chance the power up being a level up, a shield or an projectile
     if (type == 0 && AnyPowerUpsAvalaible()) return PowerUpType::LEVEL_UP;
     if (type == 1) return PowerUpType::SHIELD;
-    return ToEnum<PowerUpType>(GetRandomValue(4, ToIndex(PowerUpType::COUNT) - 1)); // pick an random projectile
+    return ToEnum<PowerUpType>(GetRandomValue(startIndex, ToIndex(PowerUpType::COUNT) - 1)); // pick an random projectile
 
 }
 
@@ -122,7 +123,12 @@ void ScoreSystem::ApplyPowerUp(const PowerUpType &powType) {
     shield.hp = shield.lvl;
   }
 
-  // add projectiles
+  else {
+
+    const auto& prType = SystemLocator::assetLocator->GetProjectileType(powType);
+    SystemLocator::entityLocator->GetPlayer()->SetProjectileType(prType);
+  }
+
 }
 
 void ScoreSystem::ExecuteLvlUp(const size_t &index) {
@@ -212,6 +218,7 @@ bool ScoreSystem::IsPowerUpAvalaible(const LvlUpType &type) {
 
   return false;
 }
+
 
 
 

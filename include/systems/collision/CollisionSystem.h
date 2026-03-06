@@ -3,6 +3,8 @@
 //
 
 #pragma once
+#include <raylib.h>
+
 #include "../../game/IGameSystem.h"
 
 
@@ -20,6 +22,7 @@ class CollisionSystem : public IGameSystem {
     void CheckEnemiesProjectiles();
     void CheckPlayerEnemies();
     void CheckPowerUps();
+    void CheckExplosions();
 
 };
 

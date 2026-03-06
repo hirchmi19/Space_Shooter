@@ -11,5 +11,6 @@ enum class EntityType {
     PROJECTILE,
     ENEMY,
     POWER_UP,
+    EXPLOSION,
     COUNT
 };

@@ -4,6 +4,8 @@
 
 #include "systems/entity/EntitySystem.h"
 
+#include <iostream>
+#include <ostream>
 #include <random>
 #include <ranges>
 
@@ -30,12 +32,14 @@ void EntitySystem::Init() {
 
     const auto& shootTimer  = SystemLocator::timerLocator->CreateTimer(.0f, false); // create cooldown timer for player
     const auto& dashTimer = SystemLocator::timerLocator->CreateTimer(0.0f, false);
+    const auto& prjectileTimer = SystemLocator::timerLocator->CreateTimer(0.0f, false);
+
     const auto& playerSprites   = SystemLocator::assetLocator->GetPlayerSprites();
 
     player = std::make_unique<Player>(
        GameWorldConstants::playerSpawn,
        GameWorldConstants::playerSize,
-       playerSprites, shootTimer, dashTimer);
+       playerSprites, shootTimer, dashTimer, prjectileTimer);
 
 
     constexpr Vector2 shieldSpawnPos{
@@ -104,7 +108,9 @@ void EntitySystem::SpawnProjectile(const ProjectileType &pType, const Vector2 &p
         RenderComponent{projectileSprite, projectileSize},
         CombatComponent{projctileHp,Rectangle{spawnPosition.x,spawnPosition.y,
                 projectileSize.x * RenderConstants::PROJECTILE_SCALING,
-                projectileSize.y * RenderConstants::PROJECTILE_SCALING}}, isPlayerProjectile);
+                projectileSize.y * RenderConstants::PROJECTILE_SCALING}},
+                isPlayerProjectile,
+                pType);
 
 }
 
@@ -124,6 +130,18 @@ void EntitySystem::SpawnPowerUp(const PowerUpType type, const Vector2 &spawnPos)
         }, true);
 }
 
+void EntitySystem::SpawnExplosion(const Vector2 &pos) {
+
+    float radius = 50.0f;
+    float damage = 1.0f;
+    const std::vector sprite = {&SystemLocator::assetLocator->GetSprite(SpriteID::EXPLOSION)};
+    const Vector2 size = {sprite[0]->src.width, sprite[0]->src.height};
+    const auto& timer = SystemLocator::timerLocator->CreateTimer(0.5f, true);
+
+    explosions.emplace_back(pos, timer, radius, damage, RenderComponent{sprite, size});
+
+}
+
 void EntitySystem::KillEntities() {
 
     KillEnemies();
@@ -131,7 +149,7 @@ void EntitySystem::KillEntities() {
     KillPowerUps();
 }
 
-void EntitySystem::KillEnemies() {
+void EntitySystem::KillEnemies() { // redundant code could be removed with a entity base class/struct
 
     for (const auto& enemy : std::ranges::reverse_view(deadEnemies)) {
 
@@ -223,6 +241,7 @@ void EntitySystem::ClearEntities() {
     deadEnemies.clear();
     deadPowerUps.clear();
     powerUps.clear();
+    explosions.clear();
 }
 
 

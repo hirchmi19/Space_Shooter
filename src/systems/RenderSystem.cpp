@@ -58,6 +58,7 @@ void RenderSystem::RenderGameState(const GameState& state) {
             RenderShield();
             RenderPlayer();
             RenderEnemies();
+            RenderExplosions();
             RenderProjectiles();
             RenderPowerUps();
             RenderUi();
@@ -195,7 +196,8 @@ void RenderSystem::RenderProjectiles() const  {
 
     for (const auto& projectile : projectiles ) {
 
-        const auto& texture = SystemLocator::assetLocator->GetTexture(TextureID::ENEMY_CANVAS);
+        const TextureID& texId = projectile.render.sprites[0]->texture;
+        const auto& texture = SystemLocator::assetLocator->GetTexture(texId);
         const auto& sprite = *(projectile.render.sprites[0]);
 
         const Rectangle dest = {
@@ -209,6 +211,31 @@ void RenderSystem::RenderProjectiles() const  {
     }
 }
 
+void RenderSystem::RenderExplosions() const {
+
+
+    const auto& explosions = SystemLocator::entityLocator->GetExplosions();
+
+    if (explosions.empty()) return;
+
+    for (const auto& exp : explosions ) {
+
+        const TextureID& texId = exp.render.sprites[0]->texture;
+        const auto& texture = SystemLocator::assetLocator->GetTexture(texId);
+        const auto& sprite = *exp.render.sprites[0];
+
+        const Rectangle dest = {
+            exp.center.x,
+            exp.center.y,
+            exp.render.size.x * RenderConstants::EXPLOSION_SCALING ,
+            exp.render.size.y * RenderConstants::EXPLOSION_SCALING};
+
+
+       if (!SystemLocator::timerLocator->IsRunning(exp.timer)) continue;
+        DrawTexturePro(texture, sprite.src, dest, { 0, 0 }, 0.0f, WHITE);
+    }
+}
+
 void RenderSystem::RenderPowerUps() const {
 
     const auto& powerUps = SystemLocator::entityLocator->GetPowerUps();
@@ -217,8 +244,9 @@ void RenderSystem::RenderPowerUps() const {
 
     for (const auto& powerUp : powerUps ) {
 
-        const auto& texture = SystemLocator::assetLocator->GetTexture(TextureID::EFFECT_CANVAS);
-        const auto& sprite = *(powerUp.render.sprites[0]);
+        const TextureID& texId = powerUp.render.sprites[0]->texture;
+        const auto& texture = SystemLocator::assetLocator->GetTexture(texId);
+        const auto& sprite = *powerUp.render.sprites[0];
 
         const Rectangle dest = {
             powerUp.movement.position.x,

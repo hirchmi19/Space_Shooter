@@ -5,6 +5,13 @@
 #include "raylib.h"
 #include "entities/Player.h"
 #include "locators/SystemLocator.h"
+#include "entities/Player.h"
+
+void Player::SetProjectileType(const ProjectileType &pType) {
+
+    this->pType = pType;
+    SystemLocator::timerLocator->Start(4.0f, projectileTimer);
+}
 
 void Player::SetPosition(const Vector2& pos) {
 
@@ -25,6 +32,7 @@ void Player::Run() {
     movement.speed = MovementConstants::BASE_SPEED;
     if (inFlowState) movement.speed = MovementConstants::FLOW_SPEED;
     if (SystemLocator::timerLocator->IsRunning(dashTimer)) movement.speed = MovementConstants::DASH_SPEED;
+    if (!SystemLocator::timerLocator->IsRunning(projectileTimer)) pType = ProjectileType::BASE_PLAYER;
 
     if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) movement.direction = -1;
     if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) movement.direction = 1;
@@ -40,8 +48,7 @@ void Player::Run() {
 
         const float shootCooldown = (inFlowState && flowLvl == 3 ) ? 0.1f : 0.35f;
         SystemLocator::entityLocator->SpawnProjectile(
-            ProjectileType::PLAYER,
-            movement.position, true);
+            pType, movement.position, true);
         SystemLocator::timerLocator->Start(shootCooldown, cooldownTimer);
     }
 

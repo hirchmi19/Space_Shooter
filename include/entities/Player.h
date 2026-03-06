@@ -12,6 +12,7 @@
 #include "../components/RenderComponent.h"
 #include "../constants/RenderConstants.h"
 #include "constants/MovementConstants.h"
+#include "projectiles/ProjectileType.h"
 
 
 class Player {
@@ -23,18 +24,20 @@ class Player {
     Player(const Vector2& position,
         const Vector2& size,
         const std::vector<const Sprite*>& sprites,
-        const size_t& timer, const size_t& dashTimer) :
+        const size_t& timer, const size_t& dashTimer, const size_t& projectileTimer) :
     movement{ position, 0 , MovementConstants::BASE_SPEED},\
     render{ sprites, size },
     combat{1,Rectangle
         {position.x, position.y,
              size.x * RenderConstants::PLAYER_SCALING,
              size.y * RenderConstants::PLAYER_SCALING} }
-    , cooldownTimer(timer), dashTimer(dashTimer) {}
+    , cooldownTimer(timer), dashTimer(dashTimer), projectileTimer(projectileTimer) {}
 
     ~Player() = default;
 
     void SetPosition(const Vector2& pos);
+    void SetProjectileType(const ProjectileType& pType);
+
     const Vector2& GetPosition() const { return movement.position; }
     const Vector2& GetSize() const  { return render.size; }
     int GetDir() const { return movement.direction; }
@@ -52,16 +55,17 @@ class Player {
     bool IsShieldActive() const { return shieldActive; }
 
     void Run();
-    void Dash();
 
     private:
 
     Movement1D movement;
     RenderComponent render;
     CombatComponent combat;
+    ProjectileType pType = ProjectileType::BASE_PLAYER;
 
     size_t cooldownTimer{};
     size_t dashTimer{};
+    size_t projectileTimer{};
 
     bool inFlowState = false;
     bool shieldActive = false;

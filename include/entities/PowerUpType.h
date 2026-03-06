@@ -11,7 +11,6 @@ enum class PowerUpType {
     SPLIT,
     GLAIVE,
     ROCKET,
-    CHAIN,
     ARROW,
     COUNT
 

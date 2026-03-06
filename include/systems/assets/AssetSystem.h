@@ -29,6 +29,7 @@ class AssetSystem : public IAssetLocator, public IGameSystem {
     std::vector<const Sprite*> GetProjectileSprite(const ProjectileType& pType) const override;
     std::vector<const Sprite*> GetPowerUpSprite(const PowerUpType& type) const override;
     std::vector<const Sprite*> GetShieldSprite() const override;
+    ProjectileType GetProjectileType(const PowerUpType& type) const override;
 
 
 

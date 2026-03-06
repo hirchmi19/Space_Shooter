@@ -30,10 +30,21 @@ void CollisionSystem::CheckEnemiesProjectiles() {
 
             if (CheckCollisionRecs(enemy.combat.hitbox, projectile.combat.hitbox) && projectile.isPlayerProjectile) {
 
-                enemy.combat.TakeDamage(projectile.combat.damage);
-                projectile.combat.TakeDamage(projectile.combat.damage);
                 const auto& powerUp = SystemLocator::scoreLocator->RollPowerUpDrop();
-                SystemLocator::entityLocator->SpawnPowerUp(powerUp, enemy.wave.worldPosition);
+                SystemLocator::entityLocator->SpawnPowerUp(powerUp, enemy.wave.worldPosition);\
+
+                enemy.combat.TakeDamage(projectile.combat.damage); // enmy always dies
+
+                if (projectile.type == ProjectileType::ARROW) { // arrow pierces through multiple enmies
+
+                    projectile.combat.TakeDamage(0.5f);
+                    continue;
+                }
+
+                if (projectile.type == ProjectileType::ROCKET)
+                    SystemLocator::entityLocator->SpawnExplosion(enemy.wave.worldPosition);
+
+                if (projectile.type != ProjectileType::GLAIVE) projectile.combat.Kill(); // glaive meltes through everything
             }
         }
     }
@@ -112,3 +123,29 @@ void CollisionSystem::CheckPowerUps() {
         }
     }
 }
+
+void CollisionSystem::CheckExplosions() {
+
+
+    auto& explosions = SystemLocator::entityLocator->GetExplosions();
+    auto& enemies = SystemLocator::entityLocator->GetEnemies();
+
+    if (explosions.empty() || enemies.empty()) return;
+
+    for (auto& explosion : explosions) {
+
+        for (auto& enemy : enemies) {
+
+
+            if (CheckCollisionCircleRec(explosion.center, explosion.radius, enemy.combat.hitbox)) {
+
+                explosion.active = false;
+                enemy.combat.Kill();
+            }
+
+        }
+    }
+
+
+}
+

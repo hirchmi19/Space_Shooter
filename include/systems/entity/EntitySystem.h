@@ -9,8 +9,10 @@
 #include "../../game/IGameSystem.h"
 #include "../../locators/IEntityLocator.h"
 #include "../include/entities//Entities.h"
+#include "entities/Explosion.h"
 #include "entities/PowerUp.h"
 #include "entities/Shield.h"
+#include "utils/utils.h"
 
 
 enum class PowerUpType;
@@ -41,7 +43,10 @@ class EntitySystem : public IEntityLocator, public IGameSystem {
     std::vector<Enemy>& GetEnemies() override {return enemies;};
     std::vector<Projectile>& GetProjectiles() override {return projectiles;};
     std::vector<PowerUp>& GetPowerUps() override {return powerUps;};
+    std::vector<Explosion>& GetExplosions() override { return explosions;};
     float GetProjectileHp() override {return projctileHp;};
+
+    void SpawnExplosion(const Vector2& pos) override;
 
 
     private:
@@ -51,14 +56,17 @@ class EntitySystem : public IEntityLocator, public IGameSystem {
     std::vector<Enemy> enemies{};
     std::vector<size_t> deadEnemies{};
 
-    std::vector<Projectile> projectiles;
+    std::vector<Projectile> projectiles{};
     std::vector<size_t> deadProjectiles{};
 
-    std::vector<PowerUp> powerUps;
+    std::vector<PowerUp> powerUps{};
     std::vector<size_t> deadPowerUps{};
+
+    std::vector<Explosion> explosions{};
 
     Shield shield;
     float projctileHp = 1;
+
     void KillEntities();
     void KillEnemies();
     void KillProjectiles();

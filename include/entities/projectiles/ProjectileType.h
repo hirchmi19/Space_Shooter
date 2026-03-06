@@ -6,7 +6,13 @@
 
 enum class ProjectileType  {
 
-  PLAYER,
-  ENEMY
+  NONE,
+  BASE_PLAYER,
+  BASE_ENEMY,
+  ARROW,
+  GLAIVE,
+  ROCKET,
+  SPLIT,
+  COUNT
 
 };
