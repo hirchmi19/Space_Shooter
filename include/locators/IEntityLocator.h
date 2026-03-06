@@ -27,6 +27,7 @@ struct IEntityLocator {
     virtual std::vector<Projectile>& GetProjectiles() = 0;
     virtual std::vector<PowerUp>& GetPowerUps() = 0;
     virtual void LvlProjectiles() = 0;
+    virtual float GetProjectileHp() = 0;
     virtual void Reset() = 0;
 };
 

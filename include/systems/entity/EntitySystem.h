@@ -41,6 +41,7 @@ class EntitySystem : public IEntityLocator, public IGameSystem {
     std::vector<Enemy>& GetEnemies() override {return enemies;};
     std::vector<Projectile>& GetProjectiles() override {return projectiles;};
     std::vector<PowerUp>& GetPowerUps() override {return powerUps;};
+    float GetProjectileHp() override {return projctileHp;};
 
 
     private:

@@ -8,6 +8,8 @@
 #include "../../game/IGameSystem.h"
 #include "../../locators/IScoreLocator.h"
 #include <string>
+
+#include "LvlUpType.h"
 #include "entities/PowerUpType.h"
 
 
@@ -69,5 +71,6 @@ private:
   void LvlShield();
   void LvlDefaultMult();
 
-  bool PowerUpAvalaible();
+  bool AnyPowerUpsAvalaible();
+  bool IsPowerUpAvalaible(const LvlUpType& type);
 };

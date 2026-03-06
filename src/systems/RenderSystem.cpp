@@ -298,10 +298,14 @@ void RenderSystem::RenderMult() const {
 
     const auto font = SystemLocator::assetLocator->GetFont();
     const auto& mult = SystemLocator::scoreLocator->GetMult();
+    const auto& flowLvl = SystemLocator::scoreLocator->GetFlowLvl();
+
     std::string caption = "x" + std::format("{:.2f}", mult);
+    std::string lvl = std::to_string(flowLvl);
     const Vector2 pos = {GameConstants::SCREEN_WIDTH - 200, GameConstants::SCREEN_HEIGHT - 100};
 
     DrawTextEx(font, caption.c_str(), pos, 25, RenderConstants::SPACING, WHITE);
+    DrawTextEx(font, lvl.c_str(), {pos.x, pos.y + 50}, 20, RenderConstants::SPACING, WHITE);
 
 }
 
