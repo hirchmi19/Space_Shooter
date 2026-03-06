@@ -21,5 +21,6 @@ enum class SpriteID {
     ARROW_UP,
     SHIELD_ICON,
     SHIELD_EFFECT,
+    SHIELD_UI,
     COUNT
 };

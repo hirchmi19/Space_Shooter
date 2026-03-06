@@ -8,8 +8,6 @@
 #include "../../game/IGameSystem.h"
 #include "../../locators/IScoreLocator.h"
 #include <string>
-
-#include "LvlUpType.h"
 #include "entities/PowerUpType.h"
 
 
@@ -29,30 +27,33 @@ public:
   void AddHighScore(const int &score, const Vector2 &pos) override;
   int GetEnemyScore(const EnemyType &id) override;
 
-  void RollPowerUpDrop() override;
+  PowerUpType RollPowerUpDrop() override;
 
   size_t RollLvlUp();
-  void ExecuteLvlUp(const size_t &lvlIndex);
+  void ExecuteLvlUp(const size_t &Index);
   void ApplyPowerUp(const PowerUpType& powType) override;
   void LevelUp();
 
   void ResetScore() override {
     highScore = 0;
-    mult = multDefault;
-    timerStarted = false;
+    mult = multDefault = 1.0f;
+    flowLvl = 1;
+    maxMult = 10;
   }
 
   void ResetMult() override {
-    mult = multDefault;
+    mult = 1.0f;
     timerStarted = false;
   }
 
 
 private:
+
   int flowLvl = 1;
   int highScore = 0;
   float multDefault = 1.0f;
   float mult = multDefault;
+  float maxMult = 10;
   float flowBonus{};
 
   size_t multTimer{};
@@ -63,4 +64,10 @@ private:
 
   void CreateScoreUi(const std::string &score, const Vector2 &pos);
   void CreateMessage(const std::string &msg);
+
+  void LvlFlowState();
+  void LvlShield();
+  void LvlDefaultMult();
+
+  bool PowerUpAvalaible();
 };

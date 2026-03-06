@@ -67,25 +67,25 @@ void GameWorld::RunGameplaySystems() {
 
             entSys.Run(); // 4. remove dead entities
 
-            if (waveSys.waveFinished) {
+            if (waveSys.waveFinished) { // 5. check if wave is over
 
-                scoreSys.ResetMult();
-                entSys.ClearEntities();
-                currentGameState = GameState::END_WAVE; // 5. check if wave is over
+                currentGameState = GameState::END_WAVE;
             }
 
             break;
 
         case GameState::END_WAVE:
 
-            SystemLocator::renderLocator->ClearUi();
-            SystemLocator::timerLocator->KillTimers();
-            SystemLocator::entityLocator->GetPlayer()->LeaveFlowState();
-
             if (!timerStarted) {
 
                 SystemLocator::timerLocator->Start(3.f, transitionTimer);
                 timerStarted = true;
+
+                SystemLocator::renderLocator->ClearUi();
+                SystemLocator::timerLocator->KillTimers();
+                scoreSys.ResetMult();
+                entSys.ClearEntities();
+                entSys.GetPlayer()->LeaveFlowState();
             }
 
             if (!SystemLocator::timerLocator->IsRunning(transitionTimer) && timerStarted) {
@@ -199,6 +199,7 @@ void GameWorld::Restart() {
     SystemLocator::renderLocator->ClearUi();
     SystemLocator::timerLocator->KillTimers();
     SystemLocator::entityLocator->GetPlayer()->LeaveFlowState();
+    SystemLocator::entityLocator->Reset();
 
     player->Revive();
     player->SetPosition(GameWorldConstants::playerSpawn);
