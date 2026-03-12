@@ -45,18 +45,17 @@ void BackgroundSystem::Init() {
 
   for (auto &star : stars) {
 
-    Star s{};
-    s.position.x =
+    star.position.x =
         static_cast<float>(GetRandomValue(0, GameConstants::SCREEN_WIDTH));
-    s.position.y =
+    star.position.y =
         static_cast<float>(GetRandomValue(0, GameConstants::SCREEN_HEIGHT));
-    s.colorValue = static_cast<unsigned char>(GetRandomValue(120, 255));
-    star = s;
+    star.colorValue = static_cast<unsigned char>(GetRandomValue(120, 255));
+
   }
 }
 
 /**
- * Respawns a start, after he leaves the screen space
+ * Respawns a star, after he leaves the screen space
  * \param index
  */
 void BackgroundSystem::RespawnStar(const size_t index) {

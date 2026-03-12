@@ -42,11 +42,13 @@ public:
     mult = multDefault = 1.0f;
     flowLvl = 1;
     maxMult = 10;
+    flowStateActive = false;
   }
 
   void ResetMult() override {
-    mult = 1.0f;
+    mult = multDefault;
     timerStarted = false;
+    flowStateActive = false;
   }
 
 
@@ -58,6 +60,7 @@ private:
   float mult = multDefault;
   float maxMult = 10;
   float flowBonus{};
+  float flowTime = 2.0f;
 
   size_t multTimer{};
   size_t flowTimer{};
@@ -74,5 +77,7 @@ private:
 
   bool AnyPowerUpsAvalaible();
   bool IsPowerUpAvalaible(const LvlUpType& type);
+
+  const ProjectileType& RollProjectile();
 
 };

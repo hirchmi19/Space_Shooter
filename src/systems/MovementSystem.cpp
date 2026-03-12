@@ -104,7 +104,7 @@ void MovementSystem::MoveEnemies() {
             continue;
         }
 
-        enemy.wave.t += enemy.wave.speed * GetFrameTime(); // move enemies
+        enemy.wave.t += enemy.wave.speed * 1 / GameConstants::UPS; // move enemies
 
         auto& bezierPoints = enemy.wave.controlPoints;
         const Vector2 newPos = GetSplinePointBezierCubic(bezierPoints[0],

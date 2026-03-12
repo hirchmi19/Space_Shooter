@@ -8,6 +8,7 @@
 #include "raylib.h"
 #include "../entities/projectiles/ProjectileType.h"
 #include "../entities/enemies/EnemyType.h"
+#include "systems/assets/EffectID.h"
 
 struct Sprite;
 enum class SpriteID;
@@ -17,15 +18,13 @@ enum class PowerUpType;
 struct IAssetLocator {
 
     virtual ~IAssetLocator() = default;
-    virtual  std::vector<const Sprite*> GetPlayerSprites() const = 0;
-    virtual  std::vector<const Sprite*> GetEnemySprites(const EnemyType &eType) const = 0;
-    virtual  std::vector<const Sprite*> GetProjectileSprite(const ProjectileType& pType) const = 0;
-    virtual  std::vector<const Sprite*> GetPowerUpSprite(const PowerUpType& type) const = 0;
-    virtual std::vector<const Sprite*> GetShieldSprite() const = 0;
-    virtual ProjectileType GetProjectileType(const PowerUpType& type) const = 0;
+    virtual std::vector<const Sprite*> GetPlayerSprite() const = 0;
+    virtual std::vector<const Sprite*> GetEnemySprites(const EnemyType &eType) const = 0;
+    virtual std::vector<const Sprite*> GetProjectileSprites(const ProjectileType& pType) const = 0;
+    virtual std::vector<const Sprite*> GetPowerUpIcon(const PowerUpType& id) const = 0;
+    virtual std::vector<const Sprite*> GetEffectSprite(const EffectID& id) const = 0;
 
     virtual const Texture2D& GetTexture(TextureID id) const = 0;
-    virtual const Sprite& GetSprite(SpriteID id) const = 0;
     virtual const Font& GetFont() const = 0;
 
 };

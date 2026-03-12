@@ -34,7 +34,7 @@ void EntitySystem::Init() {
     const auto& dashTimer = SystemLocator::timerLocator->CreateTimer(0.0f, false);
     const auto& prjectileTimer = SystemLocator::timerLocator->CreateTimer(0.0f, false);
 
-    const auto& playerSprites   = SystemLocator::assetLocator->GetPlayerSprites();
+    const auto& playerSprites   = SystemLocator::assetLocator->GetPlayerSprite();
 
     player = std::make_unique<Player>(
        GameWorldConstants::playerSpawn,
@@ -52,7 +52,7 @@ void EntitySystem::Init() {
     };
 
     shield = {shieldSpawnPos,
-        {SystemLocator::assetLocator->GetShieldSprite(), GameWorldConstants::shieldSize},
+        {SystemLocator::assetLocator->GetEffectSprite(EffectID::SHIELD), GameWorldConstants::shieldSize},
         SystemLocator::timerLocator->CreateTimer(0.0f, false),
         {
             shieldSpawnPos.x,
@@ -96,7 +96,7 @@ void EntitySystem::SpawnEnemy(const EnemyType &eType, const Vector2 &spawnPos) {
 
 void EntitySystem::SpawnProjectile(const ProjectileType &pType, const Vector2 &pos, bool isPlayerProjectile) {
 
-    const auto& projectileSprite = SystemLocator::assetLocator->GetProjectileSprite(pType);
+    const auto& projectileSprite = SystemLocator::assetLocator->GetProjectileSprites(pType);
     const int dir = isPlayerProjectile ? -1 : 1;
 
     const Vector2 projectileSize {projectileSprite[0]->src.width,projectileSprite[0]->src.height};
@@ -118,7 +118,7 @@ void EntitySystem::SpawnPowerUp(const PowerUpType type, const Vector2 &spawnPos)
 
     if (type == PowerUpType::NONE) return;
 
-    const auto& sprite = SystemLocator::assetLocator->GetPowerUpSprite(type);
+    const auto& sprite = SystemLocator::assetLocator->GetPowerUpIcon(type);
     constexpr int dir = 1;
     const Vector2 size = {sprite[0]->src.width,sprite[0]->src.height};
 
@@ -132,13 +132,19 @@ void EntitySystem::SpawnPowerUp(const PowerUpType type, const Vector2 &spawnPos)
 
 void EntitySystem::SpawnExplosion(const Vector2 &pos) {
 
-    float radius = 50.0f;
-    float damage = 1.0f;
-    const std::vector sprite = {&SystemLocator::assetLocator->GetSprite(SpriteID::EXPLOSION)};
-    const Vector2 size = {sprite[0]->src.width, sprite[0]->src.height};
-    const auto& timer = SystemLocator::timerLocator->CreateTimer(0.5f, true);
+    const std::vector sprite = {SystemLocator::assetLocator->GetEffectSprite(EffectID::EXPLOSION)};
+    const auto& lifetime = SystemLocator::timerLocator->CreateTimer(0.5f, true);
+    Vector2 size = {
+        sprite[0]->src.width * RenderConstants::EXPLOSION_SCALING,
+        sprite[0]->src.height * RenderConstants::EXPLOSION_SCALING
+    };
 
-    explosions.emplace_back(pos, timer, radius, damage, RenderComponent{sprite, size});
+    explosions.emplace_back(
+        pos,
+        lifetime,
+        Rectangle{pos.x, pos.y, size.x, size.y},
+        RenderComponent{sprite, size}
+        );
 
 }
 

@@ -12,8 +12,8 @@ namespace RenderConstants {
     inline constexpr int ENEMY_SCALING = 6;
     inline constexpr int POWER_UP_SCALING = 5;
     inline constexpr int SHIELD_SCALING = 8;
-    inline constexpr int SHIELD_UI_SCALING = 8;
-    inline constexpr int EXPLOSION_SCALING = 12;
+    inline constexpr int SHIELD_UI_SCALING = 5;
+    inline constexpr int EXPLOSION_SCALING = 14;
 
     inline constexpr int GAME_OVER_CAPTION_SIZE = 80;
     inline constexpr int GAME_OVER_SUBCAPTION_SIZE = 35;

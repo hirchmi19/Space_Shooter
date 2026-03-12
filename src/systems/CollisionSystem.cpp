@@ -5,6 +5,9 @@
 
 #include "components/WaveState.h"
 #include "systems/collision/CollisionSystem.h"
+
+#include <iostream>
+
 #include "locators/SystemLocator.h"
 
 CollisionSystem::CollisionSystem() : IGameSystem(GameSystemID::COLLISION_SYSTEM, "COLLISION_SYSTEM"){}
@@ -15,6 +18,7 @@ void CollisionSystem::Run() {
     CheckPlayerProjectiles();
     CheckPlayerEnemies();
     CheckPowerUps();
+    CheckExplosions();
 }
 
 //--------------------------------------------------------------------------
@@ -31,11 +35,11 @@ void CollisionSystem::CheckEnemiesProjectiles() {
             if (CheckCollisionRecs(enemy.combat.hitbox, projectile.combat.hitbox) && projectile.isPlayerProjectile) {
 
                 const auto& powerUp = SystemLocator::scoreLocator->RollPowerUpDrop();
-                SystemLocator::entityLocator->SpawnPowerUp(powerUp, enemy.wave.worldPosition);\
+                SystemLocator::entityLocator->SpawnPowerUp(powerUp, enemy.wave.worldPosition);
 
                 enemy.combat.TakeDamage(projectile.combat.damage); // enmy always dies
 
-                if (projectile.type == ProjectileType::ARROW) { // arrow pierces through multiple enmies
+                if (projectile.type == ProjectileType::ARROW) { // Arrow pierces through multiple enemies
 
                     projectile.combat.TakeDamage(0.5f);
                     continue;
@@ -44,7 +48,7 @@ void CollisionSystem::CheckEnemiesProjectiles() {
                 if (projectile.type == ProjectileType::ROCKET)
                     SystemLocator::entityLocator->SpawnExplosion(enemy.wave.worldPosition);
 
-                if (projectile.type != ProjectileType::GLAIVE) projectile.combat.Kill(); // glaive meltes through everything
+                if (projectile.type != ProjectileType::GLAIVE) projectile.combat.Kill(); // Glaive melts through everything
             }
         }
     }
@@ -136,16 +140,18 @@ void CollisionSystem::CheckExplosions() {
 
         for (auto& enemy : enemies) {
 
+            if (std::abs(enemy.wave.worldPosition.x - explosion.pos.x) > explosion.render.size.x) continue; //braodphase check
+            if (std::abs(enemy.wave.worldPosition.y - explosion.pos.y) > explosion.render.size.y) continue; //=> only perform an full collision check, on enemies which are in range of the explosion
 
-            if (CheckCollisionCircleRec(explosion.center, explosion.radius, enemy.combat.hitbox)) {
+            if (CheckCollisionRecs(explosion.hitbox, enemy.combat.hitbox) && explosion.active) {
 
-                explosion.active = false;
+                std::cout << "boom" << "\n";
                 enemy.combat.Kill();
             }
 
         }
+
+        explosion.active = false;
     }
-
-
 }
 

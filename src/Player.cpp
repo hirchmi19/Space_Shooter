@@ -32,7 +32,7 @@ void Player::Run() {
     movement.speed = MovementConstants::BASE_SPEED;
     if (inFlowState) movement.speed = MovementConstants::FLOW_SPEED;
     if (SystemLocator::timerLocator->IsRunning(dashTimer)) movement.speed = MovementConstants::DASH_SPEED;
-    if (!SystemLocator::timerLocator->IsRunning(projectileTimer)) pType = ProjectileType::BASE_PLAYER;
+    if (!SystemLocator::timerLocator->IsRunning(projectileTimer)) pType = ProjectileType::BASE_PLAYER; // reset projectile
 
     if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) movement.direction = -1;
     if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) movement.direction = 1;

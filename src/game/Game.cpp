@@ -15,7 +15,7 @@ Game::Game() {
 
 Game::~Game() {
 
-    world.reset();
+    world.reset(); // important!: delete world before the window
     CloseWindow();
 };
 
@@ -37,7 +37,7 @@ void Game::Run() const {
         updateAccumulator += (currentTime - prevTime) / timePerUpdate;
         prevTime = currentTime;
 
-        while (updateAccumulator >= 1.0) { // ensures an frame independent game loop
+        while (updateAccumulator >= 1.0) { // ensures an fixed timestep game loop
 
             world->RunGameplaySystems();
             updateAccumulator--;
@@ -62,7 +62,7 @@ void Game::Run() const {
  */
 void Game::CreateGame() {
 
-    InitWindow(GameConstants::SCREEN_WIDTH, GameConstants::SCREEN_HEIGHT, "Space Shooter");
+    InitWindow(GameConstants::SCREEN_WIDTH, GameConstants::SCREEN_HEIGHT, "Space Shooter"); // important!: init window before creating gameworld
     SetTargetFPS(GameConstants::TARGET_FPS);
     world = std::make_unique<GameWorld>();
 }

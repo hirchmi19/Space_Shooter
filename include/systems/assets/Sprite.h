@@ -6,9 +6,11 @@
 #include "raylib.h"
 
 enum class TextureID;
+enum class SpriteID;
 
 struct Sprite {
 
+    SpriteID sprite;
     TextureID texture;
     Rectangle src;
 };

@@ -12,6 +12,7 @@
 #include "systems/assets/Sprite.h"
 #include "systems/assets/SpriteID.h"
 #include "systems/assets/TextureID.h"
+#include "utils/utils.h"
 
 RenderSystem::RenderSystem() : IGameSystem(GameSystemID::RENDERER_SYSTEM, "RENDER_SYSTEM") {}
 
@@ -106,7 +107,7 @@ void RenderSystem::RenderEnemies() const {
             enemy.render.size.y * RenderConstants::ENEMY_SCALING};
 
         DrawTexturePro(texture, sprite.src, dest, { 0, 0 }, 0.0f, WHITE);
-        //DrawRectangleLinesEx(enemy.combat.hitbox, 1.0f, PINK); // draw hitbox
+        DrawRectangleLinesEx(enemy.combat.hitbox, 1.0f, PINK); // draw hitbox
     }
 }
 
@@ -119,7 +120,8 @@ void RenderSystem::RenderPlayer() const {
 
     const auto player = SystemLocator::entityLocator->GetPlayer();
     const auto& playerTexture = SystemLocator::assetLocator->GetTexture(TextureID::PLAYER_SHIP_CANVAS);
-    auto playerSprite = SystemLocator::assetLocator->GetSprite(SpriteID::PLAYER_SHIP_MIDDLE);
+    std::vector<const Sprite *> playerSprite = SystemLocator::assetLocator->GetPlayerSprite();
+    size_t spriteIndex = 0;
 
     const Rectangle dest = {
         player->GetPosition().x,
@@ -129,10 +131,10 @@ void RenderSystem::RenderPlayer() const {
     };
 
     const auto pSpeed = player->GetDir();
-    if (pSpeed > 0) playerSprite = SystemLocator::assetLocator->GetSprite(SpriteID::PLAYER_SHIP_RIGHT);
-    if (pSpeed < 0) playerSprite = SystemLocator::assetLocator->GetSprite(SpriteID::PLAYER_SHIP_LEFT);
+    if (pSpeed > 0) spriteIndex = ToIndex(SpriteID::PLAYER_SHIP_RIGHT);
+    if (pSpeed < 0) spriteIndex = ToIndex(SpriteID::PLAYER_SHIP_LEFT);
 
-    DrawTexturePro(playerTexture, playerSprite.src, dest, Vector2{0, 0}, 0.0f, WHITE);
+    DrawTexturePro(playerTexture, playerSprite[spriteIndex]->src, dest, Vector2{0, 0}, 0.0f, WHITE);
     //DrawRectangleLinesEx(player->GetHitBox(), 1.0f, PINK); // draw hitbox
 }
 
@@ -153,32 +155,32 @@ void RenderSystem::RenderShield() const {
 
     DrawTexturePro(texture, sprite->src, dest, Vector2{0, 0}, 0.0f, WHITE);
     RenderShieldUi();
-    //DrawRectangleLinesEx(shield.hitbox, 1.0f, PINK); // draw hitbox
+    DrawRectangleLinesEx(shield.hitbox, 1.0f, PINK); // draw hitbox
 }
 
 void RenderSystem::RenderShieldUi() const{
 
     const auto& shield = SystemLocator::entityLocator->GetShield();
     const auto& texture = SystemLocator::assetLocator->GetTexture(TextureID::EFFECT_CANVAS);
-    const auto& sprite = &SystemLocator::assetLocator->GetSprite(SpriteID::SHIELD_UI);
+    const std::vector<const Sprite*>& sprite = SystemLocator::assetLocator->GetPowerUpIcon(PowerUpType::SHIELD);
 
-    constexpr Vector2 posStart{70, GameConstants::SCREEN_HEIGHT - 100};
-    const int width = sprite->src.x * RenderConstants::SHIELD_UI_SCALING;
-    constexpr int spacing = 48;
+    constexpr Vector2 posStart{-50, GameConstants::SCREEN_HEIGHT - 90};
+    const int width = sprite[0]->src.x * RenderConstants::SHIELD_UI_SCALING;
 
     for (int i = 0; i < shield.hp; ++i) {
 
+        constexpr int spacing = 48;
         const Vector2 pos = {posStart.x + (width + spacing  * i), posStart.y};
 
         const Rectangle dest = {
 
             pos.x , pos.y,
-            sprite->src.width * RenderConstants::SHIELD_UI_SCALING,
-            sprite->src.height * RenderConstants::SHIELD_UI_SCALING
+            sprite[0]->src.width * RenderConstants::SHIELD_UI_SCALING,
+            sprite[0]->src.height * RenderConstants::SHIELD_UI_SCALING
 
         };
 
-        DrawTexturePro(texture,sprite->src, dest, Vector2{0, 0}, 0.0f, WHITE);
+        DrawTexturePro(texture,sprite[0]->src, dest, Vector2{0, 0}, 0.0f, WHITE);
 
     }
 
@@ -225,14 +227,15 @@ void RenderSystem::RenderExplosions() const {
         const auto& sprite = *exp.render.sprites[0];
 
         const Rectangle dest = {
-            exp.center.x,
-            exp.center.y,
-            exp.render.size.x * RenderConstants::EXPLOSION_SCALING ,
-            exp.render.size.y * RenderConstants::EXPLOSION_SCALING};
+            exp.pos.x,
+            exp.pos.y,
+            exp.render.size.x ,
+            exp.render.size.y };
 
 
-       if (!SystemLocator::timerLocator->IsRunning(exp.timer)) continue;
+       if (!SystemLocator::timerLocator->IsRunning(exp.lifetime)) continue;
         DrawTexturePro(texture, sprite.src, dest, { 0, 0 }, 0.0f, WHITE);
+        DrawRectangleLinesEx(exp.hitbox, 1.0f, PINK); // draw hitbox
     }
 }
 
@@ -366,14 +369,15 @@ void RenderSystem::RenderMessages() {
 
     if (!currentMsg.active) {
 
-            SystemLocator::timerLocator->Start(0.6f, currentMsg.displayTimer);
+            SystemLocator::timerLocator->Start(1.0f, currentMsg.displayTimer);
             currentMsg.active = true;
     }
     if (SystemLocator::timerLocator->IsRunning(currentMsg.displayTimer) && currentMsg.active) {
 
-        DrawTextEx(font, currentMsg.text.c_str(), {msgPosX, msgPosY}, 15, RenderConstants::SPACING, WHITE);
+        DrawTextEx(font, currentMsg.text.c_str(), {msgPosX, msgPosY}, 20, RenderConstants::SPACING, WHITE);
 
     } else msgs.erase(msgs.begin());
 
 }
+
 

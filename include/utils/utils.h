@@ -4,6 +4,7 @@
 
 #pragma once
 #include <type_traits>
+#include <cstddef>
 
 /**
  * Casts an enumeration type into a size_t integer
@@ -24,7 +25,7 @@ constexpr Enum ToEnum(size_t value) {
     static_assert(std::is_enum_v<Enum>, "ToEnumChecked requires an enum type");
 
     if (value >= static_cast<size_t>(Enum::COUNT)) {
-        throw std::out_of_range("Invalid enum index");
+        //throw std::out_of_range("Invalid enum index");
     }
 
     return static_cast<Enum>(value);

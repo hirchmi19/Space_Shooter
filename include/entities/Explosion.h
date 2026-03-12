@@ -5,12 +5,10 @@
 
 struct Explosion {
 
-    Vector2 center;
-    size_t timer;
-    float radius;
-    float damage;
+    Vector2 pos;
+    size_t lifetime;
+    Rectangle hitbox;
     RenderComponent render;
     bool active = true;
-
 
 };

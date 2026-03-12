@@ -6,7 +6,7 @@
 
 #include <cassert>
 #include "GameState.h"
-#include "../include/utils//utils.h"
+#include "utils/utils.h"
 #include "GameSystemID.h"
 #include "../systems/systems.h"
 #include "../locators/SystemLocator.h"
@@ -25,10 +25,6 @@ class GameWorld {
 
     const GameState& GetGameState() const { return currentGameState; };
     void EndWave() {currentGameState = GameState::END_WAVE;};
-
-    int GetWaveCounter() { return GetGameSystemStatic<WaveSystem>(GameSystemID::WAVE_SYSTEM).GetWaveCounter(); };
-    int GetHighScore() { return GetGameSystemStatic<ScoreSystem>(GameSystemID::SCORE_SYSTEM).GetHighScore(); };
-
 
     private:
 
@@ -62,5 +58,3 @@ class GameWorld {
 
 
 };
-
-
