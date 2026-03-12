@@ -28,13 +28,13 @@ void RenderSystem::Run(const GameState& state) {
 
 void RenderSystem::Init() {
 
-    msgs.reserve(WaveConstants::NUMBER_OF_ENEMIES);
+    scores.reserve(WaveConstants::NUMBER_OF_ENEMIES);
 
 }
 
 void RenderSystem::AddMessage(const MessageUi &msg) {
 
-    msgs.push_back(msg);
+    msgs.push(msg);
 
 }
 
@@ -107,7 +107,7 @@ void RenderSystem::RenderEnemies() const {
             enemy.render.size.y * RenderConstants::ENEMY_SCALING};
 
         DrawTexturePro(texture, sprite.src, dest, { 0, 0 }, 0.0f, WHITE);
-        DrawRectangleLinesEx(enemy.combat.hitbox, 1.0f, PINK); // draw hitbox
+        //DrawRectangleLinesEx(enemy.combat.hitbox, 1.0f, PINK); // draw hitbox
     }
 }
 
@@ -155,7 +155,7 @@ void RenderSystem::RenderShield() const {
 
     DrawTexturePro(texture, sprite->src, dest, Vector2{0, 0}, 0.0f, WHITE);
     RenderShieldUi();
-    DrawRectangleLinesEx(shield.hitbox, 1.0f, PINK); // draw hitbox
+    //DrawRectangleLinesEx(shield.hitbox, 1.0f, PINK); // draw hitbox
 }
 
 void RenderSystem::RenderShieldUi() const{
@@ -209,7 +209,7 @@ void RenderSystem::RenderProjectiles() const  {
             projectile.render.size.y * RenderConstants::PROJECTILE_SCALING};
 
         DrawTexturePro(texture, sprite.src, dest, { 0, 0 }, 0.0f, WHITE);
-       // DrawRectangleLinesEx(projectile.combat.hitbox, 1.0f, PINK); // draw hitbox
+       //DrawRectangleLinesEx(projectile.combat.hitbox, 1.0f, PINK); // draw hitbox
     }
 }
 
@@ -235,7 +235,7 @@ void RenderSystem::RenderExplosions() const {
 
        if (!SystemLocator::timerLocator->IsRunning(exp.lifetime)) continue;
         DrawTexturePro(texture, sprite.src, dest, { 0, 0 }, 0.0f, WHITE);
-        DrawRectangleLinesEx(exp.hitbox, 1.0f, PINK); // draw hitbox
+        //DrawRectangleLinesEx(exp.hitbox, 1.0f, PINK); // draw hitbox
     }
 }
 
@@ -374,9 +374,9 @@ void RenderSystem::RenderMessages() {
     }
     if (SystemLocator::timerLocator->IsRunning(currentMsg.displayTimer) && currentMsg.active) {
 
-        DrawTextEx(font, currentMsg.text.c_str(), {msgPosX, msgPosY}, 20, RenderConstants::SPACING, WHITE);
+        DrawTextEx(font, currentMsg.text.c_str(), {msgPosX, msgPosY}, 18, RenderConstants::SPACING, WHITE);
 
-    } else msgs.erase(msgs.begin());
+    } else msgs.pop();
 
 }
 

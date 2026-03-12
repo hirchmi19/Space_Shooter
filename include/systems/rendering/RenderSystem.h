@@ -3,9 +3,8 @@
 //
 
 #pragma once
-
+#include <queue>
 #include <string>
-
 #include "../../game/IGameSystem.h"
 #include "game/GameState.h"
 #include "locators/IRenderLocator.h"
@@ -27,7 +26,10 @@ class RenderSystem : public IRenderLocator, public IGameSystem {
     void AddMessage(const MessageUi& msg) override;
     void AddScore(const MessageUi& score) override;
 
-    void ClearUi()  override {msgs.clear(); scores.clear();};
+    void ClearUiElements()  override {
+        scores.clear();
+        while (!msgs.empty()) msgs.pop();
+    }
 
     private:
 
@@ -49,7 +51,7 @@ class RenderSystem : public IRenderLocator, public IGameSystem {
     void RenderWaveTransition(const std::string& caption) const;
     void RenderGameState(const GameState& state);
 
-    std::vector<MessageUi> msgs;
+    std::queue<MessageUi> msgs;
     std::vector<MessageUi> scores;
 };
 

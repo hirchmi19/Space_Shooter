@@ -8,7 +8,7 @@ struct IRenderLocator {
 
     virtual void AddMessage(const MessageUi& msg) = 0;
     virtual  void AddScore(const MessageUi& score) = 0;
-    virtual void ClearUi() = 0;
+    virtual void ClearUiElements() = 0;
 
 
 };

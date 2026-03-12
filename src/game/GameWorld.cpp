@@ -81,7 +81,7 @@ void GameWorld::RunGameplaySystems() {
                 SystemLocator::timerLocator->Start(3.f, transitionTimer);
                 timerStarted = true;
 
-                SystemLocator::renderLocator->ClearUi();
+                SystemLocator::renderLocator->ClearUiElements();
                 SystemLocator::timerLocator->KillTimers();
                 scoreSys.ResetMult();
                 entSys.ClearEntities();
@@ -196,7 +196,7 @@ void GameWorld::Restart() {
     GetGameSystemStatic<WaveSystem>(GameSystemID::WAVE_SYSTEM).ResetWaveCounter();
     GetGameSystemStatic<ScoreSystem>(GameSystemID::SCORE_SYSTEM).ResetScore();
 
-    SystemLocator::renderLocator->ClearUi();
+    SystemLocator::renderLocator->ClearUiElements();
     SystemLocator::timerLocator->KillTimers();
     SystemLocator::entityLocator->GetPlayer()->LeaveFlowState();
     SystemLocator::entityLocator->Reset();
