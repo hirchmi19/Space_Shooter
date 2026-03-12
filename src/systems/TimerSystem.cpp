@@ -30,8 +30,6 @@ void TimerSystem::Run() {
             timers[index].timeLeft = timers[index].duration;
             if (!timers[index].disposable) continue;
 
-            const auto it = std::ranges::lower_bound(deadTimers, index);
-            deadTimers.insert(it, index);
         }
     }
 }
@@ -60,9 +58,7 @@ bool TimerSystem::IsRunning(const size_t &index) {
 }
 
 void TimerSystem::KillTimers() {
-
     assert(timers.size() - permanentTimerCount <= 100 && "TOO MANY DISPOSABLE TIMERS!");
 
     timers.resize(permanentTimerCount);
-    deadTimers.clear();
 }

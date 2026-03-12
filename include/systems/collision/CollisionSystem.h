@@ -6,6 +6,7 @@
 #include <raylib.h>
 
 #include "../../game/IGameSystem.h"
+#include "entities/Shield.h"
 
 
 class CollisionSystem : public IGameSystem {
@@ -18,11 +19,14 @@ class CollisionSystem : public IGameSystem {
     void Run() override;
 
     private:
+
     void CheckPlayerProjectiles();
     void CheckEnemiesProjectiles();
     void CheckPlayerEnemies();
     void CheckPowerUps();
     void CheckExplosions();
+
+    void DamageShield(Shield& shield);
 
 };
 

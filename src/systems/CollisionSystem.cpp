@@ -25,133 +25,130 @@ void CollisionSystem::Run() {
 
 void CollisionSystem::CheckEnemiesProjectiles() {
 
-    auto& enemies = SystemLocator::entityLocator->GetEnemies();
+
+    auto& enemies     = SystemLocator::entityLocator->GetEnemies();
     auto& projectiles = SystemLocator::entityLocator->GetProjectiles();
 
     for (auto& enemy : enemies) {
-
         for (auto& projectile : projectiles) {
 
-            if (CheckCollisionRecs(enemy.combat.hitbox, projectile.combat.hitbox) && projectile.isPlayerProjectile) {
+            if (!projectile.isPlayerProjectile) continue;
 
-                const auto& powerUp = SystemLocator::scoreLocator->RollPowerUpDrop();
-                SystemLocator::entityLocator->SpawnPowerUp(powerUp, enemy.wave.worldPosition);
+            //brodphase check -- ignore if cleary out of range
+            if (std::abs(enemy.position.y - projectile.position.y) > enemy.render.size.y) continue;
 
-                enemy.combat.TakeDamage(projectile.combat.damage); // enmy always dies
+            if (!CheckCollisionRecs(enemy.hitbox, projectile.hitbox)) continue;
 
-                if (projectile.type == ProjectileType::ARROW) { // Arrow pierces through multiple enemies
+            const auto& powerUp = SystemLocator::scoreLocator->RollPowerUpDrop();
+            SystemLocator::entityLocator->SpawnPowerUp(powerUp, enemy.position);
+            enemy.isAlive = false; // enemy always dies
 
-                    projectile.combat.TakeDamage(0.5f);
-                    continue;
-                }
+            if (projectile.type == ProjectileType::ARROW) {
 
-                if (projectile.type == ProjectileType::ROCKET)
-                    SystemLocator::entityLocator->SpawnExplosion(enemy.wave.worldPosition);
-
-                if (projectile.type != ProjectileType::GLAIVE) projectile.combat.Kill(); // Glaive melts through everything
+                projectile.combat.TakeDamage(0.5f);
+                if (!projectile.combat.IsAlive()) projectile.isAlive = false;
+                continue;
             }
+
+            if (projectile.type == ProjectileType::ROCKET)
+                SystemLocator::entityLocator->SpawnExplosion(enemy.position);
+
+            if (projectile.type != ProjectileType::GLAIVE) // Glaives melts through everything
+                projectile.isAlive = false;
         }
     }
 }
 
 void CollisionSystem::CheckPlayerEnemies() {
 
-    auto& enemies= SystemLocator::entityLocator->GetEnemies();
-    Player *player = SystemLocator::entityLocator->GetPlayer();
-    auto& shield =  SystemLocator::entityLocator->GetShield();
+    auto& enemies  = SystemLocator::entityLocator->GetEnemies();
+    Player* player = SystemLocator::entityLocator->GetPlayer();
+    auto& shield   = SystemLocator::entityLocator->GetShield();
 
     for (auto& enemy : enemies) {
 
         if (enemy.wave.state != WaveState::ATTACK) continue;
-        if (CheckCollisionRecs(enemy.combat.hitbox, player->GetHitBox())) {
+        if (!CheckCollisionRecs(enemy.hitbox, player->GetHitBox())) continue;
+        if (std::abs(enemy.position.x - player->GetPosition().x) >
+            player->GetSize().x * RenderConstants::PLAYER_SCALING) continue;
 
-            if (!player->IsShieldActive()) {
-
-                player->Kill();
-                return;
-            }
-
-            if (!SystemLocator::timerLocator->IsRunning(shield.cooldown)) {
-
-                shield.hp--;
-                SystemLocator::timerLocator->Start(0.5f, shield.cooldown);
-            }
-
-            enemy.combat.Kill();
+        if (!player->IsShieldActive()) {
+            player->isAlive = false;
+            return;
         }
+
+        DamageShield(shield);
+        enemy.isAlive = false;
     }
 }
 
 void CollisionSystem::CheckPlayerProjectiles() {
 
     auto& projectiles = SystemLocator::entityLocator->GetProjectiles();
-    Player *player = SystemLocator::entityLocator->GetPlayer();
-    auto& shield =  SystemLocator::entityLocator->GetShield();
+    Player* player    = SystemLocator::entityLocator->GetPlayer();
+    auto& shield      = SystemLocator::entityLocator->GetShield();
 
     for (auto& projectile : projectiles) {
 
-        if (projectile.movement.position.y < player->GetPosition().y) continue;
-        if (CheckCollisionRecs(projectile.combat.hitbox, player->GetHitBox()) && !projectile.isPlayerProjectile) {
+        if (projectile.isPlayerProjectile) continue;
+        if (projectile.position.y < player->GetPosition().y) continue;
+        if (!CheckCollisionRecs(projectile.hitbox, player->GetHitBox())) continue;
+        if (std::abs(projectile.position.x - player->GetPosition().x) > player->GetSize().x) continue;
 
-            if (!player->IsShieldActive()) {
-
-                player->Kill();
-                return;
-            }
-
-            if (!SystemLocator::timerLocator->IsRunning(shield.cooldown)) {
-
-                shield.hp--;
-                SystemLocator::timerLocator->Start(0.5f, shield.cooldown);
-            }
-
-            projectile.combat.Kill();
+        if (!player->IsShieldActive()) {
+            player->isAlive = false;
+            return;
         }
+
+        DamageShield(shield);
+        projectile.isAlive = false;
     }
 }
 
 void CollisionSystem::CheckPowerUps() {
 
     auto& powerups = SystemLocator::entityLocator->GetPowerUps();
-
     if (powerups.empty()) return;
 
     Player* player = SystemLocator::entityLocator->GetPlayer();
 
     for (auto& powerup : powerups) {
 
-        if (CheckCollisionRecs(powerup.hitbox, player->GetHitBox())) {
-
-            SystemLocator::scoreLocator->ApplyPowerUp(powerup.type);
-            powerup.alive = false;
-        }
+        if (!CheckCollisionRecs(powerup.hitbox, player->GetHitBox())) continue;
+        SystemLocator::scoreLocator->ApplyPowerUp(powerup.type);
+        powerup.isAlive = false;
     }
 }
 
 void CollisionSystem::CheckExplosions() {
 
-
     auto& explosions = SystemLocator::entityLocator->GetExplosions();
-    auto& enemies = SystemLocator::entityLocator->GetEnemies();
+    auto& enemies    = SystemLocator::entityLocator->GetEnemies();
 
     if (explosions.empty() || enemies.empty()) return;
 
     for (auto& explosion : explosions) {
 
+        if (!explosion.isAlive) continue;
+
         for (auto& enemy : enemies) {
 
-            if (std::abs(enemy.wave.worldPosition.x - explosion.pos.x) > explosion.render.size.x) continue; //braodphase check
-            if (std::abs(enemy.wave.worldPosition.y - explosion.pos.y) > explosion.render.size.y) continue; //=> only perform an full collision check, on enemies which are in range of the explosion
+            // broadphase check
+            if (std::abs(enemy.position.x - explosion.position.x) > explosion.render.size.x) continue;
+            if (std::abs(enemy.position.y - explosion.position.y) > explosion.render.size.y) continue;
+            if (!CheckCollisionRecs(explosion.hitbox, enemy.hitbox)) continue;
 
-            if (CheckCollisionRecs(explosion.hitbox, enemy.combat.hitbox) && explosion.active) {
-
-                std::cout << "boom" << "\n";
-                enemy.combat.Kill();
-            }
-
+            enemy.isAlive = false;
         }
 
-        explosion.active = false;
+        explosion.isAlive = false;
     }
+}
+
+void CollisionSystem::DamageShield(Shield& shield) {
+
+    if (SystemLocator::timerLocator->IsRunning(shield.cooldown)) return;
+    shield.hp--;
+    SystemLocator::timerLocator->Start(0.5f, shield.cooldown);
 }
 

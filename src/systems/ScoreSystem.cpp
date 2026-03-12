@@ -79,7 +79,7 @@ void ScoreSystem::CreateScoreUi(const std::string &score, const Vector2 &pos) {
 
 void ScoreSystem::CreateMessage(const std::string &msg) {
 
-  const size_t timer = SystemLocator::timerLocator->CreateTimer(0.0f, true);\
+  const size_t timer = SystemLocator::timerLocator->CreateTimer(0.0f, true);
   SystemLocator::renderLocator->AddMessage({msg, timer});
 
 }
@@ -188,12 +188,12 @@ bool ScoreSystem::AnyPowerUpsAvalaible() {
 
   const auto& shield = SystemLocator::entityLocator->GetShield();
 
-  if (multDefault <= ScoringConstants::MAX_DEFAULT_MULT) return true;
-  if (shield.lvl <= 3) return true;
-  if (flowLvl <= 3) return true;
+  if (multDefault < ScoringConstants::MAX_DEFAULT_MULT) return true;
+  if (shield.lvl < 3) return true;
+  if (flowLvl < 3) return true;
   if (SystemLocator::entityLocator->GetProjectileHp() <= 3) return true;
 
-  return true;
+  return false;
 }
 
 bool ScoreSystem::IsPowerUpAvalaible(const LvlUpType &type) {

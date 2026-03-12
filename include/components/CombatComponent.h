@@ -7,12 +7,10 @@
 
 struct CombatComponent {
 
-    Rectangle hitbox{};
     int score;
-    float damage = 1;
 
-    explicit CombatComponent(const float hp = 0, const Rectangle hitbox = {}, const int score = 0)
-        : hitbox(hitbox), score(score), hp(hp) {}
+    explicit CombatComponent(const float hp = 0, const int score = 0)
+        : score(score), hp(hp) {}
 
     
     void TakeDamage(const float& dmg){
@@ -22,9 +20,7 @@ struct CombatComponent {
     }
     
     bool IsAlive() const { return hp > 0; }
-    void Kill() { hp = 0; }
     void Revive() { hp = 1; }
-
 
     private:
 

@@ -8,6 +8,7 @@
 #include "../../game/IGameSystem.h"
 #include "game/GameState.h"
 #include "locators/IRenderLocator.h"
+#include "systems/assets/Sprite.h"
 #include "systems/rendering/RenderSystem.h"
 #include "systems/rendering/MessageUi.h"
 
@@ -33,6 +34,8 @@ class RenderSystem : public IRenderLocator, public IGameSystem {
 
     private:
 
+    void DrawSprite(const Sprite& sprite, const Vector2& pos, const Vector2& size, float scaling, float rotation = 0.0f) const;
+
     void RenderPlayer() const;
     void RenderEnemies() const;
     void RenderProjectiles() const;
@@ -47,7 +50,7 @@ class RenderSystem : public IRenderLocator, public IGameSystem {
     void RenderMessages();
     void RenderScores();
 
-    void RenderGameOver(const GameState& state) const;
+    void RenderGameOver() const;
     void RenderWaveTransition(const std::string& caption) const;
     void RenderGameState(const GameState& state);
 

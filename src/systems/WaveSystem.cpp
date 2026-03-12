@@ -247,7 +247,7 @@ void WaveSystem::HandleFormationAttacks() {
 
     SystemLocator::entityLocator->SpawnProjectile(
         ProjectileType::BASE_ENEMY,
-        enemies[enemyIndex].wave.worldPosition,
+        enemies[enemyIndex].position,
         false);
 
     SystemLocator::timerLocator->Start(0.5, attackTimer);
@@ -380,7 +380,7 @@ bool WaveSystem::IsCurrentDiveFinished() const
 
     for (const auto& enemy : enemies)
     {
-        if (!enemy.combat.IsAlive())
+        if (!enemy.isAlive)
             continue;
 
         if (enemy.wave.diveGroup != diveCount)

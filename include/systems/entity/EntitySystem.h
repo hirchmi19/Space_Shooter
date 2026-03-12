@@ -4,14 +4,11 @@
 
 #pragma once
 #include <memory>
+#include <ranges>
 #include <vector>
-
 #include "../../game/IGameSystem.h"
 #include "../../locators/IEntityLocator.h"
-#include "../include/entities//Entities.h"
-#include "entities/Explosion.h"
-#include "entities/PowerUp.h"
-#include "entities/Shield.h"
+#include "../include/entities/Entities.h"
 #include "utils/utils.h"
 
 
@@ -63,20 +60,31 @@ class EntitySystem : public IEntityLocator, public IGameSystem {
     std::vector<size_t> deadPowerUps{};
 
     std::vector<Explosion> explosions{};
+    std::vector<size_t> deadExplosions{};
 
     Shield shield;
     float projctileHp = 1;
 
-    void KillEntities();
-    void KillEnemies();
-    void KillProjectiles();
-    void KillPowerUps();
+    void InitPlayer();
+    void InitShield();
 
-    void FindDeadEntities();
-    void FindDeadProjectiles();
-    void FindDeadEnemies();
-    void FindDeadPowerUps();
+    template<typename T>
+    void KillEntities(std::vector<T>& entities, std::vector<size_t>& removalQ) {
+        for (const auto& index : std::ranges::reverse_view(removalQ)) {
+            entities.erase(entities.begin() + static_cast<long>(index));
+        }
+        removalQ.clear();
+    }
 
-    void RequestEntityRemoval(const EntityType&, size_t value) override;
-    std::vector<size_t>& GetRemovalQ(const EntityType& type);
+    template<typename T>
+    void FindDeadEntities(std::vector<T>& entities, std::vector<size_t>& removalQ) {
+        for (size_t i = 0; i < entities.size(); ++i) {
+            if (entities[i].isAlive) continue;
+            RequestEntityRemoval(removalQ, i);
+        }
+    }
+
+
+    void RequestEntityRemoval(std::vector<size_t> &removalQ, size_t index) override;
+
 };

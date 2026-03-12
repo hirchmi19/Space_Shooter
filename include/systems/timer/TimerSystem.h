@@ -28,7 +28,6 @@ class TimerSystem : public ITimerLocator, public IGameSystem{
 
     size_t permanentTimerCount = 0;
     std::vector<Timer> timers{};
-    std::vector<size_t> deadTimers{};
 
 };
 

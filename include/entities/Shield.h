@@ -1,14 +1,12 @@
 #pragma once
 #include "raylib.h"
+#include "entities/Entity.h"
 #include "../components/RenderComponent.h"
 #include "components/CombatComponent.h"
 
-struct Shield {
+struct Shield : Entity {
 
-  Vector2 position;
-  RenderComponent render;
   size_t cooldown;
-  Rectangle hitbox{};
   int hp = 1;
   int lvl = 1;
 

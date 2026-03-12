@@ -7,7 +7,6 @@
 
 struct Movement1D {
 
-    Vector2 position;
     int direction = 0;
     float speed = 0;
 

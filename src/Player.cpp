@@ -7,7 +7,7 @@
 #include "locators/SystemLocator.h"
 #include "entities/Player.h"
 
-void Player::SetProjectileType(const ProjectileType &pType) {
+void Player::SetProjectileType(const ProjectileType& pType) {
 
     this->pType = pType;
     SystemLocator::timerLocator->Start(4.0f, projectileTimer);
@@ -15,9 +15,9 @@ void Player::SetProjectileType(const ProjectileType &pType) {
 
 void Player::SetPosition(const Vector2& pos) {
 
-    movement.position = pos;
-    combat.hitbox.x = pos.x;
-    combat.hitbox.y = pos.y;
+    position = pos;
+    hitbox.x = pos.x;
+    hitbox.y = pos.y;
 };
 
 
@@ -48,7 +48,7 @@ void Player::Run() {
 
         const float shootCooldown = (inFlowState && flowLvl == 3 ) ? 0.1f : 0.35f;
         SystemLocator::entityLocator->SpawnProjectile(
-            pType, movement.position, true);
+            pType, position, true);
         SystemLocator::timerLocator->Start(shootCooldown, cooldownTimer);
     }
 

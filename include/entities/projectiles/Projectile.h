@@ -4,15 +4,14 @@
 
 #pragma once
 
+#include "../Entity.h"
 #include "ProjectileType.h"
 #include "../../components/Movement1D.h"
 #include "../../components/CombatComponent.h"
-#include "../../components/RenderComponent.h"
 
-struct Projectile {
+struct Projectile : Entity{
 
     Movement1D movement;
-    RenderComponent render;
     CombatComponent combat;
     bool isPlayerProjectile = true;
     ProjectileType type = ProjectileType::BASE_PLAYER;

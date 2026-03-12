@@ -21,8 +21,15 @@ void EntitySystem::Run() {
 
     if (shield.hp <= 0 ) player->DeactivateShield();
 
-    FindDeadEntities();
-    KillEntities();
+    FindDeadEntities(enemies, deadEnemies);
+    FindDeadEntities(projectiles, deadProjectiles);
+    FindDeadEntities(powerUps, deadPowerUps);
+    FindDeadEntities(explosions, deadExplosions);
+
+    KillEntities(enemies, deadEnemies);
+    KillEntities(projectiles, deadProjectiles);
+    KillEntities(powerUps, deadPowerUps);
+    KillEntities(explosions, deadExplosions);
 }
 
 void EntitySystem::Init() {
@@ -30,10 +37,15 @@ void EntitySystem::Init() {
     enemies.reserve(WaveConstants::NUMBER_OF_ENEMIES);
     projectiles.reserve(25);
 
-    const auto& shootTimer  = SystemLocator::timerLocator->CreateTimer(.0f, false); // create cooldown timer for player
+    InitPlayer();
+    InitShield();
+}
+
+void EntitySystem::InitPlayer() {
+
+    const auto& shootTimer  = SystemLocator::timerLocator->CreateTimer(.0f, false);
     const auto& dashTimer = SystemLocator::timerLocator->CreateTimer(0.0f, false);
     const auto& prjectileTimer = SystemLocator::timerLocator->CreateTimer(0.0f, false);
-
     const auto& playerSprites   = SystemLocator::assetLocator->GetPlayerSprite();
 
     player = std::make_unique<Player>(
@@ -41,26 +53,28 @@ void EntitySystem::Init() {
        GameWorldConstants::playerSize,
        playerSprites, shootTimer, dashTimer, prjectileTimer);
 
+}
 
-    constexpr Vector2 shieldSpawnPos{
-        GameWorldConstants::playerSpawnX +
-            (GameWorldConstants::playerSize.x * RenderConstants::PLAYER_SCALING) / 2 -
-                (GameWorldConstants::shieldSize.x * RenderConstants::SHIELD_SCALING) / 2,
-        GameWorldConstants::playerSpawnY +
-            (GameWorldConstants::playerSize.y * RenderConstants::PLAYER_SCALING) / 2 -
-                (GameWorldConstants::shieldSize.y * RenderConstants::SHIELD_SCALING) / 2
+void EntitySystem::InitShield() {
+
+    constexpr Vector2 playerCenter = {
+        GameWorldConstants::playerSpawnX + (GameWorldConstants::playerSize.x * RenderConstants::PLAYER_SCALING) / 2,
+        GameWorldConstants::playerSpawnY + (GameWorldConstants::playerSize.y * RenderConstants::PLAYER_SCALING) / 2
     };
 
-    shield = {shieldSpawnPos,
-        {SystemLocator::assetLocator->GetEffectSprite(EffectID::SHIELD), GameWorldConstants::shieldSize},
-        SystemLocator::timerLocator->CreateTimer(0.0f, false),
-        {
-            shieldSpawnPos.x,
-            shieldSpawnPos.y,
-            GameWorldConstants::shieldSize.x * RenderConstants::SHIELD_SCALING,
-            GameWorldConstants::shieldSize.y * RenderConstants::SHIELD_SCALING}
+    constexpr Vector2 spawnPos = {
+        playerCenter.x - (GameWorldConstants::shieldSize.x * RenderConstants::SHIELD_SCALING) / 2,
+        playerCenter.y - (GameWorldConstants::shieldSize.y * RenderConstants::SHIELD_SCALING) / 2
     };
 
+    shield.position = spawnPos;
+    shield.render   = {SystemLocator::assetLocator->GetEffectSprite(EffectID::SHIELD), GameWorldConstants::shieldSize};
+    shield.hitbox   = {
+        spawnPos.x, spawnPos.y,
+        GameWorldConstants::shieldSize.x * RenderConstants::SHIELD_SCALING,
+        GameWorldConstants::shieldSize.y * RenderConstants::SHIELD_SCALING};
+
+    shield.cooldown = SystemLocator::timerLocator->CreateTimer(0.0f, false);
 }
 
 void EntitySystem::HandleInputs() const {
@@ -79,38 +93,34 @@ void EntitySystem::LvlProjectiles() {
 
 void EntitySystem::SpawnEnemy(const EnemyType &eType, const Vector2 &spawnPos) {
 
-    const auto& sprites =
-        SystemLocator::assetLocator->GetEnemySprites(eType);
-
+    const auto& sprites = SystemLocator::assetLocator->GetEnemySprites(eType);
     const Vector2 size = {sprites[0]->src.width, sprites[0]->src.height};
 
-    enemies.emplace_back(RenderComponent{sprites, size},
-        CombatComponent{1,
-            Rectangle{spawnPos.x, spawnPos.y,
-            size.x * RenderConstants::ENEMY_SCALING,
-            size.y * RenderConstants::ENEMY_SCALING},
-
-            SystemLocator::scoreLocator->GetEnemyScore(eType)}
-            );
+    Enemy enemy;
+    enemy.position = spawnPos;
+    enemy.render = {sprites, size};
+    enemy.hitbox = {spawnPos.x, spawnPos.y, size.x * RenderConstants::ENEMY_SCALING, size.y * RenderConstants::ENEMY_SCALING};
+    enemy.combat = CombatComponent{1, SystemLocator::scoreLocator->GetEnemyScore(eType)};
+    enemies.emplace_back(enemy);
 }
 
 void EntitySystem::SpawnProjectile(const ProjectileType &pType, const Vector2 &pos, bool isPlayerProjectile) {
 
-    const auto& projectileSprite = SystemLocator::assetLocator->GetProjectileSprites(pType);
+    const auto& sprite = SystemLocator::assetLocator->GetProjectileSprites(pType);
     const int dir = isPlayerProjectile ? -1 : 1;
+    const Vector2 size = {sprite[0]->src.width, sprite[0]->src.height};
+    const float playerWidth = player->GetSize().x * RenderConstants::PLAYER_SCALING;
+    const Vector2 spawnPos = {pos.x + (playerWidth * 0.5f) - (size.x * 0.5f), pos.y};
 
-    const Vector2 projectileSize {projectileSprite[0]->src.width,projectileSprite[0]->src.height};
-    const float playerWidth = player->GetSize().x * RenderConstants::ENEMY_SCALING;
-    const Vector2 spawnPosition {pos.x + (playerWidth * 0.5f) - (projectileSize.x * 0.5f),pos.y};
-
-    projectiles.emplace_back(
-        Movement1D{spawnPosition, dir, MovementConstants::PROJECTILE_SPEED},
-        RenderComponent{projectileSprite, projectileSize},
-        CombatComponent{projctileHp,Rectangle{spawnPosition.x,spawnPosition.y,
-                projectileSize.x * RenderConstants::PROJECTILE_SCALING,
-                projectileSize.y * RenderConstants::PROJECTILE_SCALING}},
-                isPlayerProjectile,
-                pType);
+    Projectile p;
+    p.position = spawnPos;
+    p.render = {sprite, size};
+    p.hitbox = {spawnPos.x, spawnPos.y, size.x * RenderConstants::PROJECTILE_SCALING, size.y * RenderConstants::PROJECTILE_SCALING};
+    p.movement = {dir, MovementConstants::PROJECTILE_SPEED};
+    p.combat = CombatComponent{projctileHp};
+    p.isPlayerProjectile = isPlayerProjectile;
+    p.type = pType;
+    projectiles.emplace_back(p);
 
 }
 
@@ -119,123 +129,36 @@ void EntitySystem::SpawnPowerUp(const PowerUpType type, const Vector2 &spawnPos)
     if (type == PowerUpType::NONE) return;
 
     const auto& sprite = SystemLocator::assetLocator->GetPowerUpIcon(type);
-    constexpr int dir = 1;
-    const Vector2 size = {sprite[0]->src.width,sprite[0]->src.height};
+    const Vector2 size = {sprite[0]->src.width, sprite[0]->src.height};
 
-    powerUps.emplace_back(type, Movement1D{spawnPos, dir, MovementConstants::POWER_UP_SPEED},
-        RenderComponent{sprite, size},
-        Rectangle{spawnPos.x, spawnPos.y,
-            RenderConstants::POWER_UP_SCALING * size.x,
-            RenderConstants::POWER_UP_SCALING * size.y
-        }, true);
+    PowerUp p;
+    p.position = spawnPos;
+    p.render = {sprite, size};
+    p.hitbox = {spawnPos.x, spawnPos.y, size.x * RenderConstants::POWER_UP_SCALING, size.y * RenderConstants::POWER_UP_SCALING};
+    p.movement = { 1, MovementConstants::POWER_UP_SPEED};
+    p.type = type;
+    powerUps.emplace_back(p);
 }
 
 void EntitySystem::SpawnExplosion(const Vector2 &pos) {
 
-    const std::vector sprite = {SystemLocator::assetLocator->GetEffectSprite(EffectID::EXPLOSION)};
-    const auto& lifetime = SystemLocator::timerLocator->CreateTimer(0.5f, true);
-    Vector2 size = {
-        sprite[0]->src.width * RenderConstants::EXPLOSION_SCALING,
-        sprite[0]->src.height * RenderConstants::EXPLOSION_SCALING
-    };
+    const std::vector<const Sprite*>& sprite = {SystemLocator::assetLocator->GetEffectSprite(EffectID::EXPLOSION)};
+    const Vector2 size = {sprite[0]->src.width * RenderConstants::EXPLOSION_SCALING,
+                          sprite[0]->src.height * RenderConstants::EXPLOSION_SCALING};
 
-    explosions.emplace_back(
-        pos,
-        lifetime,
-        Rectangle{pos.x, pos.y, size.x, size.y},
-        RenderComponent{sprite, size}
-        );
+    Explosion e;
+    e.position = pos;
+    e.render = {sprite, size};
+    e.hitbox = {pos.x, pos.y, size.x, size.y};
+    e.lifetime = SystemLocator::timerLocator->CreateTimer(0.5f, true);
+    explosions.emplace_back(e);
 
 }
 
-void EntitySystem::KillEntities() {
+void EntitySystem::RequestEntityRemoval(std::vector<size_t> &removalQ, const size_t index) {
 
-    KillEnemies();
-    KillProjectiles();
-    KillPowerUps();
-}
-
-void EntitySystem::KillEnemies() { // redundant code could be removed with a entity base class/struct
-
-    for (const auto& enemy : std::ranges::reverse_view(deadEnemies)) {
-
-        enemies.erase(enemies.begin() + static_cast<long>(enemy));
-    }
-
-    deadEnemies.clear();
-}
-
-void EntitySystem::KillProjectiles() {
-
-    for (const auto& projectile : std::ranges::reverse_view(deadProjectiles)) {
-
-        projectiles.erase(projectiles.begin() + static_cast<long>(projectile));
-    }
-
-    deadProjectiles.clear();
-}
-
-void EntitySystem::KillPowerUps() {
-
-    for (const auto& powerUp : std::ranges::reverse_view(deadPowerUps)) {
-
-        powerUps.erase(powerUps.begin() + static_cast<long>(powerUp));
-    }
-
-    deadPowerUps.clear();
-}
-
-void EntitySystem::FindDeadEntities() {
-
-    FindDeadEnemies();
-    FindDeadProjectiles();
-    FindDeadPowerUps();
-}
-
-void EntitySystem::FindDeadEnemies() {
-
-    for (size_t i = 0; i < enemies.size(); ++i) {
-
-        Enemy& enemy = enemies[i];
-        if (enemy.combat.IsAlive()) continue;
-        RequestEntityRemoval(EntityType::ENEMY, i);
-        SystemLocator::scoreLocator->AddHighScore(enemy.combat.score, enemy.wave.worldPosition);
-    }
-}
-
-void EntitySystem::FindDeadProjectiles() {
-
-    for (size_t i = 0; i < projectiles.size(); ++i) {
-
-        Projectile& projectile = projectiles[i];
-        if (projectile.combat.IsAlive()) continue;
-        RequestEntityRemoval(EntityType::PROJECTILE, i);
-    }
-}
-
-void EntitySystem::FindDeadPowerUps() {
-
-    for (size_t i = 0; i < powerUps.size(); ++i) {
-
-        PowerUp& pup = powerUps[i];
-        if (pup.alive) continue;
-        RequestEntityRemoval(EntityType::POWER_UP, i);
-    }
-}
-
-void EntitySystem::RequestEntityRemoval(const EntityType &eType, const size_t value) {
-
-    auto& removalQ = GetRemovalQ(eType);
-    const auto index = std::ranges::lower_bound(removalQ, value);
-    removalQ.insert(index, value);
-
-}
-
-std::vector<size_t>& EntitySystem::GetRemovalQ(const EntityType &type) {
-
-    if (type == EntityType::PROJECTILE) return deadProjectiles;
-    if (type == EntityType::ENEMY) return deadEnemies;
-    if (type == EntityType::POWER_UP) return deadPowerUps;
+    const auto it = std::ranges::lower_bound(removalQ, index);
+    removalQ.insert(it, index);
 
 }
 

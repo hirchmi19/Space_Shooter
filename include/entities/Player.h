@@ -6,47 +6,48 @@
 
 #include "raylib.h"
 #include <vector>
-
+#include "Entity.h"
 #include "../components/CombatComponent.h"
 #include "../components/Movement1D.h"
-#include "../components/RenderComponent.h"
 #include "../constants/RenderConstants.h"
 #include "constants/MovementConstants.h"
 #include "projectiles/ProjectileType.h"
 
 
-class Player {
+class Player : public Entity {
 
     public:
 
     Player() = default;
 
-    Player(const Vector2& position,
+    Player(
+        const Vector2& position,
         const Vector2& size,
         const std::vector<const Sprite*>& sprites,
-        const size_t& timer, const size_t& dashTimer, const size_t& projectileTimer) :
-    movement{ position, 0 , MovementConstants::BASE_SPEED},\
-    render{ sprites, size },
-    combat{1,Rectangle
-        {position.x, position.y,
-             size.x * RenderConstants::PLAYER_SCALING,
-             size.y * RenderConstants::PLAYER_SCALING} }
-    , cooldownTimer(timer), dashTimer(dashTimer), projectileTimer(projectileTimer) {}
+        const size_t& timer, const size_t& dashTimer, const size_t& projectileTimer)
+        :
+        Entity{position, {sprites, size},
+            Rectangle{position.x, position.y,
+            size.x * RenderConstants::PLAYER_SCALING,
+            size.y * RenderConstants::PLAYER_SCALING}},
+        movement{0, MovementConstants::BASE_SPEED},
+        combat{1},
+        cooldownTimer(timer), dashTimer(dashTimer), projectileTimer(projectileTimer) {}
 
     ~Player() = default;
 
     void SetPosition(const Vector2& pos);
     void SetProjectileType(const ProjectileType& pType);
 
-    const Vector2& GetPosition() const { return movement.position; }
+    const Vector2& GetPosition() const { return position; }
     const Vector2& GetSize() const  { return render.size; }
     int GetDir() const { return movement.direction; }
     float GetSpeed() const { return movement.speed; }
-    const Rectangle& GetHitBox() const { return combat.hitbox; }
+    const Rectangle& GetHitBox() const { return hitbox; }
 
-    void Revive() {combat.Revive();}
-    void Kill() {combat.Kill();}
-    bool IsAlive() const { return combat.IsAlive(); }
+    void Revive() {isAlive = true; combat.Revive();}
+    void Kill() {isAlive = false;}
+    bool IsAlive() const { return isAlive; }
     void EnterFlowState() { inFlowState = true; }
     void ActivateShield() { shieldActive = true; }
     void DeactivateShield() { shieldActive = false; }
@@ -59,7 +60,6 @@ class Player {
     private:
 
     Movement1D movement;
-    RenderComponent render;
     CombatComponent combat;
     ProjectileType pType = ProjectileType::BASE_PLAYER;
 

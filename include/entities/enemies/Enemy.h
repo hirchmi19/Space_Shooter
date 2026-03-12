@@ -4,13 +4,12 @@
 
 #pragma once
 
+#include "../Entity.h"
 #include "../../components/CombatComponent.h"
-#include "../../components/RenderComponent.h"
 #include "../../components/WaveComponent.h"
 
-struct Enemy {
+struct Enemy : Entity {
 
-   RenderComponent render;
    CombatComponent combat;
    WaveComponent wave;
 

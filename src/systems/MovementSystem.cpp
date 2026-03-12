@@ -27,20 +27,21 @@ void MovementSystem::Run() {
  */
 void MovementSystem::MovePlayer() {
 
-    Player* player = SystemLocator::entityLocator->GetPlayer();
-    auto& shield = SystemLocator::entityLocator->GetShield();
-    const auto& playerSpeed = player->GetDir();
-    Vector2 playerPosition = player->GetPosition();
-    const float playerPosXRight = playerPosition.x + player->GetSize().x * RenderConstants::PLAYER_SCALING;
+    Player* player  = SystemLocator::entityLocator->GetPlayer();
+    auto& shield    = SystemLocator::entityLocator->GetShield();
+    const int dir   = player->GetDir();
+    Vector2 pos     = player->GetPosition();
+    const float rightEdge = pos.x + player->GetSize().x * RenderConstants::PLAYER_SCALING;
 
-    if (playerPosXRight > GameConstants::SCREEN_WIDTH && playerSpeed > 0)return; // check if player is out of bounds
-    if (playerPosition.x <= 0 && playerSpeed < 0) return;
+    if (rightEdge > GameConstants::SCREEN_WIDTH && dir > 0) return;
+    if (pos.x <= 0 && dir < 0) return;
 
-    playerPosition.x += static_cast<float>(player->GetDir()) * player->GetSpeed();
-    player->SetPosition(playerPosition);
+    pos.x += static_cast<float>(dir) * player->GetSpeed();
+    player->SetPosition(pos);
 
-    shield.position.x = playerPosition.x + (player->GetSize().x * RenderConstants::PLAYER_SCALING) / 2 -
-        (shield.render.size.x * RenderConstants::SHIELD_SCALING) / 2;
+    // sync shield to player center
+    shield.position.x = pos.x + (player->GetSize().x * RenderConstants::PLAYER_SCALING) / 2 -
+                        (shield.render.size.x * RenderConstants::SHIELD_SCALING) / 2;
     shield.hitbox.x = shield.position.x;
 
 }
@@ -50,14 +51,15 @@ void MovementSystem::MovePlayer() {
  */
 void MovementSystem::MoveProjectiles() {
 
-   auto& projectiles = SystemLocator::entityLocator->GetProjectiles();
+    auto& projectiles = SystemLocator::entityLocator->GetProjectiles();
 
     for (auto& projectile : projectiles) {
 
-        const float posYUp = projectile.movement.position.y + projectile.render.size.y;
-
-        if (projectile.movement.position.y <= 0 || posYUp >= GameConstants::SCREEN_HEIGHT) // delete projectiles when they leave the screen
-            projectile.combat.Kill();
+        const float bottomEdge = projectile.position.y + projectile.render.size.y;
+        if (projectile.position.y <= 0 || bottomEdge >= GameConstants::SCREEN_HEIGHT) {
+            projectile.isAlive = false;
+            continue;
+        }
 
         MoveProjectile(projectile);
     }
@@ -69,13 +71,15 @@ void MovementSystem::MovePowerUps() {
 
     for (auto& powerUp : powerUps) {
 
-        if (powerUp.movement.position.y >= GameConstants::SCREEN_HEIGHT) powerUp.alive = false;
+        if (powerUp.position.y >= GameConstants::SCREEN_HEIGHT) {
+            powerUp.isAlive = false;
+            continue;
+        }
 
-        powerUp.movement.position.y += static_cast<float>(powerUp.movement.direction) * powerUp.movement.speed;
-        powerUp.hitbox.x = powerUp.movement.position.x;
-        powerUp.hitbox.y = powerUp.movement.position.y;
+        powerUp.position.y += static_cast<float>(powerUp.movement.direction) * powerUp.movement.speed;
+        powerUp.hitbox.x = powerUp.position.x;
+        powerUp.hitbox.y = powerUp.position.y;
     }
-
 }
 
 /**
@@ -87,49 +91,42 @@ void MovementSystem::MoveEnemies() {
 
     for (auto& enemy : enemies) {
 
-        if (enemy.wave.state != WaveState::ENTER_FORMATION && // ignore enemies which are not moving
+        if (enemy.wave.state != WaveState::ENTER_FORMATION &&
             enemy.wave.state != WaveState::ATTACK) continue;
 
-        if (enemy.wave.t >= 1.0f && enemy.wave.state == WaveState::ENTER_FORMATION) { // enemies entering the formation
-
+        if (enemy.wave.t >= 1.0f && enemy.wave.state == WaveState::ENTER_FORMATION) {
             MoveEnemy(enemy, enemy.wave.formationPosition);
             enemy.wave.state = WaveState::IN_FORMATION;
             continue;
         }
 
-        if (enemy.wave.t >= 1.0f && enemy.wave.state == WaveState::ATTACK) { // enemies leaving the formation (attacking)
-
+        if (enemy.wave.t >= 1.0f && enemy.wave.state == WaveState::ATTACK) {
             MoveEnemy(enemy, enemy.wave.worldPosition);
             enemy.wave.state = WaveState::OUT_FORMATION;
             continue;
         }
 
-        enemy.wave.t += enemy.wave.speed * 1 / GameConstants::UPS; // move enemies
+        enemy.wave.t += enemy.wave.speed * (1.0f / GameConstants::UPS);
 
-        auto& bezierPoints = enemy.wave.controlPoints;
-        const Vector2 newPos = GetSplinePointBezierCubic(bezierPoints[0],
-            bezierPoints[1],
-            bezierPoints[2],
-            bezierPoints[3],
-            enemy.wave.t);
-
-        MoveEnemy(enemy, newPos);
+        const auto& cp = enemy.wave.controlPoints;
+        MoveEnemy(enemy, GetSplinePointBezierCubic(cp[0], cp[1], cp[2], cp[3], enemy.wave.t));
     }
 }
 
 
 void MovementSystem::MoveProjectile(Projectile& projectile) {
 
-    projectile.movement.position.y += static_cast<float>(projectile.movement.direction) * projectile.movement.speed;
-    projectile.combat.hitbox.x = projectile.movement.position.x;
-    projectile.combat.hitbox.y = projectile.movement.position.y;
+    projectile.position.y += static_cast<float>(projectile.movement.direction) * projectile.movement.speed;
+    projectile.hitbox.x = projectile.position.x;
+    projectile.hitbox.y = projectile.position.y;
 
 }
 
 void MovementSystem::MoveEnemy(Enemy &enemy, const Vector2& newPos) {
 
+    enemy.position = newPos;
     enemy.wave.worldPosition = newPos;
-    enemy.combat.hitbox.x = newPos.x;
-    enemy.combat.hitbox.y = newPos.y;
+    enemy.hitbox.x = newPos.x;
+    enemy.hitbox.y = newPos.y;
 
 }
