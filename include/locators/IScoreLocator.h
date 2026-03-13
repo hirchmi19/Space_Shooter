@@ -13,7 +13,7 @@ struct IScoreLocator {
   virtual ~IScoreLocator() = default;
 
   virtual int GetEnemyScore(const EnemyType &id) = 0;
-  virtual void AddHighScore(const int &score, const Vector2 &pos) = 0;
+  virtual void AddScore(const int &score, const Vector2 &pos) = 0;
   virtual int GetFlowLvl() const = 0;
   virtual void ResetScore() = 0;
   virtual void ResetMult() = 0;

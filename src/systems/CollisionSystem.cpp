@@ -35,7 +35,7 @@ void CollisionSystem::CheckEnemiesProjectiles() {
             if (!projectile.isPlayerProjectile) continue;
 
             //brodphase check -- ignore if cleary out of range
-            if (std::abs(enemy.position.y - projectile.position.y) > enemy.render.size.y) continue;
+            //if (std::abs(enemy.position.y - projectile.position.y) > enemy.render.size.y) continue;
 
             if (!CheckCollisionRecs(enemy.hitbox, projectile.hitbox)) continue;
 
@@ -134,14 +134,14 @@ void CollisionSystem::CheckExplosions() {
         for (auto& enemy : enemies) {
 
             // broadphase check
-            if (std::abs(enemy.position.x - explosion.position.x) > explosion.render.size.x) continue;
-            if (std::abs(enemy.position.y - explosion.position.y) > explosion.render.size.y) continue;
+            //if (std::abs(enemy.position.x - explosion.position.x) > explosion.render.size.x) continue;
+            //if (std::abs(enemy.position.y - explosion.position.y) > explosion.render.size.y) continue;
             if (!CheckCollisionRecs(explosion.hitbox, enemy.hitbox)) continue;
 
             enemy.isAlive = false;
         }
 
-        explosion.isAlive = false;
+       if (!SystemLocator::timerLocator->IsRunning(explosion.lifetime)) explosion.isAlive = false;
     }
 }
 

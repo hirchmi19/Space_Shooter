@@ -31,6 +31,8 @@ class EntitySystem : public IEntityLocator, public IGameSystem {
     void SpawnProjectile(const ProjectileType &pType, const Vector2& pos, bool isPlayerProjectile) override;
     void SpawnEnemy(const EnemyType &eType, const Vector2 &spawnPos) override;
     void SpawnPowerUp(PowerUpType type, const Vector2& spawnPos) override;
+    void SpawnExplosion(const Vector2& pos) override;
+
     void ClearEntities();
     void LvlProjectiles() override;
     void Reset() override { projctileHp = 1, shield.hp = 1;}
@@ -42,8 +44,6 @@ class EntitySystem : public IEntityLocator, public IGameSystem {
     std::vector<PowerUp>& GetPowerUps() override {return powerUps;};
     std::vector<Explosion>& GetExplosions() override { return explosions;};
     float GetProjectileHp() override {return projctileHp;};
-
-    void SpawnExplosion(const Vector2& pos) override;
 
 
     private:
@@ -67,6 +67,7 @@ class EntitySystem : public IEntityLocator, public IGameSystem {
 
     void InitPlayer();
     void InitShield();
+    void HandleEnemyDeaths() const;
 
     template<typename T>
     void KillEntities(std::vector<T>& entities, std::vector<size_t>& removalQ) {

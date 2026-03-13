@@ -37,7 +37,12 @@ void ScoreSystem::Run() {
   }
 }
 
-void ScoreSystem::AddHighScore(const int &score, const Vector2 &pos) {
+/**
+ * Calculates the real score and adds it to the highscore
+ * \param score
+ * \param pos
+ */
+void ScoreSystem::AddScore(const int &score, const Vector2 &pos) {
 
   flowBonus = flowStateActive ? 2 : 1; // double the points while in flow state
 
@@ -54,6 +59,11 @@ void ScoreSystem::AddHighScore(const int &score, const Vector2 &pos) {
   mult = std::min(newMult, maxMult);
 }
 
+/**
+ *
+ * \param id returns the base score of an enemy
+ * \return
+ */
 int ScoreSystem::GetEnemyScore(const EnemyType &id) {
   switch (id) {
     case EnemyType::YELLOW_E:
@@ -70,6 +80,11 @@ int ScoreSystem::GetEnemyScore(const EnemyType &id) {
   }
 }
 
+/**
+ * Creates an score ui element for rendering
+ * \param score
+ * \param pos
+ */
 void ScoreSystem::CreateScoreUi(const std::string &score, const Vector2 &pos) {
 
   const size_t timer = SystemLocator::timerLocator->CreateTimer(0.7f, true);
@@ -77,6 +92,10 @@ void ScoreSystem::CreateScoreUi(const std::string &score, const Vector2 &pos) {
 
 }
 
+/**
+ * Creates an message ui element for rendering
+ * \param msg
+ */
 void ScoreSystem::CreateMessage(const std::string &msg) {
 
   const size_t timer = SystemLocator::timerLocator->CreateTimer(0.0f, true);
@@ -84,6 +103,10 @@ void ScoreSystem::CreateMessage(const std::string &msg) {
 
 }
 
+/**
+ * Rolls wheter and if yes what type of power up is dropped
+ * \return
+ */
 PowerUpType ScoreSystem::RollPowerUpDrop(){
 
     int p = GetRandomValue(1, 8);
@@ -96,6 +119,10 @@ PowerUpType ScoreSystem::RollPowerUpDrop(){
 
 }
 
+/**
+ * Rolls what poewer up gets an level up
+ * \return
+ */
 size_t ScoreSystem::RollLvlUp() {
 
   if (!AnyPowerUpsAvalaible()) return 0; // important!
@@ -109,6 +136,10 @@ size_t ScoreSystem::RollLvlUp() {
   return type;
 }
 
+/**
+ * Rolls an random projectile
+ * \return
+ */
 const ProjectileType &ScoreSystem::RollProjectile() {
 
   const auto& start = ProjectileType::ARROW; // start position in the projectile type enum
@@ -117,6 +148,10 @@ const ProjectileType &ScoreSystem::RollProjectile() {
 
 }
 
+/**
+ * Applies an power up to the player
+ * \param powType
+ */
 void ScoreSystem::ApplyPowerUp(const PowerUpType &powType) {
 
   Player* player = SystemLocator::entityLocator->GetPlayer();
@@ -137,6 +172,10 @@ void ScoreSystem::ApplyPowerUp(const PowerUpType &powType) {
 
 }
 
+/**
+ * Levels up an power up
+ * \param index
+ */
 void ScoreSystem::ExecuteLvlUp(const size_t &index) {
 
   if (index == 0 || !AnyPowerUpsAvalaible()) return;
@@ -184,6 +223,10 @@ void ScoreSystem::LvlDefaultMult() {
   CreateMessage("MULT UP!");
 }
 
+/**
+ * Returns true if ther is any type of power up, which isnt max level yet
+ * \return
+ */
 bool ScoreSystem::AnyPowerUpsAvalaible() {
 
   const auto& shield = SystemLocator::entityLocator->GetShield();
@@ -196,9 +239,12 @@ bool ScoreSystem::AnyPowerUpsAvalaible() {
   return false;
 }
 
+/**
+ * Returns true if an given power up isnt max level yet
+ * \param type
+ * \return
+ */
 bool ScoreSystem::IsPowerUpAvalaible(const LvlUpType &type) {
-
-  if (type == LvlUpType::COUNT || type == LvlUpType::NONE) return false;
 
   const auto& shield = SystemLocator::entityLocator->GetShield();
 
@@ -222,6 +268,8 @@ bool ScoreSystem::IsPowerUpAvalaible(const LvlUpType &type) {
 
       if (SystemLocator::entityLocator->GetProjectileHp() >= 3) return false;
       return true;
+
+    case LvlUpType::COUNT: case LvlUpType::NONE: return false; // fall through these cases, as they are irrelevant
   }
 
   return false;

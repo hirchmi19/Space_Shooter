@@ -26,6 +26,7 @@ void EntitySystem::Run() {
     FindDeadEntities(powerUps, deadPowerUps);
     FindDeadEntities(explosions, deadExplosions);
 
+    HandleEnemyDeaths(); // IMPORTANT!: handle death enemy events before killing them
     KillEntities(enemies, deadEnemies);
     KillEntities(projectiles, deadProjectiles);
     KillEntities(powerUps, deadPowerUps);
@@ -88,9 +89,6 @@ void EntitySystem::LvlProjectiles() {
     projctileHp++;
 }
 
-
-//--------------------------------------------------------------------------
-
 void EntitySystem::SpawnEnemy(const EnemyType &eType, const Vector2 &spawnPos) {
 
     const auto& sprites = SystemLocator::assetLocator->GetEnemySprites(eType);
@@ -143,18 +141,38 @@ void EntitySystem::SpawnPowerUp(const PowerUpType type, const Vector2 &spawnPos)
 void EntitySystem::SpawnExplosion(const Vector2 &pos) {
 
     const std::vector<const Sprite*>& sprite = {SystemLocator::assetLocator->GetEffectSprite(EffectID::EXPLOSION)};
-    const Vector2 size = {sprite[0]->src.width * RenderConstants::EXPLOSION_SCALING,
-                          sprite[0]->src.height * RenderConstants::EXPLOSION_SCALING};
+    const Vector2 size = {sprite[0]->src.width,sprite[0]->src.height};
 
     Explosion e;
     e.position = pos;
     e.render = {sprite, size};
-    e.hitbox = {pos.x, pos.y, size.x, size.y};
+    e.hitbox = {pos.x, pos.y, size.x * RenderConstants::EXPLOSION_SCALING, size.y * RenderConstants::EXPLOSION_SCALING};
     e.lifetime = SystemLocator::timerLocator->CreateTimer(0.5f, true);
     explosions.emplace_back(e);
 
 }
 
+//----------------------------------------------------------------------------------------------------
+
+/**
+ * Handles the death enemy event
+ */
+void EntitySystem::HandleEnemyDeaths() const {
+
+    for (const auto& i : deadEnemies) {
+
+        const auto& e = enemies.at(i);
+        SystemLocator::scoreLocator->AddScore(e.combat.score, e.position);
+
+    }
+
+}
+
+/**
+ * Adds the indice of an dead entity to its according removal queue
+ * \param removalQ
+ * \param index
+ */
 void EntitySystem::RequestEntityRemoval(std::vector<size_t> &removalQ, const size_t index) {
 
     const auto it = std::ranges::lower_bound(removalQ, index);
@@ -162,6 +180,9 @@ void EntitySystem::RequestEntityRemoval(std::vector<size_t> &removalQ, const siz
 
 }
 
+/**
+ * Clears all entity collections
+ */
 void EntitySystem::ClearEntities() {
 
     enemies.clear();

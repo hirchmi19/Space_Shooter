@@ -58,6 +58,7 @@ bool TimerSystem::IsRunning(const size_t &index) {
 }
 
 void TimerSystem::KillTimers() {
+
     assert(timers.size() - permanentTimerCount <= 100 && "TOO MANY DISPOSABLE TIMERS!");
 
     timers.resize(permanentTimerCount);

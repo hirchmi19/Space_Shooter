@@ -27,7 +27,7 @@ public:
   float GetMult() const override { return mult; }
   int GetFlowLvl() const override { return flowLvl; }
 
-  void AddHighScore(const int &score, const Vector2 &pos) override;
+  void AddScore(const int &score, const Vector2 &pos) override;
   int GetEnemyScore(const EnemyType &id) override;
 
   PowerUpType RollPowerUpDrop() override;
