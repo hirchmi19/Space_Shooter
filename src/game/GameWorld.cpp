@@ -7,6 +7,7 @@
 #include "game/GameWorld.h"
 #include "game/GameState.h"
 #include "constants/GameWorldConstants.h"
+#include "constants/TimerDurations.h"
 
 GameWorld::GameWorld() {
 
@@ -38,7 +39,7 @@ void GameWorld::RunGameplaySystems() {
 
             if (!timerStarted) {
 
-                SystemLocator::timerLocator->Start(3.0f, transitionTimer);
+                SystemLocator::timerLocator->Start(TimerDurations::TRANSITION_GW, transitionTimer);
                 timerStarted = true;
             }
 
@@ -78,14 +79,14 @@ void GameWorld::RunGameplaySystems() {
 
             if (!timerStarted) {
 
-                SystemLocator::timerLocator->Start(3.f, transitionTimer);
+                SystemLocator::timerLocator->Start(TimerDurations::TRANSITION_GW, transitionTimer);
                 timerStarted = true;
 
-                SystemLocator::renderLocator->ClearUiElements();
+                SystemLocator::renderLocator->ClearUiElements(); // clean up and prepeare next wave
                 SystemLocator::timerLocator->KillTimers();
                 scoreSys.ResetMult();
                 entSys.ClearEntities();
-                entSys.GetPlayer()->LeaveFlowState();
+                entSys.GetPlayer()->LeaveFlowState(); // debatable. Could be turned off, as a design choice
             }
 
             if (!SystemLocator::timerLocator->IsRunning(transitionTimer) && timerStarted) {
@@ -110,7 +111,7 @@ void GameWorld::RunGameplaySystems() {
 void GameWorld::RunRenderSystem() {
 
     if (gameSystems[ToIndex(GameSystemID::BACKGROUND_SYSTEM)])
-        GetGameSystemStatic<BackgroundSystem>(GameSystemID::BACKGROUND_SYSTEM).Render(); // render bg
+        GetGameSystemStatic<BackgroundSystem>(GameSystemID::BACKGROUND_SYSTEM).Render(); // render starfield background
     if (gameSystems[ToIndex(GameSystemID::RENDERER_SYSTEM)])
         GetGameSystemStatic<RenderSystem>(GameSystemID::RENDERER_SYSTEM).Run(currentGameState); // render current game state
 

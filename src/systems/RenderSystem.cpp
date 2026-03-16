@@ -7,6 +7,7 @@
 #include "systems/rendering/RenderSystem.h"
 #include "constants/GameConstants.h"
 #include "constants/ScoringConstants.h"
+#include "constants/TimerDurations.h"
 #include "constants/WaveConstants.h"
 #include "locators/SystemLocator.h"
 #include "systems/assets/Sprite.h"
@@ -301,11 +302,11 @@ void RenderSystem::RenderMessages() {
 
     const Vector2 msgSize  = MeasureTextEx(font, currentMsg.text.c_str(), RenderConstants::HIGHSCORE_CAPTION_SIZE, RenderConstants::SPACING);
     const float msgPosX    = GameConstants::SCREEN_ORIGIN.x - msgSize.x / 2 + 40;
-    constexpr float msgPosY = GameWorldConstants::playerSpawnY - 100;
+    constexpr float msgPosY = GameWorldConstants::playerSpawnY - 250;
 
     if (!currentMsg.active) {
 
-        SystemLocator::timerLocator->Start(1.0f, currentMsg.displayTimer);
+        SystemLocator::timerLocator->Start(TimerDurations::MSG_DURATION, currentMsg.displayTimer);
         currentMsg.active = true;
     }
 

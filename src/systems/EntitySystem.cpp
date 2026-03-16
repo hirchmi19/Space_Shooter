@@ -11,6 +11,7 @@
 
 #include "constants/GameWorldConstants.h"
 #include "constants/MovementConstants.h"
+#include "constants/TimerDurations.h"
 #include "constants/WaveConstants.h"
 #include "systems/assets/AssetSystem.h"
 #include "locators/SystemLocator.h"
@@ -44,7 +45,7 @@ void EntitySystem::Init() {
 
 void EntitySystem::InitPlayer() {
 
-    const auto& shootTimer  = SystemLocator::timerLocator->CreateTimer(.0f, false);
+    const auto& shootTimer  = SystemLocator::timerLocator->CreateTimer(0.0f, false);
     const auto& dashTimer = SystemLocator::timerLocator->CreateTimer(0.0f, false);
     const auto& prjectileTimer = SystemLocator::timerLocator->CreateTimer(0.0f, false);
     const auto& playerSprites   = SystemLocator::assetLocator->GetPlayerSprite();
@@ -147,7 +148,7 @@ void EntitySystem::SpawnExplosion(const Vector2 &pos) {
     e.position = pos;
     e.render = {sprite, size};
     e.hitbox = {pos.x, pos.y, size.x * RenderConstants::EXPLOSION_SCALING, size.y * RenderConstants::EXPLOSION_SCALING};
-    e.lifetime = SystemLocator::timerLocator->CreateTimer(0.5f, true);
+    e.lifetime = SystemLocator::timerLocator->CreateTimer(TimerDurations::EXPLOSION_LIFETIME, true);
     explosions.emplace_back(e);
 
 }

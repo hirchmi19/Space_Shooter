@@ -8,6 +8,7 @@
 #include "locators/SystemLocator.h"
 #include "systems/rendering/MessageUi.h"
 #include "systems/scoring/LvlUpType.h"
+#include "systems/timer/Timer.h"
 #include "utils/utils.h"
 
 ScoreSystem::ScoreSystem() : IGameSystem(GameSystemID::SCORE_SYSTEM, "SCORE_SYSTEM") {}
@@ -15,7 +16,7 @@ ScoreSystem::ScoreSystem() : IGameSystem(GameSystemID::SCORE_SYSTEM, "SCORE_SYST
 
 void ScoreSystem::Run() {
 
-  if (mult >= multDefault + 2.0f && !flowStateActive) {
+  if (mult >= baseMult + 2.0f && !flowStateActive) {
     
     SystemLocator::entityLocator->GetPlayer()->EnterFlowState();
     flowStateActive = true;
@@ -24,10 +25,10 @@ void ScoreSystem::Run() {
 
   if (!SystemLocator::timerLocator->IsRunning(multTimer) && timerStarted) {
 
-    const float newMult = mult * 0.33f; // decrease mult
-    mult = std::max(newMult, multDefault); // mult cannot fall under default value
+    const float newMult = mult * 0.33f; // decrease mult by 2/3
+    mult = std::max(newMult, baseMult); // mult cannot fall under base value
 
-    SystemLocator::timerLocator->Start(3.0f, multTimer); // mult decreases after decrease as well
+    SystemLocator::timerLocator->Start(TimerDurations::MULT_BUFF_DURATION, multTimer); // mult decreases after decrease as well
 
     if (!flowStateActive) return;
 
@@ -87,7 +88,7 @@ int ScoreSystem::GetEnemyScore(const EnemyType &id) {
  */
 void ScoreSystem::CreateScoreUi(const std::string &score, const Vector2 &pos) {
 
-  const size_t timer = SystemLocator::timerLocator->CreateTimer(0.7f, true);
+  const size_t timer = SystemLocator::timerLocator->CreateTimer(TimerDurations::SCORE_DURATION, true);
   SystemLocator::renderLocator->AddScore({score, timer, pos});
 
 }
@@ -217,9 +218,9 @@ void ScoreSystem::LvlShield() {
 
 void ScoreSystem::LvlDefaultMult() {
 
-  if (multDefault >= ScoringConstants::MAX_DEFAULT_MULT) return;
-  multDefault++;
-  mult = multDefault;
+  if (baseMult >= ScoringConstants::MAX_DEFAULT_MULT) return;
+  baseMult++;
+  mult = baseMult;
   CreateMessage("MULT UP!");
 }
 
@@ -231,7 +232,7 @@ bool ScoreSystem::AnyPowerUpsAvalaible() {
 
   const auto& shield = SystemLocator::entityLocator->GetShield();
 
-  if (multDefault < ScoringConstants::MAX_DEFAULT_MULT) return true;
+  if (baseMult < ScoringConstants::MAX_DEFAULT_MULT) return true;
   if (shield.lvl < 3) return true;
   if (flowLvl < 3) return true;
   if (SystemLocator::entityLocator->GetProjectileHp() <= 3) return true;
@@ -256,7 +257,7 @@ bool ScoreSystem::IsPowerUpAvalaible(const LvlUpType &type) {
       return true;
 
     case LvlUpType::MULT:
-      if (multDefault >= ScoringConstants::MAX_DEFAULT_MULT) return false;
+      if (baseMult >= ScoringConstants::MAX_DEFAULT_MULT) return false;
       return true;
 
     case LvlUpType::FLOW:

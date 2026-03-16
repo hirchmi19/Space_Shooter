@@ -8,6 +8,7 @@
 
 #include <iostream>
 
+#include "constants/TimerDurations.h"
 #include "locators/SystemLocator.h"
 
 CollisionSystem::CollisionSystem() : IGameSystem(GameSystemID::COLLISION_SYSTEM, "COLLISION_SYSTEM"){}
@@ -149,6 +150,6 @@ void CollisionSystem::DamageShield(Shield& shield) {
 
     if (SystemLocator::timerLocator->IsRunning(shield.cooldown)) return;
     shield.hp--;
-    SystemLocator::timerLocator->Start(0.5f, shield.cooldown);
+    SystemLocator::timerLocator->Start(TimerDurations::SHIELD_COOLDOWN, shield.cooldown);
 }
 

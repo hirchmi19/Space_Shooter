@@ -7,10 +7,12 @@
 #include "locators/SystemLocator.h"
 #include "entities/Player.h"
 
+#include "constants/TimerDurations.h"
+
 void Player::SetProjectileType(const ProjectileType& pType) {
 
     this->pType = pType;
-    SystemLocator::timerLocator->Start(4.0f, projectileTimer);
+    SystemLocator::timerLocator->Start(TimerDurations::WAEPON_DURATION, projectileTimer);
 }
 
 void Player::SetPosition(const Vector2& pos) {
@@ -41,12 +43,13 @@ void Player::Run() {
     (IsKeyPressed(KEY_LEFT_SHIFT) || IsKeyPressed(KEY_RIGHT_SHIFT))
     && inFlowState && flowLvl >= 2) {
 
-        SystemLocator::timerLocator->Start(0.3f, dashTimer);
+        SystemLocator::timerLocator->Start(TimerDurations::DASH_DURATION, dashTimer);
     }
 
     if (!SystemLocator::timerLocator->IsRunning(cooldownTimer) && IsKeyPressed(KEY_SPACE)) {
 
-        const float shootCooldown = (inFlowState && flowLvl == 3 ) ? 0.1f : 0.35f;
+        const float shootCooldown = (inFlowState && flowLvl == 3 ) ?
+        TimerDurations::RAPID_FIRE_COOLDOWN : TimerDurations::BASE_PLAYER_COOLDOWN;
         SystemLocator::entityLocator->SpawnProjectile(
             pType, position, true);
         SystemLocator::timerLocator->Start(shootCooldown, cooldownTimer);

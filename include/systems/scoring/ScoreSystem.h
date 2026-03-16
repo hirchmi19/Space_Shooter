@@ -10,6 +10,7 @@
 #include <string>
 
 #include "LvlUpType.h"
+#include "constants/TimerDurations.h"
 #include "entities/PowerUpType.h"
 #include "entities/projectiles/ProjectileType.h"
 
@@ -39,14 +40,14 @@ public:
 
   void ResetScore() override {
     highScore = 0;
-    mult = multDefault = 1.0f;
+    mult = baseMult = 1.0f;
     flowLvl = 1;
     maxMult = 10;
     flowStateActive = false;
   }
 
   void ResetMult() override {
-    mult = multDefault;
+    mult = baseMult;
     timerStarted = false;
     flowStateActive = false;
   }
@@ -56,11 +57,11 @@ private:
 
   int flowLvl = 1;
   int highScore = 0;
-  float multDefault = 1.0f;
-  float mult = multDefault;
+  float baseMult = 1.0f;
+  float mult = baseMult;
   float maxMult = 10;
-  float flowBonus{};
-  float flowTime = 2.0f;
+  float flowBonus;
+  float flowTime = TimerDurations::FLOW_BASE_DURATION;
 
   size_t multTimer{};
   size_t flowTimer{};

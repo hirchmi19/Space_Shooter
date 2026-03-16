@@ -7,6 +7,7 @@
 #include "systems/waving/Wave.h"
 #include "systems/waving/WaveSystem.h"
 #include "constants/GameConstants.h"
+#include "constants/TimerDurations.h"
 #include "constants/WaveConstants.h"
 #include "locators/SystemLocator.h"
 
@@ -53,6 +54,7 @@ void WaveSystem::Run()
 void WaveSystem::Start() {
 
     currentPhase = WavePhase::INITIALIZE;
+    waveFinished = false;
 
 }
 
@@ -70,13 +72,13 @@ void WaveSystem::Init() {
     topDiveSpawns.resize(WaveConstants::NUMBER_OF_ENEMIES);
     sideDiveSpawns.resize(WaveConstants::NUMBER_OF_ENEMIES);
 
+    InitTimers();
+
     CalcFormationPositions();
     CalcTopDiveSpawns();
     CalcSideDiveSpawns();
     BuildFormationSlots();
     DefinePatterns();
-
-    InitTimers();
 }
 
 void WaveSystem::InitTimers() {
@@ -98,7 +100,6 @@ void WaveSystem::StartWave() {
     diveSpawned = false;
     diveCompleted = false;
     enemiesSpawned = false;
-    waveFinished = false;
     shootsFired = 0;
     currentPattern = PickWavePattern();
 
@@ -120,7 +121,7 @@ void WaveSystem::BuildFormation()
         diveCount = 0;
         enemiesSpawned = true;
         waveInitialized = true;
-        SystemLocator::timerLocator->Start(1.5f, phaseTimer);
+        SystemLocator::timerLocator->Start(TimerDurations::WAVE_PHASE, phaseTimer);
         return;
     }
 
@@ -128,7 +129,7 @@ void WaveSystem::BuildFormation()
     {
         const DiveType type = currentPattern.dives[diveCount];
 
-        if (!enemiesSpawned)  SpawnDive(type);
+        if (!enemiesSpawned) SpawnDive(type);
         AssignDiveCurves(type);
 
         diveSpawned = true;
@@ -141,7 +142,7 @@ void WaveSystem::BuildFormation()
         diveSpawned = false;
         diveCompleted = true;
         diveCount++;
-        SystemLocator::timerLocator->Start(1.f, diveTimer);
+        SystemLocator::timerLocator->Start(TimerDurations::WAVE_DIVE, diveTimer);
     }
 }
 
@@ -155,7 +156,7 @@ void WaveSystem::HandleSoloAttacks() {
 
     auto& enemies = SystemLocator::entityLocator->GetEnemies();
 
-    if (enemies.empty()) return; // just in case :)
+    if (enemies.empty()) return;
 
     if (enemies.size() < 4) {
 
@@ -165,7 +166,7 @@ void WaveSystem::HandleSoloAttacks() {
         return;
     }
 
-    const int maxEnemies = std::max(4, GetRandomValue(4, static_cast<int>(enemies.size() * .25f)));
+    const int maxEnemies = std::max(4, GetRandomValue(4, static_cast<int>(enemies.size() * .25f))); // at least 4 up to 1/4 of the total enemies can solo attack
     int enemyIndex = 0;
 
     if (diveCount >= maxEnemies) {
@@ -186,7 +187,7 @@ void WaveSystem::HandleSoloAttacks() {
 
     enemies[enemyIndex].wave.state = WaveState::ATTACK;
     diveCount++;
-    SystemLocator::timerLocator->Start(1.f, diveTimer);
+    SystemLocator::timerLocator->Start(TimerDurations::WAVE_DIVE, diveTimer);
 }
 
 /**
@@ -201,7 +202,7 @@ void WaveSystem::HandleSwarmAttacks() {
 
         currentPhase = WavePhase::FORMATION_OFF;
         diveCount = 0;
-        SystemLocator::timerLocator->Start(1.5f, phaseTimer);
+        SystemLocator::timerLocator->Start(TimerDurations::WAVE_PHASE, phaseTimer);
         return;
     }
 
@@ -221,7 +222,7 @@ void WaveSystem::HandleSwarmAttacks() {
         diveSpawned = false;
         diveCompleted = true;
         diveCount--;
-        SystemLocator::timerLocator->Start(1.5f, diveTimer);
+        SystemLocator::timerLocator->Start(TimerDurations::WAVE_DIVE, diveTimer);
     }
 
 }
@@ -250,7 +251,7 @@ void WaveSystem::HandleFormationAttacks() {
         enemies[enemyIndex].position,
         false);
 
-    SystemLocator::timerLocator->Start(0.5, attackTimer);
+    SystemLocator::timerLocator->Start(TimerDurations::WAVE_ATTACK, attackTimer);
     shootsFired++;
 }
 
@@ -351,7 +352,7 @@ void WaveSystem::AssignAttackCurves(const DiveType type) {
     }
 }
 
-void WaveSystem::AssignCurve(Enemy &enemy, const Vector2& start, const Vector2 &end, const DiveType type) { //TODO: make this more scalable
+void WaveSystem::AssignCurve(Enemy &enemy, const Vector2& start, const Vector2 &end, const DiveType type) {
 
     switch (type) {
 
@@ -412,7 +413,7 @@ std::vector<size_t> WaveSystem::GetGroupMemberIndices(const int id) const {
 
 const WavePattern& WaveSystem::PickWavePattern() const {
 
-    const auto patternIndex = static_cast<size_t>(GetRandomValue(1, patterns.size() - 1));
+    const auto patternIndex = static_cast<size_t>(GetRandomValue(0, patterns.size() - 1));
     return patterns[patternIndex];
 }
 
