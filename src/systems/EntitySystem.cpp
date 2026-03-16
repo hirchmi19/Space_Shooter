@@ -101,6 +101,7 @@ void EntitySystem::SpawnEnemy(const EnemyType &eType, const Vector2 &spawnPos) {
     enemy.hitbox = {spawnPos.x, spawnPos.y, size.x * RenderConstants::ENEMY_SCALING, size.y * RenderConstants::ENEMY_SCALING};
     enemy.combat = CombatComponent{1, SystemLocator::scoreLocator->GetEnemyScore(eType)};
     enemies.emplace_back(enemy);
+
 }
 
 void EntitySystem::SpawnProjectile(const ProjectileType &pType, const Vector2 &pos, bool isPlayerProjectile) {

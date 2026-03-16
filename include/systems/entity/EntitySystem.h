@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include <iostream>
 #include <memory>
 #include <ranges>
 #include <vector>

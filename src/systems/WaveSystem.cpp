@@ -43,12 +43,6 @@ void WaveSystem::Run()
             break;
     }
 
-    if (SystemLocator::entityLocator->GetEnemies().empty() && waveInitialized) {
-
-        waveCounter++;
-        waveFinished = true;
-    }
-
 }
 
 void WaveSystem::Start() {
@@ -379,19 +373,17 @@ bool WaveSystem::IsCurrentDiveFinished() const
 {
     const auto& enemies = SystemLocator::entityLocator->GetEnemies();
 
-    for (const auto& enemy : enemies)
-    {
-        if (!enemy.isAlive)
-            continue;
+    bool foundAny = false;
 
-        if (enemy.wave.diveGroup != diveCount)
-            continue;
+    for (const auto& enemy : enemies) {
+        if (!enemy.isAlive) continue;
+        if (enemy.wave.diveGroup != diveCount) continue;
 
-        if (enemy.wave.t < 1.0)
-            return false;
+        foundAny = true;
+        if (enemy.wave.t < 1.0f) return false;
     }
 
-    return true;
+    return foundAny; // only true if at least one enemy finished, not if empty
 }
 
 /**
@@ -413,7 +405,8 @@ std::vector<size_t> WaveSystem::GetGroupMemberIndices(const int id) const {
 
 const WavePattern& WaveSystem::PickWavePattern() const {
 
-    const auto patternIndex = static_cast<size_t>(GetRandomValue(0, patterns.size() - 1));
+    // start at 1 to skip WaveType::NONE at index 0
+    const auto patternIndex = static_cast<size_t>(GetRandomValue(1, patterns.size() - 1));
     return patterns[patternIndex];
 }
 

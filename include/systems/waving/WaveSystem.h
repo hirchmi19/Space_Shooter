@@ -26,7 +26,9 @@ class WaveSystem : public IWaveLocator , public IGameSystem{
 
     void Start();
     void ResetWaveCounter() {waveCounter = 1 ;}
-    int GetWaveCounter() const override {return waveCounter;};
+    int GetWaveCounter() const override {return waveCounter;}
+    bool IsWaveInitialized() const { return waveInitialized; }
+    void SetWaveFinished() { waveCounter++; waveFinished = true; }
 
     bool waveFinished = false;
 
