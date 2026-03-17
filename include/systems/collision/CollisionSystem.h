@@ -4,7 +4,6 @@
 
 #pragma once
 #include <raylib.h>
-
 #include "../../game/IGameSystem.h"
 #include "entities/Shield.h"
 

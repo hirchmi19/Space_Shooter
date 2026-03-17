@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <format>
 #include "raylib.h"
 #include "systems/rendering/RenderSystem.h"
 #include "constants/GameConstants.h"
@@ -184,7 +185,7 @@ void RenderSystem::RenderExplosions() const {
 
         if (!SystemLocator::timerLocator->IsRunning(exp.lifetime)) continue;
         DrawSprite(*exp.render.sprites[0], exp.position, exp.render.size, RenderConstants::EXPLOSION_SCALING);
-        DrawRectangleLinesEx(exp.hitbox,1.0f, PINK);
+        //DrawRectangleLinesEx(exp.hitbox,1.0f, PINK);
     }
 }
 

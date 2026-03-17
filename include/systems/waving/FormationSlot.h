@@ -3,8 +3,8 @@
 //
 
 #pragma once
-#include "DivingGroup.h"
 #include "raylib.h"
+#include "DivingGroup.h"
 
 enum class EnemyType;
 struct DivingGroup;

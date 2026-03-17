@@ -3,12 +3,11 @@
 //
 
 #pragma once
+#include <string>
 #include "raylib.h"
 #include "../../entities/enemies/EnemyType.h"
 #include "../../game/IGameSystem.h"
 #include "../../locators/IScoreLocator.h"
-#include <string>
-
 #include "LvlUpType.h"
 #include "constants/TimerDurations.h"
 #include "entities/PowerUpType.h"

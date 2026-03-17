@@ -6,7 +6,6 @@
 
 #include <vector>
 #include <array>
-
 #include "Wave.h"
 #include "../../game/IGameSystem.h"
 #include "../../utils//utils.h"

@@ -3,7 +3,7 @@
 //
 
 #pragma once
-
+#include <array>
 #include "raylib.h"
 #include "WaveState.h"
 

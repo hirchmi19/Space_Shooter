@@ -4,7 +4,7 @@
 
 #pragma once
 #include <vector>
-
+#include <cstddef>
 #include "Timer.h"
 #include "../../game/IGameSystem.h"
 #include "../../locators/ITimerLocator.h"

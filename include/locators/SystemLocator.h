@@ -4,7 +4,6 @@
 
 #pragma once
 #include <memory>
-
 #include "IAssetLocator.h"
 #include "IEntityLocator.h"
 #include "IRenderLocator.h"

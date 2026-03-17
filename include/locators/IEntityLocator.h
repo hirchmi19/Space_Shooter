@@ -5,14 +5,9 @@
 #pragma once
 
 #include "raylib.h"
-#include "entities/Player.h"
 #include "../entities/Entities.h"
 #include "entities/enemies/EnemyType.h"
-#include "../entities/Player.h"
-#include "entities/Explosion.h"
 #include "entities/PowerUpType.h"
-#include "entities/PowerUp.h"
-#include "entities/Shield.h"
 
 
 struct IEntityLocator {

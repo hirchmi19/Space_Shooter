@@ -64,6 +64,7 @@ void Game::CreateGame() {
 
     InitWindow(GameConstants::SCREEN_WIDTH, GameConstants::SCREEN_HEIGHT, "Space Shooter"); // important!: init window before creating gameworld
     SetTargetFPS(GameConstants::TARGET_FPS);
+    //ToggleFullscreen();
     world = std::make_unique<GameWorld>();
 }
 

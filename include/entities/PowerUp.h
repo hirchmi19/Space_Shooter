@@ -1,4 +1,5 @@
-#pragma once 
+#pragma once
+#include "entities/Entity.h"
 #include "PowerUpType.h"
 #include "../../../raylib.h"
 

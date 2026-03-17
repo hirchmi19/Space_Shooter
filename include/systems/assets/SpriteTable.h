@@ -1,10 +1,7 @@
 #pragma once
 #include <array>
-
 #include "EffectID.h"
-#include "Sprite.h"
-#include "SpriteID.h"
-#include "TextureID.h"
+#include "Assets.h"
 #include "entities/PowerUpType.h"
 #include "entities/enemies/EnemyType.h"
 #include "entities/projectiles/ProjectileType.h"
@@ -21,7 +18,7 @@ inline constexpr std::array PLAYER_SPRITE_TABLE = {
 inline constexpr std::array<std::pair<Sprite, Sprite>, ToIndex(EnemyType::COUNT)> ENEMY_SPRITE_TABLE = {{
 
     {Sprite{SpriteID::YELLOW_ENEMY_0, TextureID::ENEMY_CANVAS, Rectangle{56, 0, 8, 8}},
-        Sprite{SpriteID::YELLOW_ENEMY_1, TextureID::ENEMY_CANVAS, Rectangle{56, 8, 8, 7}}},// YELLOW_ENEMY
+        Sprite{SpriteID::YELLOW_ENEMY_1, TextureID::ENEMY_CANVAS, Rectangle{56, 8, 8, 7}}}, // YELLOW_ENEMY
 
     {Sprite{SpriteID::RED_ENEMY_0, TextureID::ENEMY_CANVAS, Rectangle{40, 0, 8, 8}},
         Sprite{SpriteID::RED_ENEMY_1, TextureID::ENEMY_CANVAS, Rectangle{40, 8, 8, 8}}},  // RED_ENEMY

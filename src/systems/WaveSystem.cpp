@@ -43,6 +43,12 @@ void WaveSystem::Run()
             break;
     }
 
+    if (SystemLocator::entityLocator->GetEnemies().empty() && waveInitialized) {
+
+        waveCounter++;
+        waveFinished = true;
+    }
+
 }
 
 void WaveSystem::Start() {
@@ -160,7 +166,7 @@ void WaveSystem::HandleSoloAttacks() {
         return;
     }
 
-    const int maxEnemies = std::max(4, GetRandomValue(4, static_cast<int>(enemies.size() * .25f))); // at least 4 up to 1/4 of the total enemies can solo attack
+    const int maxEnemies = std::max(4, GetRandomValue(4, static_cast<int>(enemies.size() * 0.25f))); // at least 4 up to 1/4 of the total enemies can solo attack
     int enemyIndex = 0;
 
     if (diveCount >= maxEnemies) {
@@ -373,17 +379,19 @@ bool WaveSystem::IsCurrentDiveFinished() const
 {
     const auto& enemies = SystemLocator::entityLocator->GetEnemies();
 
-    bool foundAny = false;
+    for (const auto& enemy : enemies)
+    {
+        if (!enemy.isAlive)
+            continue;
 
-    for (const auto& enemy : enemies) {
-        if (!enemy.isAlive) continue;
-        if (enemy.wave.diveGroup != diveCount) continue;
+        if (enemy.wave.diveGroup != diveCount)
+            continue;
 
-        foundAny = true;
-        if (enemy.wave.t < 1.0f) return false;
+        if (enemy.wave.t < 1.0)
+            return false;
     }
 
-    return foundAny; // only true if at least one enemy finished, not if empty
+    return true;
 }
 
 /**

@@ -3,8 +3,6 @@
 //
 
 #pragma once
-
-#include <map>
 #include <vector>
 #include "raylib.h"
 #include "Assets.h"
@@ -45,8 +43,6 @@ class AssetSystem : public IAssetLocator, public IGameSystem {
 
     std::vector<const Sprite*> GetEffectSprite(const EffectID& id) const override
     {return {&EFFECT_SPRITE_TABLE[ToIndex(id)]}; }
-
-
 
     private:
 

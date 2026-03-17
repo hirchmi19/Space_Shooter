@@ -69,10 +69,10 @@ void GameWorld::RunGameplaySystems() {
 
             entSys.Run(); // 4. remove dead entities
 
-            if (SystemLocator::entityLocator->GetEnemies().empty() && waveSys.IsWaveInitialized())
-                waveSys.SetWaveFinished(); // 5. check if wave is finished
+            if (waveSys.waveFinished) { // 5. check if wave is over
 
-            if (waveSys.waveFinished) currentGameState = GameState::END_WAVE;
+                currentGameState = GameState::END_WAVE;
+            }
 
             break;
 

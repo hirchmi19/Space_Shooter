@@ -7,15 +7,14 @@
 #include "game/GameWorld.h"
 #include "locators/SystemLocator.h"
 
-BackgroundSystem::BackgroundSystem()
-    : IGameSystem(GameSystemID::BACKGROUND_SYSTEM, "BACKGROUND_SYSTEM") {}
+BackgroundSystem::BackgroundSystem() : IGameSystem(GameSystemID::BACKGROUND_SYSTEM, "BACKGROUND_SYSTEM") {}
 
 void BackgroundSystem::Run() {
 
+    speed = SystemLocator::entityLocator->GetPlayer()->IsInFlowState() ? 15.f : 1.f;
+
   for (size_t i = 0; i < stars.size(); ++i) {
 
-    speed =
-        SystemLocator::entityLocator->GetPlayer()->IsInFlowState() ? 15.f : 1.f;
     stars[i].position.y += speed;
 
     if (stars[i].position.y >= GameConstants::SCREEN_HEIGHT)

@@ -4,9 +4,8 @@
 
 #pragma once
 #include <cstdint>
-
-#include "GameConstants.h"
 #include "raylib.h"
+#include "GameConstants.h"
 
 namespace GameWorldConstants {
 

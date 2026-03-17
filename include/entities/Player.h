@@ -6,6 +6,7 @@
 
 #include "raylib.h"
 #include <vector>
+#include <cstddef>
 #include "Entity.h"
 #include "../components/CombatComponent.h"
 #include "../components/Movement1D.h"
