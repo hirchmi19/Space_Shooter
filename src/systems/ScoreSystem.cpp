@@ -3,6 +3,11 @@
 //
 
 #include "systems/scoring/ScoreSystem.h"
+
+#include <cassert>
+#include <iostream>
+#include <ostream>
+
 #include "constants/ScoringConstants.h"
 #include "entities/enemies/EnemyType.h"
 #include "locators/SystemLocator.h"
@@ -60,11 +65,6 @@ void ScoreSystem::AddScore(const int &score, const Vector2 &pos) {
   mult = std::min(newMult, maxMult);
 }
 
-/**
- *
- * \param id returns the base score of an enemy
- * \return
- */
 int ScoreSystem::GetEnemyScore(const EnemyType &id) {
   switch (id) {
     case EnemyType::YELLOW_E:
@@ -113,10 +113,11 @@ PowerUpType ScoreSystem::RollPowerUpDrop(){
     int p = GetRandomValue(1, 8);
     if (p != 1) return PowerUpType::NONE; // 1/8 chance of dropping a power up
 
-    const int type = GetRandomValue(0, 2); // 1/3 chance the power up being a level up, a shield or an projectile
-    if (type == 0 && AnyPowerUpsAvalaible()) return PowerUpType::LEVEL_UP;
-    if (type == 1) return PowerUpType::SHIELD;
-    return PowerUpType::RANDOM_PROJECTILE;
+    const int numberOfPowerUps = AnyPowerUpsAvalaible() ? 3 : 2; // make sure no level up power ups spawn if there are no power ups left
+    const int type = GetRandomValue(1, numberOfPowerUps); // 1/3 chance the power up being a level up, a shield or an projectile
+    if (type == 1) return PowerUpType::RANDOM_PROJECTILE;
+    if (type == 2) return PowerUpType::SHIELD;
+    return PowerUpType::LEVEL_UP;
 
 }
 
@@ -126,7 +127,7 @@ PowerUpType ScoreSystem::RollPowerUpDrop(){
  */
 size_t ScoreSystem::RollLvlUp() {
 
-  if (!AnyPowerUpsAvalaible()) return 0; // important!
+  assert(!AnyPowerUpsAvalaible() && "NO LEVEL UPS AVALAIBLE!"); // prevent possible endless loop
 
   size_t type;
 
@@ -218,7 +219,7 @@ void ScoreSystem::LvlShield() {
 
 void ScoreSystem::LvlDefaultMult() {
 
-  if (baseMult >= ScoringConstants::MAX_DEFAULT_MULT) return;
+  if (baseMult >= ScoringConstants::MAX_BASE_MULT) return;
   baseMult++;
   mult = baseMult;
   CreateMessage("MULT UP!");
@@ -232,10 +233,10 @@ bool ScoreSystem::AnyPowerUpsAvalaible() {
 
   const auto& shield = SystemLocator::entityLocator->GetShield();
 
-  if (baseMult < ScoringConstants::MAX_DEFAULT_MULT) return true;
-  if (shield.lvl < 3) return true;
-  if (flowLvl < 3) return true;
-  if (SystemLocator::entityLocator->GetProjectileHp() <= 3) return true;
+  if (IsPowerUpAvalaible(LvlUpType::MULT)) return true;
+  if (IsPowerUpAvalaible(LvlUpType::SHIELD)) return true;
+  if (IsPowerUpAvalaible(LvlUpType::FLOW)) return true;
+  if (IsPowerUpAvalaible(LvlUpType::PROJECTILE)) return true;
 
   return false;
 }
@@ -253,21 +254,21 @@ bool ScoreSystem::IsPowerUpAvalaible(const LvlUpType &type) {
 
     case LvlUpType::SHIELD:
 
-      if (shield.lvl >= 3) return false;
+      if (shield.lvl >= ScoringConstants::MAX_SHIELD_LEVEL) return false;
       return true;
 
     case LvlUpType::MULT:
-      if (baseMult >= ScoringConstants::MAX_DEFAULT_MULT) return false;
+      if (baseMult >= ScoringConstants::MAX_BASE_MULT) return false;
       return true;
 
     case LvlUpType::FLOW:
 
-      if (flowLvl >= 3) return false;
+      if (flowLvl >= ScoringConstants::MAX_FLOW_LEVEL) return false;
       return true;
 
     case LvlUpType::PROJECTILE:
 
-      if (SystemLocator::entityLocator->GetProjectileHp() >= 3) return false;
+      if (SystemLocator::entityLocator->GetProjectileHp() >= ScoringConstants::MAX_PROJECTILE_LEVEL) return false;
       return true;
 
     case LvlUpType::COUNT: case LvlUpType::NONE: return false; // fall through these cases, as they are irrelevant

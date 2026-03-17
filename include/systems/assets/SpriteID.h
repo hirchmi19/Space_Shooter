@@ -6,7 +6,7 @@
 
 enum class SpriteID {
 
-    NONE,
+    //NONE,
     PLAYER_SHIP_MIDDLE,
     PLAYER_SHIP_LEFT,
     PLAYER_SHIP_RIGHT,

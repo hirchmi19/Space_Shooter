@@ -64,7 +64,7 @@ class EntitySystem : public IEntityLocator, public IGameSystem {
     std::vector<size_t> deadExplosions{};
 
     Shield shield;
-    float projctileHp = 1;
+    float projctileHp = 3;
 
     void InitPlayer();
     void InitShield();
