@@ -8,7 +8,7 @@
 struct Shield : Entity {
 
   size_t cooldown;
-  int hp = 3;
-  int lvl = 3;
+  int hp = 1;
+  int lvl = 1;
 
 };

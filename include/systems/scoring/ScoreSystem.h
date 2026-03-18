@@ -54,9 +54,9 @@ public:
 
 private:
 
-  int flowLvl = 3;
+  int flowLvl = 1;
   int highScore = 0;
-  float baseMult = 10.0f;
+  float baseMult = 1.0f;
   float mult = baseMult;
   float maxMult = 10;
   float flowBonus;

@@ -9,11 +9,12 @@ struct ITimerLocator {
 
   virtual ~ITimerLocator() = default;
 
-  virtual void Start(const float &duration, const size_t& index) = 0;
-  virtual const size_t CreateTimer(const float &duration, bool disposable) = 0;
-  virtual bool IsRunning(const size_t& index) = 0;
-  virtual float GetTimeLeft (const size_t& index) = 0;
+  virtual void Start(const float duration, const size_t index) = 0;
+  virtual const size_t CreateTimer(const float duration, bool disposable) = 0;
+  virtual bool IsRunning(const size_t index) = 0;
+  virtual float GetTimeLeft (const size_t index) = 0;
   virtual void KillTimers() = 0;
   virtual void ClearTimers() = 0;
+  virtual void Pause(const size_t index) = 0;
 
 };

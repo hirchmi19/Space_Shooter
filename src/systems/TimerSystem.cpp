@@ -11,15 +11,15 @@
 
 TimerSystem::TimerSystem() : IGameSystem(GameSystemID::TIMER_SYSTEM, "TIMER_SYSTEM") {
 
-    timers.reserve(500);
+    timers.reserve(500); // reserve with large number
 }
 void TimerSystem::Run() {
 
     for (size_t index = 0; index < timers.size(); index++) {
 
-        if (!timers[index].isRunning) continue;
+        if (!timers[index].isRunning || timers[index].isPaused) continue;
 
-        const float delta = 1.0f / GameConstants::UPS;
+        constexpr float delta = 1.0f / GameConstants::UPS;
         timers[index].elapsedTime += delta;
         timers[index].timeLeft -= delta;
 
@@ -34,7 +34,7 @@ void TimerSystem::Run() {
     }
 }
 
-void TimerSystem::Start(const float &duration, const size_t &index) {
+void TimerSystem::Start(const float duration, const size_t index) {
 
     timers[index].isRunning = true;
     timers[index].elapsedTime = 0;
@@ -42,7 +42,7 @@ void TimerSystem::Start(const float &duration, const size_t &index) {
     timers[index].timeLeft = duration;
 }
 
-const size_t TimerSystem::CreateTimer(const float &duration, bool disposable) {
+const size_t TimerSystem::CreateTimer(const float duration, bool disposable) {
 
     assert(timers.size() < timers.capacity() && "TIMER CAPACITY REACHED!");
 
@@ -52,7 +52,7 @@ const size_t TimerSystem::CreateTimer(const float &duration, bool disposable) {
     return timers.size() - 1;
 }
 
-bool TimerSystem::IsRunning(const size_t &index) {
+bool TimerSystem::IsRunning(const size_t index) {
 
     return timers[index].isRunning;
 }

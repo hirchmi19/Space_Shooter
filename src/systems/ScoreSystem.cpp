@@ -127,7 +127,7 @@ PowerUpType ScoreSystem::RollPowerUpDrop(){
  */
 size_t ScoreSystem::RollLvlUp() {
 
-  assert(!AnyPowerUpsAvalaible() && "NO LEVEL UPS AVALAIBLE!"); // prevent possible endless loop
+  assert(AnyPowerUpsAvalaible() && "NO LEVEL UPS AVALAIBLE!"); // prevent possible endless loop
 
   size_t type;
 
@@ -197,20 +197,20 @@ void ScoreSystem::ExecuteLvlUp(const size_t &index) {
 
 void ScoreSystem::LvlFlowState() {
 
-  if (flowLvl <= 3) {
+  if (flowLvl >= ScoringConstants::MAX_FLOW_LEVEL) return;
 
-    flowLvl++;
-    maxMult *= 2.5f;
-    flowTime += 2.0f;
-    CreateMessage("FLOW STATE UP!");
+  flowLvl++;
+  maxMult *= 2.5f;
+  flowTime += 2.0f;
+  CreateMessage("FLOW STATE UP!");
 
-  }
+
 }
 
 void ScoreSystem::LvlShield() {
 
   auto& shield = SystemLocator::entityLocator->GetShield();
-  if (shield.lvl >= 3) return;
+  if (shield.lvl >= ScoringConstants::MAX_SHIELD_LEVEL) return;
 
   shield.lvl++;
   shield.hp++;
@@ -230,8 +230,6 @@ void ScoreSystem::LvlDefaultMult() {
  * \return
  */
 bool ScoreSystem::AnyPowerUpsAvalaible() {
-
-  const auto& shield = SystemLocator::entityLocator->GetShield();
 
   if (IsPowerUpAvalaible(LvlUpType::MULT)) return true;
   if (IsPowerUpAvalaible(LvlUpType::SHIELD)) return true;
@@ -253,23 +251,16 @@ bool ScoreSystem::IsPowerUpAvalaible(const LvlUpType &type) {
   switch (type) {
 
     case LvlUpType::SHIELD:
-
-      if (shield.lvl >= ScoringConstants::MAX_SHIELD_LEVEL) return false;
-      return true;
+      return shield.lvl >= ScoringConstants::MAX_SHIELD_LEVEL;
 
     case LvlUpType::MULT:
-      if (baseMult >= ScoringConstants::MAX_BASE_MULT) return false;
-      return true;
+      return baseMult >= ScoringConstants::MAX_BASE_MULT;
 
     case LvlUpType::FLOW:
-
-      if (flowLvl >= ScoringConstants::MAX_FLOW_LEVEL) return false;
-      return true;
+      return flowLvl >= ScoringConstants::MAX_FLOW_LEVEL;
 
     case LvlUpType::PROJECTILE:
-
-      if (SystemLocator::entityLocator->GetProjectileHp() >= ScoringConstants::MAX_PROJECTILE_LEVEL) return false;
-      return true;
+      return SystemLocator::entityLocator->GetProjectileHp() >= ScoringConstants::MAX_PROJECTILE_LEVEL;
 
     case LvlUpType::COUNT: case LvlUpType::NONE: return false; // fall through these cases, as they are irrelevant
   }

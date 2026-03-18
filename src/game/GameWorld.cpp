@@ -87,7 +87,7 @@ void GameWorld::RunGameplaySystems() {
                 SystemLocator::timerLocator->KillTimers();
                 scoreSys.ResetMult();
                 entSys.ClearEntities();
-                entSys.GetPlayer()->LeaveFlowState(); // debatable. Could be turned off, as a design choice
+               // entSys.GetPlayer()->LeaveFlowState();
             }
 
             if (!SystemLocator::timerLocator->IsRunning(transitionTimer) && timerStarted) {

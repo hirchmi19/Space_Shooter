@@ -17,12 +17,16 @@ class TimerSystem : public ITimerLocator, public IGameSystem{
     ~TimerSystem() override = default;
 
     void Run() override;
-    void Start(const float &duration, const size_t& index) override;
-    const size_t CreateTimer(const float &duration, bool disposable) override;
-    bool IsRunning(const size_t& index) override;
-    float GetTimeLeft(const size_t& index) override {return timers[index].timeLeft; }
+    void Start(float duration, const size_t index) override;
+    const size_t CreateTimer(float duration, bool disposable) override;
+    bool IsRunning(size_t index) override;
+    float GetTimeLeft(const size_t index) override {return timers[index].timeLeft; }
     void KillTimers() override;
     void ClearTimers() override { timers.clear(); }
+    void Pause(const size_t index) override {
+        if (timers.size() >= index) return;
+        timers[index].isPaused = true;
+    }
 
     private:
 

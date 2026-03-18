@@ -11,5 +11,6 @@ struct Timer {
     float timeLeft;
     bool disposable;
     bool isRunning = false;
+    bool isPaused = false;
 
 };
