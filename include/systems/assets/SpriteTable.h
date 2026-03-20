@@ -17,14 +17,23 @@ inline constexpr std::array PLAYER_SPRITE_TABLE = {
 
 inline constexpr std::array<std::pair<Sprite, Sprite>, ToIndex(EnemyType::COUNT)> ENEMY_SPRITE_TABLE = {{
 
+    {Sprite{}, Sprite{}},
+
     {Sprite{SpriteID::YELLOW_ENEMY_0, TextureID::ENEMY_CANVAS, Rectangle{56, 0, 8, 8}},
         Sprite{SpriteID::YELLOW_ENEMY_1, TextureID::ENEMY_CANVAS, Rectangle{56, 8, 8, 7}}}, // YELLOW_ENEMY
 
     {Sprite{SpriteID::RED_ENEMY_0, TextureID::ENEMY_CANVAS, Rectangle{40, 0, 8, 8}},
         Sprite{SpriteID::RED_ENEMY_1, TextureID::ENEMY_CANVAS, Rectangle{40, 8, 8, 8}}},  // RED_ENEMY
 
+    {Sprite{SpriteID::PINK_ENEMY_0, TextureID::ENEMY_CANVAS, Rectangle{65, 0, 6, 8}},
+        Sprite{SpriteID::PINK_ENEMY_1, TextureID::ENEMY_CANVAS, Rectangle{64, 8, 8, 8}}}, // PINK_ENEMY
+
+    {Sprite{SpriteID::BLUE_ENEMY_0, TextureID::ENEMY_CANVAS, Rectangle{81, 0, 6, 8}},
+        Sprite{SpriteID::BLUE_ENEMY_1, TextureID::ENEMY_CANVAS, Rectangle{81, 8, 6, 8}}}, // BLUE_ENEMY
+
     {Sprite{SpriteID::BLACK_ENEMY_0, TextureID::ENEMY_CANVAS, Rectangle{72, 0, 8, 8}},
         Sprite{SpriteID::BLACK_ENEMY_1, TextureID::ENEMY_CANVAS, Rectangle{72, 8, 8, 8}}},  // BLACK_ENEMY
+
 }};
 
 

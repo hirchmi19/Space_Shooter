@@ -66,7 +66,9 @@ void ScoreSystem::AddScore(const int &score, const Vector2 &pos) {
 }
 
 int ScoreSystem::GetEnemyScore(const EnemyType &id) {
+
   switch (id) {
+
     case EnemyType::YELLOW_E:
       return ScoringConstants::YELLOW_ENEMY_SCORE;
 
@@ -75,6 +77,12 @@ int ScoreSystem::GetEnemyScore(const EnemyType &id) {
 
     case EnemyType::BLACK_E:
       return ScoringConstants::BLACK_ENEMY_SCORE;
+
+    case EnemyType::PINK_E:
+      return ScoringConstants::PINK_ENEMY_SCORE;
+
+    case EnemyType::BLUE_E:
+      return ScoringConstants::BLUE_ENEMY_SCORE;
 
     default:
       return 0;

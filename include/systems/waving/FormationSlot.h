@@ -4,7 +4,6 @@
 
 #pragma once
 #include "raylib.h"
-#include "DivingGroup.h"
 
 enum class EnemyType;
 struct DivingGroup;
@@ -13,9 +12,9 @@ struct Enemy;
 
 struct FormationSlot {
 
-    Vector2 position{};
-    DivingGroup group{};
-    EnemyType type{};
-    int slotIndex = 0;
+    Vector2 position;
+    int groupID;
+    EnemyType type;
+    int gridIndex = 0;
 
 };

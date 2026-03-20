@@ -11,5 +11,7 @@ namespace WaveConstants {
     inline constexpr float HORIZONTAL_SPACING = 60.0f;
     inline constexpr float VERTICAL_SPACING   = 65.0f;
     inline constexpr int NUMBER_OF_ENEMIES = 44;
+    inline constexpr int TOP_ROW_ENEMIES = 4;
+    inline constexpr int MIDDLE_ROW_ENEMIES = 20;
 
 }

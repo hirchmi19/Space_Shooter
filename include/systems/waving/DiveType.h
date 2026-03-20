@@ -6,8 +6,11 @@
 
 enum class DiveType {
 
-    NONE,
-    FROM_TOP,
-    FROM_SIDES,
+    NONE = 0,
+    TOP,
+    SIDE,
+    SIDE_RANDOM,
+    LOOP,
+    LOOP_RANDOM,
     COUNT
 };

@@ -6,8 +6,11 @@
 
 enum class EnemyType {
 
+    NONE,
     YELLOW_E,
     RED_E,
+    PINK_E,
+    BLUE_E,
     BLACK_E,
     COUNT
 

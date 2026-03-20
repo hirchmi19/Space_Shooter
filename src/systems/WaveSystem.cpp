@@ -10,6 +10,7 @@
 #include "constants/TimerDurations.h"
 #include "constants/WaveConstants.h"
 #include "locators/SystemLocator.h"
+#include "systems/waving/BezierCurves.h"
 
 
 WaveSystem::WaveSystem() : IGameSystem(GameSystemID::WAVE_SYSTEM, "WAVE_SYSTEM") {}
@@ -77,8 +78,6 @@ void WaveSystem::Init() {
     CalcFormationPositions();
     CalcTopDiveSpawns();
     CalcSideDiveSpawns();
-    BuildFormationSlots();
-    DefinePatterns();
 }
 
 void WaveSystem::InitTimers() {
@@ -96,14 +95,15 @@ void WaveSystem::StartWave() {
 
     waveInitialized = false;
 
+    divingGroupCounter = GetRandomValue(3, 6);
     diveCount = 0;
     diveSpawned = false;
     diveCompleted = false;
     enemiesSpawned = false;
     shootsFired = 0;
-    currentPattern = PickWavePattern();
 
-    BuildDivingGroups(currentPattern);
+    BuildFormationSlots();
+    BuildDivingGroups();
     currentPhase = WavePhase::FORMATION_OFF;
 }
 
@@ -115,7 +115,7 @@ void WaveSystem::BuildFormation()
 {
     if (SystemLocator::timerLocator->IsRunning(diveTimer) && diveSpawned) return;
 
-    if (diveCount >= currentPattern.numberOfDives)
+    if (diveCount >= divingGroupCounter)
     {
         currentPhase = WavePhase::FORMATION_ON;
         diveCount = 0;
@@ -127,8 +127,8 @@ void WaveSystem::BuildFormation()
 
     if (!diveSpawned)
     {
-        const DiveType type = currentPattern.dives[diveCount];
 
+        const DiveType& type = ToEnum<DiveType>(static_cast<size_t>(GetRandomValue(1, ToIndex(DiveType::COUNT) - 1 )));
         if (!enemiesSpawned) SpawnDive(type);
         AssignDiveCurves(type);
 
@@ -161,7 +161,7 @@ void WaveSystem::HandleSoloAttacks() {
     if (enemies.size() < 4) {
 
         currentPhase = WavePhase::READY_FOR_SWARM;
-        diveCount = currentPattern.numberOfDives;
+        diveCount = divingGroupCounter;
         shootsFired = 0;
         return;
     }
@@ -172,7 +172,7 @@ void WaveSystem::HandleSoloAttacks() {
     if (diveCount >= maxEnemies) {
 
         currentPhase = WavePhase::READY_FOR_SWARM;
-        diveCount = currentPattern.numberOfDives;
+        diveCount = divingGroupCounter;
         shootsFired = 0;
         return;
     }
@@ -181,7 +181,7 @@ void WaveSystem::HandleSoloAttacks() {
         enemyIndex = GetRandomValue(0, static_cast<int>(enemies.size() - 1));
     }while (enemies[enemyIndex].wave.state != WaveState::IN_FORMATION);
 
-    AssignBezierSolo(enemies[enemyIndex],
+    CalcControlPointsSolo(enemies[enemyIndex],
         enemies[enemyIndex].wave.formationPosition,
         SystemLocator::entityLocator->GetPlayer()->GetPosition());
 
@@ -195,9 +195,11 @@ void WaveSystem::HandleSoloAttacks() {
  */
 void WaveSystem::HandleSwarmAttacks() {
 
+
     if (SystemLocator::timerLocator->IsRunning(diveTimer) && diveSpawned ||
         SystemLocator::entityLocator->GetEnemies().empty()) return;
 
+    // phase shift
     if (diveCount  < 0) {
 
         currentPhase = WavePhase::FORMATION_OFF;
@@ -206,17 +208,17 @@ void WaveSystem::HandleSwarmAttacks() {
         return;
     }
 
+    // spawn and execute next dive
     if (!diveSpawned) {
 
-        const DiveType type = currentPattern.dives[diveCount];
-
-        AssignAttackCurves(type);
+        AssignAttackCurves();
 
         diveSpawned = true;
         diveCompleted = false;
         return;
     }
 
+    // wait for dive to finish
     if (IsCurrentDiveFinished() && diveSpawned)
     {
         diveSpawned = false;
@@ -234,7 +236,7 @@ void WaveSystem::HandleFormationAttacks() {
 
     const auto& enemies = SystemLocator::entityLocator->GetEnemies();
 
-    if (enemies.size() <= 2) return;
+    if (enemies.size() <= 2) return; // not enough enemies left in the formation
 
     const int maxShots = static_cast<int>(SystemLocator::entityLocator->GetEnemies().size() / 2);
 
@@ -255,43 +257,71 @@ void WaveSystem::HandleFormationAttacks() {
     shootsFired++;
 }
 
+/**
+ * Define formation slots and assign enemies randomly
+ */
 void WaveSystem::BuildFormationSlots() {
 
     formationSlots.clear();
 
-    for (size_t i = 0; i < formationPositions.size(); ++i)
-    {
+    constexpr EnemyType topEnemy = EnemyType::BLACK_E; // black enemies are always in the top row
+
+    const EnemyType middleEnemy = ToEnum<EnemyType>(   // possible enemies for middel rows of formation
+            static_cast<size_t>(GetRandomValue(
+                    ToIndex(EnemyType::RED_E),
+                    ToIndex(EnemyType::BLUE_E)
+                    )));
+
+    EnemyType bottomEnemy = EnemyType::NONE;
+
+    if (middleEnemy == EnemyType::RED_E) bottomEnemy = EnemyType::YELLOW_E; // possible enemies for bottoms rows of formation
+    else {
+        bottomEnemy = ToEnum<EnemyType>(
+         static_cast<size_t>(GetRandomValue(
+                 ToIndex(EnemyType::YELLOW_E),
+                 ToIndex(EnemyType::RED_E)
+                 )));
+    }
+
+    for (size_t i = 0; i < formationPositions.size(); ++i) {
+
         FormationSlot slot;
         slot.position = formationPositions[i];
 
-        if (i < 4) // 4 black enemies, and 20 red and yellow enemies (= 44)
-            slot.type = EnemyType::BLACK_E;
-        else if (i < 20)
-            slot.type = EnemyType::RED_E;
+        if (i < WaveConstants::TOP_ROW_ENEMIES)
+            slot.type = topEnemy;
+        else if (i < WaveConstants::MIDDLE_ROW_ENEMIES)
+            slot.type = middleEnemy;
         else
-            slot.type = EnemyType::YELLOW_E;
+            slot.type = bottomEnemy;
 
         formationSlots.push_back(slot);
+        }
     }
 
-}
-
 /**
- * Separates enemies in diving groups or sub-waves
- * \param pattern
+ * Partitions enemies in diving groups or sub-waves
  */
-void WaveSystem::BuildDivingGroups(const WavePattern& pattern)
+void WaveSystem::BuildDivingGroups()
 {
     size_t index = 0;
+    const int enemiesPerGroup = WaveConstants::NUMBER_OF_ENEMIES / divingGroupCounter;
 
-    for (int dive = 0; dive < pattern.numberOfDives; ++dive)
+    // assign all enemies to their diving groups except for the last group
+    for (int dive = 0; dive < divingGroupCounter - 1; ++dive)
     {
-        for (int j = 0; j < pattern.groupSizes[dive]; ++j)
+        for (int slot = 0; slot < enemiesPerGroup; ++slot)
         {
-            formationSlots[index].group.groupID = dive;
-            formationSlots[index].group.dive = pattern.dives[dive];
+            formationSlots[index].groupID = dive;
             index++;
         }
+    }
+
+    // fill last diving group with remaining enemies
+    while (index < formationSlots.size()) {
+
+        formationSlots[index].groupID = divingGroupCounter - 1;
+        index++;
     }
 }
 
@@ -302,7 +332,7 @@ void WaveSystem::BuildDivingGroups(const WavePattern& pattern)
 void WaveSystem::SpawnDive(const DiveType type) {
 
     const auto indices = GetGroupMemberIndices(diveCount);
-    const auto& spawns = (type == DiveType::FROM_TOP) ? topDiveSpawns : sideDiveSpawns;
+    const auto& spawns = (type == DiveType::TOP) ? topDiveSpawns : sideDiveSpawns;
 
     for (size_t i = 0; i < indices.size(); ++i)
     {
@@ -315,17 +345,16 @@ void WaveSystem::SpawnDive(const DiveType type) {
         enemy.wave.formationPosition = slot.position;
         enemy.wave.diveGroup = diveCount;
         enemy.wave.spawnPosition = spawn;
-        enemy.wave.slotIndex = slot.slotIndex;
+        enemy.wave.slotIndex = slot.gridIndex;
     }
 }
 
 /**
  * Assigns all members of a diving group to the correct Bézier curve
- * \param type
  */
-void WaveSystem::AssignDiveCurves(const DiveType type)
+void WaveSystem::AssignDiveCurves(const DiveType &type)
 {
-     auto& enemies = SystemLocator::entityLocator->GetEnemies();
+    auto& enemies = SystemLocator::entityLocator->GetEnemies();
 
     for (auto& enemy : enemies)
     {
@@ -336,18 +365,18 @@ void WaveSystem::AssignDiveCurves(const DiveType type)
     }
 }
 
-void WaveSystem::AssignAttackCurves(const DiveType type) {
+void WaveSystem::AssignAttackCurves() {
 
     auto& enemies = SystemLocator::entityLocator->GetEnemies();
 
     for (auto& enemy : enemies) {
 
-        const Vector2& end = {enemy.wave.formationPosition.x, SystemLocator::entityLocator->GetPlayer()->GetPosition().y + 100.f};
+        const Vector2& end = {enemy.wave.formationPosition.x,SystemLocator::entityLocator->GetPlayer()->GetPosition().y + 100.f};
 
-        if (enemy.wave.diveGroup != diveCount)continue;
+        if (enemy.wave.diveGroup != diveCount) continue;
         if (enemy.wave.state != WaveState::IN_FORMATION) continue;
 
-        AssignBezierSide(enemy, enemy.wave.formationPosition, end);
+        CalcControlPointsSide(enemy, enemy.wave.formationPosition, end);
         enemy.wave.state = WaveState::ATTACK;
     }
 }
@@ -356,18 +385,28 @@ void WaveSystem::AssignCurve(Enemy &enemy, const Vector2& start, const Vector2 &
 
     switch (type) {
 
-        case DiveType::FROM_TOP:
-
-            AssignBezierTop(enemy, start, end);
-            enemy.wave.state = WaveState::ENTER_FORMATION;
+        case DiveType::TOP:
+            CalcControlPointsTop(enemy, start, end);
             break;
 
-        case DiveType::FROM_SIDES:
+        case DiveType::SIDE:
+            CalcControlPointsSide(enemy, start, end);
+            break;
 
-            AssignBezierSide(enemy, start, end);
-            enemy.wave.state = WaveState::ENTER_FORMATION;
+        case DiveType::SIDE_RANDOM:
+            CalcControlPointsSideRandom(enemy, start, end);
+            break;
+
+        case DiveType::LOOP:
+            CalcControlPointsLoop(enemy, start, end);
+            break;
+
+        case DiveType::LOOP_RANDOM:
+            CalcControlPointsLoopRandom(enemy, start, end);
             break;
     }
+
+    enemy.wave.state = WaveState::ENTER_FORMATION;
 
 }
 
@@ -405,17 +444,10 @@ std::vector<size_t> WaveSystem::GetGroupMemberIndices(const int id) const {
 
     for (size_t i = 0; i < formationSlots.size(); ++i) {
 
-        if (formationSlots[i].group.groupID == id) result.push_back(i);
+        if (formationSlots[i].groupID == id) result.push_back(i);
     }
 
     return result;
-}
-
-const WavePattern& WaveSystem::PickWavePattern() const {
-
-    // start at 1 to skip WaveType::NONE at index 0
-    const auto patternIndex = static_cast<size_t>(GetRandomValue(1, patterns.size() - 1));
-    return patterns[patternIndex];
 }
 
 
@@ -499,64 +531,3 @@ void WaveSystem::CalcSideDiveSpawns()
     }
 }
 
-
-// DEFINITIONS --------------------------------------------------------------------------
-
-/**
- * Define wave patterns
- */
-void WaveSystem::DefinePatterns() {
-
-    patterns[ToIndex(WaveType::TOP_SIDE_TOP)]= {WaveType::TOP_SIDE_TOP, 3, {16, 16, 12},
-    {DiveType::FROM_TOP, DiveType::FROM_SIDES, DiveType::FROM_TOP}};
-
-    patterns[ToIndex(WaveType::SIDE_TOP_SIDE)] = {WaveType::SIDE_TOP_SIDE, 3, {16, 16, 12},
-{DiveType::FROM_SIDES, DiveType::FROM_TOP, DiveType::FROM_SIDES}};
-
-    // Define wave patterns here
-}
-
-
-// Define all Bézier curves here TODO: better to defines this as structs
-
-void WaveSystem::AssignBezierTop(Enemy& enemy, const Vector2& start, const Vector2& end) {
-
-    enemy.wave.controlPoints[0] = start;
-
-    enemy.wave.controlPoints[1] = {start.x * 0.8f + end.x * 0.2f,start.y + 400.0f };
-    enemy.wave.controlPoints[2] = {end.x,start.y + 600.0f };
-
-    enemy.wave.controlPoints[3] = end;
-
-    enemy.wave.t = 0.0f;
-}
-
-void WaveSystem::AssignBezierSide(Enemy &enemy, const Vector2 &start, const Vector2 &end) {
-
-    enemy.wave.controlPoints[0] = start;
-
-    const bool fromLeft = start.x < 0;
-
-    constexpr float horizontalPull = 200.0f;
-    constexpr float verticalPull  = 800.0f;
-
-    enemy.wave.controlPoints[1] = {start.x + (fromLeft ? horizontalPull : -horizontalPull),start.y + verticalPull};
-    enemy.wave.controlPoints[2].x = end.x + (fromLeft ? -40.0f : 40.0f);
-    enemy.wave.controlPoints[3] = end;
-
-    enemy.wave.t = 0.0f;
-}
-
-void WaveSystem::AssignBezierSolo(Enemy &enemy, const Vector2 &start, const Vector2 &end) {
-
-    enemy.wave.controlPoints[0] = start;
-
-    const bool fromLeft = start.x < GameConstants::SCREEN_WIDTH / 2;
-    constexpr float horizontalPull = 450.0f;
-
-    enemy.wave.controlPoints[1] = {start.x + (fromLeft ? horizontalPull : -horizontalPull),start.y + 300.0f};
-    enemy.wave.controlPoints[2] = {end.x + (fromLeft ? -60.0f : 60.0f),end.y - 150.0f};
-    enemy.wave.controlPoints[3] = {end.x, end.y + 100.0f};
-
-    enemy.wave.t = 0.0f;
-}

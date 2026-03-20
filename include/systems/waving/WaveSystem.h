@@ -12,7 +12,7 @@
 #include "../../locators/IWaveLocator.h"
 
 
-class WaveSystem : public IWaveLocator , public IGameSystem{
+class WaveSystem : public IWaveLocator , public IGameSystem {
 
 
     public:
@@ -24,7 +24,7 @@ class WaveSystem : public IWaveLocator , public IGameSystem{
     void InitTimers() override;
 
     void Start();
-    void ResetWaveCounter() {waveCounter = 1 ;}
+    void ResetWaveCounter() { waveCounter = 1 ;}
     int GetWaveCounter() const override {return waveCounter;}
     bool IsWaveInitialized() const { return waveInitialized; }
     void SetWaveFinished() { waveCounter++; waveFinished = true; }
@@ -38,6 +38,7 @@ class WaveSystem : public IWaveLocator , public IGameSystem{
     bool diveCompleted = true;
     bool enemiesSpawned = false;
 
+    int divingGroupCounter = 0;
     int diveCount = 0;
     int shootsFired = 0;
     int waveCounter = 1;
@@ -53,29 +54,18 @@ class WaveSystem : public IWaveLocator , public IGameSystem{
     std::vector<Vector2> sideDiveSpawns{};
 
     WavePhase currentPhase = WavePhase::INITIALIZE;
-    WavePattern currentPattern{};
-
-    std::array<WavePattern, ToIndex(WaveType::COUNT)> patterns{};
 
 
     void StartWave();
-
-    void DefinePatterns();
-    const WavePattern& PickWavePattern() const;
-
-    void AssignBezierTop(Enemy& enemy, const Vector2& start, const Vector2& end);
-    void AssignBezierSide(Enemy& enemy, const Vector2& start, const Vector2& end);
-    void AssignBezierSolo(Enemy& enemy, const Vector2& start, const Vector2& end);
-
-    void BuildDivingGroups(const WavePattern &pattern);
+    void BuildDivingGroups();
     void BuildFormationSlots();
 
     std::vector<size_t> GetGroupMemberIndices(int id) const;
 
     void SpawnDive(DiveType type);
 
-    void AssignDiveCurves(DiveType type);
-    void AssignAttackCurves(DiveType type);
+    void AssignDiveCurves(const DiveType &type);
+    void AssignAttackCurves();
     void AssignCurve(Enemy& enemy,const Vector2& start, const Vector2& end, DiveType type);
 
     void BuildFormation();
