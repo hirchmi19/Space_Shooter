@@ -51,7 +51,7 @@ inline constexpr std::array POWER_UP_ICON_SPRITE_TABLE = {
     Sprite{}, // dummy entry to skip NONE entry
     Sprite{SpriteID::ARROW_LEVEL_UP, TextureID::EFFECT_CANVAS, Rectangle{16, 8, 8, 8}},
     Sprite{SpriteID::SHIELD_ICON, TextureID::EFFECT_CANVAS, Rectangle{24, 0, 8, 8}},
-    Sprite{SpriteID::RANDOM_PROJECTILE, TextureID::PROJECTILE_CANVAS, Rectangle{2, 33, 5, 5}},
+    Sprite{SpriteID::RANDOM_PROJECTILE, TextureID::EFFECT_CANVAS, Rectangle{24, 8, 8, 8}},
 };
 
 inline constexpr std::array<Sprite, ToIndex(EffectID::COUNT)> EFFECT_SPRITE_TABLE = {

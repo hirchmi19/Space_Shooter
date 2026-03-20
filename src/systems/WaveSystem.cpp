@@ -95,7 +95,7 @@ void WaveSystem::StartWave() {
 
     waveInitialized = false;
 
-    divingGroupCounter = GetRandomValue(3, 6);
+    divingGroupCounter = GetRandomValue(WaveConstants::MIN_DIVES, WaveConstants::MAX_DIVES);
     diveCount = 0;
     diveSpawned = false;
     diveCompleted = false;

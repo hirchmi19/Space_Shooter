@@ -118,8 +118,8 @@ void ScoreSystem::CreateMessage(const std::string &msg) {
  */
 PowerUpType ScoreSystem::RollPowerUpDrop(){
 
-    int p = GetRandomValue(1, 8);
-    if (p != 1) return PowerUpType::NONE; // 1/8 chance of dropping a power up
+   const int p = GetRandomValue(1, 6);
+   if (p != 1) return PowerUpType::NONE; // 1/8 chance of dropping a power up
 
     const int numberOfPowerUps = AnyPowerUpsAvalaible() ? 3 : 2; // make sure no level up power ups spawn if there are no power ups left
     const int type = GetRandomValue(1, numberOfPowerUps); // 1/3 chance the power up being a level up, a shield or an projectile
@@ -259,16 +259,16 @@ bool ScoreSystem::IsPowerUpAvalaible(const LvlUpType &type) {
   switch (type) {
 
     case LvlUpType::SHIELD:
-      return shield.lvl >= ScoringConstants::MAX_SHIELD_LEVEL;
+      return shield.lvl < ScoringConstants::MAX_SHIELD_LEVEL;
 
     case LvlUpType::MULT:
-      return baseMult >= ScoringConstants::MAX_BASE_MULT;
+      return baseMult < ScoringConstants::MAX_BASE_MULT;
 
     case LvlUpType::FLOW:
-      return flowLvl >= ScoringConstants::MAX_FLOW_LEVEL;
+      return flowLvl < ScoringConstants::MAX_FLOW_LEVEL;
 
     case LvlUpType::PROJECTILE:
-      return SystemLocator::entityLocator->GetProjectileHp() >= ScoringConstants::MAX_PROJECTILE_LEVEL;
+      return SystemLocator::entityLocator->GetProjectileHp() < ScoringConstants::MAX_PROJECTILE_LEVEL;
 
     case LvlUpType::COUNT: case LvlUpType::NONE: return false; // fall through these cases, as they are irrelevant
   }

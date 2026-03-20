@@ -13,5 +13,7 @@ namespace WaveConstants {
     inline constexpr int NUMBER_OF_ENEMIES = 44;
     inline constexpr int TOP_ROW_ENEMIES = 4;
     inline constexpr int MIDDLE_ROW_ENEMIES = 20;
+    inline constexpr int MIN_DIVES = 3;
+    inline constexpr int MAX_DIVES = 6;
 
 }
