@@ -16,6 +16,7 @@ The project uses Raylib version 5.5, which is installed by its CMake config. Thi
 - SPACE : Shoot
 
 **Gameplay:**
+
 Survive endless procedurally generated waves of enemies in a classic formation-based space shooter. Destroy enemies to build your score multiplier, enter Flow State for increased speed and firepower, collect power-ups, and hit score milestones to unlock permanent upgrades.
 
 - Procedural wave generation, e.g random group sizes, dive counts and enemy compositions each wave
@@ -28,6 +29,7 @@ Survive endless procedurally generated waves of enemies in a classic formation-b
 - Rocket explosions with area damage
 
 **Architecture:**
+
 The project uses a system-based architecture with a service locator for cross-system communication and a component-based entity model.
 
 Key design decisions:
