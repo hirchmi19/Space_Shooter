@@ -1,7 +1,7 @@
 # Space_Shooter
 
 A small but structured **C++ arcade-style space shooter** built with **raylib** and **CMake**.
-The project uses Raylib version 5.5, which is installed by its CMake config.This was my first C++ project and the goal was to get hands-on experience with the language by building something real.
+The project uses Raylib version 5.5, which is installed by its CMake config. This was my first C++ project and the goal was to get hands-on experience with the language by building something real.
 
 ## Game
 
@@ -29,33 +29,6 @@ Survive endless procedurally generated waves of enemies in a classic formation-b
 
 **Architecture:**
 The project uses a system-based architecture with a service locator for cross-system communication and a component-based entity model.
-
-src/
-├── main.cpp
-├── game/
-│   ├── Game.cpp              # Game loop (fixed timestep)
-│   └── GameWorld.cpp         # Scene & game state machine
-├── systems/
-│   ├── AssetSystem           # Texture loading, compile-time sprite tables
-│   ├── EntitySystem          # Entity lifecycle & spawning
-│   ├── MovementSystem        # Player, enemy & projectile movement
-│   ├── CollisionSystem       # Collision detection with broadphase checks
-│   ├── WaveSystem            # Procedural wave generation & attack patterns
-│   ├── ScoreSystem           # Scoring, multiplier, flow state & milestones
-│   ├── RenderSystem          # All rendering & UI
-│   ├── TimerSystem           # Index-based timer handles
-│   └── BackgroundSystem      # Parallax starfield
-├── entities/
-│   ├── Entity                # Base struct (position, hitbox, render, isAlive)
-│   ├── Player
-│   ├── Enemy
-│   ├── Projectile
-│   ├── PowerUp
-│   ├── Explosion
-│   └── Shield
-└── systems/waving/
-    ├── BezierCurves.cpp      # All Bézier curve definitions
-    └── WaveSystem.cpp        # Wave logic
 
 Key design decisions:
 
