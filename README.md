@@ -1,7 +1,7 @@
 # Space_Shooter
 
 A small but structured **C++ arcade-style space shooter** built with **raylib** and **CMake**.
-The project uses Raylib version 5.5, which is installed by its CMake config. 
+The project uses Raylib version 5.5, which is installed by its CMake config.This was my first C++ project and the goal was to get hands-on experience with the language by building something real.
 
 ## Game
 
@@ -15,9 +15,61 @@ The project uses Raylib version 5.5, which is installed by its CMake config.
 - D | → : Move right
 - SPACE : Shoot
 
+**Gameplay:**
+Survive endless procedurally generated waves of enemies in a classic formation-based space shooter. Destroy enemies to build your score multiplier, enter Flow State for increased speed and firepower, collect power-ups, and hit score milestones to unlock permanent upgrades.
+
+- Procedural wave generation, e.g random group sizes, dive counts and enemy compositions each wave
+- Five Bézier curve movement types for enemy entry paths 
+- Five enemy types with randomized formation placement
+- Multiplier system that builds as you kill enemies and decays over time
+- Flow State which triggers at high multipliers, boosting speed and unlocking dash and rapid fire
+- Collectible power-ups: projectile types 
+- Shield system with HP and cooldown
+- Rocket explosions with area damage
+
+**Architecture:**
+The project uses a system-based architecture with a service locator for cross-system communication and a component-based entity model.
+
+src/
+├── main.cpp
+├── game/
+│   ├── Game.cpp              # Game loop (fixed timestep)
+│   └── GameWorld.cpp         # Scene & game state machine
+├── systems/
+│   ├── AssetSystem           # Texture loading, compile-time sprite tables
+│   ├── EntitySystem          # Entity lifecycle & spawning
+│   ├── MovementSystem        # Player, enemy & projectile movement
+│   ├── CollisionSystem       # Collision detection with broadphase checks
+│   ├── WaveSystem            # Procedural wave generation & attack patterns
+│   ├── ScoreSystem           # Scoring, multiplier, flow state & milestones
+│   ├── RenderSystem          # All rendering & UI
+│   ├── TimerSystem           # Index-based timer handles
+│   └── BackgroundSystem      # Parallax starfield
+├── entities/
+│   ├── Entity                # Base struct (position, hitbox, render, isAlive)
+│   ├── Player
+│   ├── Enemy
+│   ├── Projectile
+│   ├── PowerUp
+│   ├── Explosion
+│   └── Shield
+└── systems/waving/
+    ├── BezierCurves.cpp      # All Bézier curve definitions
+    └── WaveSystem.cpp        # Wave logic
+
+Key design decisions:
+
+- Fixed timestep game loop decoupled from frame rate
+- Index timer system (pointer-safe, no heap allocation per timer)
+- Deferred entity removal with sorted index queues to avoid mid-loop invalidation
+- Templated FindDeadEntities / KillEntities working across all entity types
+- Compile-time sprite tables (SpriteTable.h) replacing runtime if-chains
+- Bézier curves for all enemy movement paths, defined in a dedicated file
+- Procedural wave generation — group sizes, dive types and formation composition randomized each wave
+
 # Requirements:
 
-- C++ compiler (Clang, GCC, or MSVC)
+- C++20 compiler (Clang or GCC)
 - CMake ≥ 3.15
 - Git
 - Raylib 5.5
